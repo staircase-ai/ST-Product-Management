@@ -1,0 +1,1429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Risk Analyst v3 — Acme Learning Systems</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* ========================================
+       STAIRCASE DESIGN SYSTEM VARIABLES
+       ======================================== */
+    :root {
+      /* Brand */
+      --st-primary: #0369E9;
+      --st-primary-hover: #0255c7;
+      --st-primary-light: #E8F2FD;
+
+      /* Status */
+      --st-positive: #13AD68;
+      --st-positive-light: #E6F7EF;
+      --st-neutral: #FFBB00;
+      --st-neutral-light: #FFF8E6;
+      --st-negative: #DC3626;
+      --st-negative-light: #FDECEB;
+      --st-warning: #FA6B0B;
+
+      /* Text */
+      --st-text: #181F26;
+      --st-text-secondary: #5F6C7A;
+      --st-text-caption: #7F859A;
+
+      /* Background */
+      --st-bg: #F8F9FA;
+      --st-bg-card: #FFFFFF;
+      --st-bg-hover: #F3F4F5;
+
+      /* Border */
+      --st-border: #E3E4E4;
+      --st-border-hover: #D1D3D4;
+
+      /* Typography */
+      --st-font: 'Noto Sans', system-ui, -apple-system, sans-serif;
+      --st-text-base: 14px;
+      --st-line-height: 1.5;
+
+      /* Spacing (8px grid) */
+      --st-space-1: 8px;
+      --st-space-2: 16px;
+      --st-space-3: 24px;
+      --st-space-4: 32px;
+      --st-space-5: 40px;
+
+      /* Border Radius */
+      --st-radius: 6px;
+      --st-radius-lg: 16px;
+      --st-radius-pill: 20px;
+
+      /* Shadow */
+      --st-shadow: 0 2px 4px 0 rgba(52, 56, 58, 0.06), 0 0 1px 0 rgba(52, 56, 58, 0.24);
+      --st-shadow-lg: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    /* ========================================
+       RESET & BASE
+       ======================================== */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--st-font);
+      font-size: var(--st-text-base);
+      line-height: var(--st-line-height);
+      color: var(--st-text);
+      background: var(--st-bg);
+      min-height: 100vh;
+    }
+
+    /* ========================================
+       LAYOUT - TWO COLUMN
+       ======================================== */
+    .app-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: var(--st-space-3);
+    }
+
+    .page-header {
+      display: flex;
+      align-items: center;
+      gap: var(--st-space-2);
+      margin-bottom: var(--st-space-3);
+    }
+
+    .account-avatar {
+      width: 56px;
+      height: 56px;
+      background: linear-gradient(135deg, #0369E9 0%, #00B4D8 100%);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 600;
+      font-size: 18px;
+    }
+
+    .account-name {
+      font-size: 24px;
+      font-weight: 600;
+      color: var(--st-text);
+    }
+
+    .health-score {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      border: 3px solid var(--st-neutral);
+      font-weight: 600;
+      font-size: 16px;
+      color: var(--st-text);
+      margin-left: auto;
+    }
+
+    .main-content {
+      display: grid;
+      grid-template-columns: 55% 45%;
+      gap: var(--st-space-3);
+      min-height: calc(100vh - 150px);
+    }
+
+    /* ========================================
+       LEFT PANEL
+       ======================================== */
+    .left-panel {
+      display: flex;
+      flex-direction: column;
+      gap: var(--st-space-3);
+    }
+
+    /* Account Header Card */
+    .account-header-card {
+      background: var(--st-bg-card);
+      border-radius: var(--st-radius-lg);
+      box-shadow: var(--st-shadow);
+      padding: var(--st-space-3);
+      position: relative;
+    }
+
+    .header-top-row {
+      display: flex;
+      align-items: center;
+      gap: var(--st-space-2);
+      margin-bottom: var(--st-space-2);
+    }
+
+    .severity-indicator {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .severity-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--st-border);
+    }
+
+    .severity-dot.filled {
+      background: var(--st-negative);
+    }
+
+    .severity-dot.filled.critical {
+      background: var(--st-negative);
+      animation: pulse 1.5s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.6; }
+    }
+
+    .severity-label {
+      font-weight: 500;
+      color: var(--st-text-secondary);
+      margin-left: 4px;
+    }
+
+    .risk-type-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 12px;
+      border-radius: var(--st-radius-pill);
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    .risk-type-badge.competitive {
+      background: var(--st-negative-light);
+      color: var(--st-negative);
+    }
+
+    .risk-type-badge.product {
+      background: var(--st-neutral-light);
+      color: #996600;
+    }
+
+    .risk-type-badge.stakeholder {
+      background: var(--st-primary-light);
+      color: var(--st-primary);
+    }
+
+    .escalate-btn {
+      margin-left: auto;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 16px;
+      background: var(--st-bg-card);
+      border: 1px solid var(--st-border);
+      border-radius: var(--st-radius);
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--st-text);
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .escalate-btn:hover {
+      border-color: var(--st-negative);
+      color: var(--st-negative);
+      background: var(--st-negative-light);
+    }
+
+    .metadata-row {
+      display: flex;
+      align-items: center;
+      gap: var(--st-space-2);
+      margin-bottom: var(--st-space-2);
+      font-size: 13px;
+      color: var(--st-text-secondary);
+    }
+
+    .metadata-item {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .metadata-value {
+      font-weight: 600;
+      color: var(--st-text);
+    }
+
+    .metadata-divider {
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      background: var(--st-border);
+    }
+
+    .med-summary {
+      font-size: 14px;
+      line-height: 1.6;
+      color: var(--st-text);
+    }
+
+    /* Risk Reasons Section */
+    .risk-reasons-section {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .section-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--st-text);
+      margin-bottom: var(--st-space-2);
+    }
+
+    .risk-reasons-list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--st-space-2);
+    }
+
+    /* Risk Reason Card */
+    .risk-reason-card {
+      background: var(--st-bg-card);
+      border-radius: var(--st-radius-lg);
+      box-shadow: var(--st-shadow);
+      padding: var(--st-space-2) var(--st-space-3);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      border: 1px solid transparent;
+    }
+
+    .risk-reason-card:hover {
+      border-color: var(--st-border-hover);
+    }
+
+    .risk-reason-card.expanded {
+      border-color: var(--st-primary);
+    }
+
+    .card-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+    }
+
+    .card-content {
+      flex: 1;
+    }
+
+    .risk-name {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--st-text);
+      margin-bottom: 4px;
+    }
+
+    .mini-summary {
+      font-size: 13px;
+      color: var(--st-text-secondary);
+      margin-bottom: var(--st-space-1);
+    }
+
+    .card-pills {
+      display: flex;
+      align-items: center;
+      gap: var(--st-space-1);
+      flex-wrap: wrap;
+    }
+
+    .severity-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 8px;
+      border-radius: var(--st-radius-pill);
+      font-size: 12px;
+      font-weight: 500;
+    }
+
+    .severity-pill.critical {
+      background: var(--st-negative-light);
+      color: var(--st-negative);
+    }
+
+    .severity-pill.high {
+      background: var(--st-negative-light);
+      color: var(--st-negative);
+    }
+
+    .severity-pill.medium {
+      background: var(--st-neutral-light);
+      color: #996600;
+    }
+
+    .severity-pill.low {
+      background: var(--st-bg);
+      color: var(--st-text-secondary);
+    }
+
+    .category-pill {
+      display: inline-flex;
+      align-items: center;
+      padding: 2px 8px;
+      border-radius: var(--st-radius-pill);
+      font-size: 12px;
+      font-weight: 500;
+      background: var(--st-bg);
+      color: var(--st-text-secondary);
+    }
+
+    .signal-count {
+      font-size: 12px;
+      color: var(--st-text-caption);
+    }
+
+    .expand-icon {
+      width: 24px;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--st-text-secondary);
+      transition: transform 0.2s ease;
+      flex-shrink: 0;
+    }
+
+    .risk-reason-card.expanded .expand-icon {
+      transform: rotate(180deg);
+    }
+
+    /* Expanded Content */
+    .expanded-content {
+      display: none;
+      padding-top: var(--st-space-2);
+      margin-top: var(--st-space-2);
+      border-top: 1px solid var(--st-border);
+    }
+
+    .risk-reason-card.expanded .expanded-content {
+      display: block;
+    }
+
+    .expanded-section {
+      margin-bottom: var(--st-space-2);
+    }
+
+    .expanded-section:last-child {
+      margin-bottom: 0;
+    }
+
+    .expanded-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--st-text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 4px;
+    }
+
+    .expanded-text {
+      font-size: 13px;
+      color: var(--st-text);
+      line-height: 1.5;
+    }
+
+    .key-players-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .key-player-tag {
+      display: inline-flex;
+      align-items: center;
+      padding: 4px 10px;
+      background: var(--st-bg);
+      border-radius: var(--st-radius);
+      font-size: 13px;
+      color: var(--st-text);
+    }
+
+    .reference-card {
+      background: var(--st-bg);
+      border-radius: var(--st-radius);
+      padding: var(--st-space-2);
+      margin-top: 8px;
+    }
+
+    .reference-quote {
+      font-size: 13px;
+      font-style: italic;
+      color: var(--st-text);
+      margin-bottom: 8px;
+    }
+
+    .reference-attribution {
+      font-size: 12px;
+      color: var(--st-text-secondary);
+    }
+
+    /* ========================================
+       RIGHT PANEL
+       ======================================== */
+    .right-panel {
+      background: var(--st-bg-card);
+      border-radius: var(--st-radius-lg);
+      box-shadow: var(--st-shadow);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .right-panel.dimmed {
+      opacity: 0.5;
+      pointer-events: none;
+    }
+
+    /* Tabs */
+    .tab-bar {
+      display: flex;
+      border-bottom: 1px solid var(--st-border);
+      padding: 0 var(--st-space-3);
+    }
+
+    .tab-btn {
+      padding: var(--st-space-2) var(--st-space-2);
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--st-text-secondary);
+      background: none;
+      border: none;
+      cursor: pointer;
+      position: relative;
+      transition: color 0.15s ease;
+    }
+
+    .tab-btn:hover {
+      color: var(--st-text);
+    }
+
+    .tab-btn.active {
+      color: var(--st-primary);
+    }
+
+    .tab-btn.active::after {
+      content: '';
+      position: absolute;
+      bottom: -1px;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: var(--st-primary);
+      border-radius: 2px 2px 0 0;
+    }
+
+    .tab-content {
+      flex: 1;
+      overflow-y: auto;
+      padding: var(--st-space-3);
+    }
+
+    .tab-pane {
+      display: none;
+    }
+
+    .tab-pane.active {
+      display: block;
+    }
+
+    /* Strategy Section */
+    .strategy-section {
+      background: var(--st-bg);
+      border-radius: var(--st-radius);
+      padding: var(--st-space-2);
+      margin-bottom: var(--st-space-3);
+    }
+
+    .strategy-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--st-text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 8px;
+    }
+
+    .strategy-text {
+      font-size: 13px;
+      color: var(--st-text);
+      line-height: 1.5;
+    }
+
+    /* Action Cards */
+    .actions-list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--st-space-2);
+    }
+
+    .action-card {
+      background: var(--st-bg-card);
+      border: 1px solid var(--st-border);
+      border-radius: var(--st-radius);
+      padding: var(--st-space-2);
+      transition: border-color 0.15s ease;
+    }
+
+    .action-card:hover {
+      border-color: var(--st-border-hover);
+    }
+
+    .action-number {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--st-primary);
+      margin-bottom: 4px;
+    }
+
+    .action-name {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--st-text);
+      margin-bottom: 4px;
+    }
+
+    .action-description {
+      font-size: 13px;
+      color: var(--st-text-secondary);
+      line-height: 1.5;
+      margin-bottom: var(--st-space-1);
+    }
+
+    .action-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      border-radius: var(--st-radius);
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      border: none;
+    }
+
+    .action-btn.primary {
+      background: var(--st-primary);
+      color: white;
+    }
+
+    .action-btn.primary:hover {
+      background: var(--st-primary-hover);
+    }
+
+    .action-btn.secondary {
+      background: var(--st-bg);
+      color: var(--st-text);
+      border: 1px solid var(--st-border);
+    }
+
+    .action-btn.secondary:hover {
+      background: var(--st-bg-hover);
+    }
+
+    /* Stakeholders Tab */
+    .stakeholders-list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--st-space-2);
+    }
+
+    .stakeholder-card {
+      background: var(--st-bg-card);
+      border: 1px solid var(--st-border);
+      border-radius: var(--st-radius);
+      padding: var(--st-space-2);
+    }
+
+    .stakeholder-header {
+      display: flex;
+      align-items: center;
+      gap: var(--st-space-1);
+      margin-bottom: 8px;
+    }
+
+    .stakeholder-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--st-bg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+    }
+
+    .stakeholder-info {
+      flex: 1;
+    }
+
+    .stakeholder-name {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--st-text);
+    }
+
+    .stakeholder-role {
+      font-size: 12px;
+      color: var(--st-text-secondary);
+    }
+
+    .sentiment-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 8px;
+      border-radius: var(--st-radius-pill);
+      font-size: 12px;
+      font-weight: 500;
+    }
+
+    .sentiment-pill.detractor {
+      background: var(--st-negative-light);
+      color: var(--st-negative);
+    }
+
+    .sentiment-pill.neutral {
+      background: var(--st-neutral-light);
+      color: #996600;
+    }
+
+    .sentiment-pill.advocate {
+      background: var(--st-positive-light);
+      color: var(--st-positive);
+    }
+
+    .stakeholder-summary {
+      font-size: 13px;
+      color: var(--st-text);
+      line-height: 1.5;
+      margin-bottom: 8px;
+    }
+
+    .engagement-metrics {
+      display: flex;
+      gap: var(--st-space-2);
+      font-size: 12px;
+      color: var(--st-text-secondary);
+    }
+
+    .metric-item {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    /* ========================================
+       DRAFT EMAIL OVERLAY
+       ======================================== */
+    .email-overlay {
+      display: none;
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: var(--st-bg-card);
+      border-radius: var(--st-radius-lg);
+      z-index: 100;
+      flex-direction: column;
+    }
+
+    .email-overlay.visible {
+      display: flex;
+    }
+
+    .email-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--st-space-2) var(--st-space-3);
+      border-bottom: 1px solid var(--st-border);
+    }
+
+    .email-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--st-text);
+    }
+
+    .email-subtitle {
+      font-size: 13px;
+      color: var(--st-text-secondary);
+    }
+
+    .close-btn {
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: var(--st-radius);
+      border: none;
+      background: var(--st-bg);
+      color: var(--st-text-secondary);
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .close-btn:hover {
+      background: var(--st-negative-light);
+      color: var(--st-negative);
+    }
+
+    .email-body {
+      flex: 1;
+      padding: var(--st-space-3);
+      overflow-y: auto;
+    }
+
+    .email-field {
+      margin-bottom: var(--st-space-2);
+    }
+
+    .email-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--st-text-secondary);
+      margin-bottom: 4px;
+      display: block;
+    }
+
+    .email-input {
+      width: 100%;
+      padding: 8px 12px;
+      border: 1px solid var(--st-border);
+      border-radius: var(--st-radius);
+      font-family: var(--st-font);
+      font-size: 14px;
+      color: var(--st-text);
+    }
+
+    .email-input:focus {
+      outline: none;
+      border-color: var(--st-primary);
+    }
+
+    .email-textarea {
+      width: 100%;
+      min-height: 250px;
+      padding: 12px;
+      border: 1px solid var(--st-border);
+      border-radius: var(--st-radius);
+      font-family: var(--st-font);
+      font-size: 14px;
+      color: var(--st-text);
+      line-height: 1.6;
+      resize: vertical;
+    }
+
+    .email-textarea:focus {
+      outline: none;
+      border-color: var(--st-primary);
+    }
+
+    .email-actions {
+      display: flex;
+      gap: var(--st-space-2);
+      padding: var(--st-space-2) var(--st-space-3);
+      border-top: 1px solid var(--st-border);
+    }
+
+    .email-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 10px 20px;
+      border-radius: var(--st-radius);
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      border: none;
+    }
+
+    .email-btn.primary {
+      background: var(--st-primary);
+      color: white;
+    }
+
+    .email-btn.primary:hover {
+      background: var(--st-primary-hover);
+    }
+
+    .email-btn.secondary {
+      background: var(--st-bg);
+      color: var(--st-text);
+      border: 1px solid var(--st-border);
+    }
+
+    .email-btn.secondary:hover {
+      background: var(--st-bg-hover);
+    }
+
+    /* ========================================
+       UTILITIES
+       ======================================== */
+    .icon {
+      width: 16px;
+      height: 16px;
+    }
+
+    /* Generated timestamp */
+    .generated-info {
+      font-size: 12px;
+      color: var(--st-text-caption);
+      margin-bottom: var(--st-space-2);
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <!-- Page Header -->
+    <div class="page-header">
+      <div class="account-avatar">AL</div>
+      <div>
+        <div class="account-name">Acme Learning Systems</div>
+      </div>
+      <div class="health-score">52</div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+      <!-- Left Panel -->
+      <div class="left-panel" id="leftPanel">
+        <!-- Account Header Card -->
+        <div class="account-header-card">
+          <div class="header-top-row">
+            <div class="severity-indicator">
+              <span class="severity-dot filled"></span>
+              <span class="severity-dot filled"></span>
+              <span class="severity-dot filled"></span>
+              <span class="severity-dot filled"></span>
+              <span class="severity-dot"></span>
+              <span class="severity-label">4/5</span>
+            </div>
+            <div class="risk-type-badge competitive">
+              <span>🔥</span>
+              <span>Competitive</span>
+            </div>
+            <button class="escalate-btn" onclick="showEscalateToast()">
+              <span>Escalate</span>
+              <svg class="icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M4 12L12 4M12 4H5M12 4V11"/>
+              </svg>
+            </button>
+          </div>
+
+          <div class="metadata-row">
+            <div class="metadata-item">
+              <span>ARR:</span>
+              <span class="metadata-value">$180K</span>
+            </div>
+            <span class="metadata-divider"></span>
+            <div class="metadata-item">
+              <span>Renewal:</span>
+              <span class="metadata-value">45 days</span>
+            </div>
+            <span class="metadata-divider"></span>
+            <div class="metadata-item">
+              <span>Products:</span>
+              <span class="metadata-value">CS, PX</span>
+            </div>
+          </div>
+
+          <div class="generated-info">Generated December 17, 2025</div>
+
+          <p class="med-summary">
+            Acme Learning Systems is consolidating CS capabilities into their Salesforce environment due to workflow duplication concerns. VP Customer Success is frustrated with integration complexity and is actively evaluating native Salesforce CS tools. Key champion recently went on leave, creating additional uncertainty around the renewal.
+          </p>
+        </div>
+
+        <!-- Risk Reasons Section -->
+        <div class="risk-reasons-section">
+          <h3 class="section-title">Risk Reasons</h3>
+          <div class="risk-reasons-list">
+            <!-- Risk Reason 1 -->
+            <div class="risk-reason-card" onclick="toggleRiskCard(this)">
+              <div class="card-header">
+                <div class="card-content">
+                  <div class="risk-name">Competitive Pressure</div>
+                  <div class="mini-summary">Active evaluation with competitor, VP comparing pricing and integration capabilities</div>
+                  <div class="card-pills">
+                    <span class="severity-pill high">🔴 High</span>
+                    <span class="category-pill">Competitive</span>
+                    <span class="signal-count">3 signals</span>
+                  </div>
+                </div>
+                <div class="expand-icon">
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M4 6L8 10L12 6"/>
+                  </svg>
+                </div>
+              </div>
+              <div class="expanded-content">
+                <div class="expanded-section">
+                  <div class="expanded-label">Summary</div>
+                  <p class="expanded-text">Customer is actively evaluating Salesforce-native CS capabilities as alternative to Gainsight CS. Workflow duplication between systems is driving consolidation consideration. VP Customer Success is leading the evaluation with support from CTO.</p>
+                </div>
+                <div class="expanded-section">
+                  <div class="expanded-label">Key Players</div>
+                  <div class="key-players-list">
+                    <span class="key-player-tag">Sarah Mitchell</span>
+                    <span class="key-player-tag">James Chen</span>
+                  </div>
+                </div>
+                <div class="expanded-section">
+                  <div class="expanded-label">Approach</div>
+                  <p class="expanded-text">Lead with integration roadmap demonstrating reduced workflow duplication. Engage VP for exec alignment on value delivered. Avoid discussing pricing until value is re-established. Similar accounts retained when exec alignment happened within 2 weeks.</p>
+                </div>
+                <div class="expanded-section">
+                  <div class="expanded-label">Evidence</div>
+                  <div class="reference-card">
+                    <p class="reference-quote">"We are pausing the use of Gainsight CS... adoption has been poor and the duplication of work in Gainsight and Salesforce has been challenging"</p>
+                    <p class="reference-attribution">— Sarah Mitchell, VP Customer Success • December 8, 2025 • Email</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Risk Reason 2 -->
+            <div class="risk-reason-card" onclick="toggleRiskCard(this)">
+              <div class="card-header">
+                <div class="card-content">
+                  <div class="risk-name">Product Friction</div>
+                  <div class="mini-summary">Integration complexity concerns, CTO requesting dedicated technical resources</div>
+                  <div class="card-pills">
+                    <span class="severity-pill medium">🟡 Medium</span>
+                    <span class="category-pill">Product</span>
+                    <span class="signal-count">2 signals</span>
+                  </div>
+                </div>
+                <div class="expand-icon">
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M4 6L8 10L12 6"/>
+                  </svg>
+                </div>
+              </div>
+              <div class="expanded-content">
+                <div class="expanded-section">
+                  <div class="expanded-label">Summary</div>
+                  <p class="expanded-text">CTO has raised concerns about the technical complexity of the Salesforce integration. Team is requesting dedicated SE support to address specific workflow issues and demonstrate the integration roadmap.</p>
+                </div>
+                <div class="expanded-section">
+                  <div class="expanded-label">Key Players</div>
+                  <div class="key-players-list">
+                    <span class="key-player-tag">James Chen</span>
+                  </div>
+                </div>
+                <div class="expanded-section">
+                  <div class="expanded-label">Approach</div>
+                  <p class="expanded-text">Schedule technical deep-dive with SE to walk through integration architecture. Address specific workflow duplication concerns with concrete solutions. Provide clear timeline for upcoming integration improvements.</p>
+                </div>
+                <div class="expanded-section">
+                  <div class="expanded-label">Evidence</div>
+                  <div class="reference-card">
+                    <p class="reference-quote">"We are investing heavily in making CS fit nicely inside Salesforce. I need to understand if Gainsight can be part of that vision."</p>
+                    <p class="reference-attribution">— James Chen, CTO • December 5, 2025 • Meeting</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Risk Reason 3 -->
+            <div class="risk-reason-card" onclick="toggleRiskCard(this)">
+              <div class="card-header">
+                <div class="card-content">
+                  <div class="risk-name">Stakeholder Uncertainty</div>
+                  <div class="mini-summary">Key champion on extended leave, unclear who is driving renewal decision</div>
+                  <div class="card-pills">
+                    <span class="severity-pill medium">🟡 Medium</span>
+                    <span class="category-pill">Stakeholder</span>
+                    <span class="signal-count">2 signals</span>
+                  </div>
+                </div>
+                <div class="expand-icon">
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M4 6L8 10L12 6"/>
+                  </svg>
+                </div>
+              </div>
+              <div class="expanded-content">
+                <div class="expanded-section">
+                  <div class="expanded-label">Summary</div>
+                  <p class="expanded-text">The primary Gainsight champion (Director of CS Ops) went on extended medical leave in November. Decision-making authority has shifted to VP and CTO, who are less familiar with the platform's value and more focused on consolidation.</p>
+                </div>
+                <div class="expanded-section">
+                  <div class="expanded-label">Key Players</div>
+                  <div class="key-players-list">
+                    <span class="key-player-tag">Sarah Mitchell</span>
+                    <span class="key-player-tag">James Chen</span>
+                    <span class="key-player-tag">Marcus Wong (on leave)</span>
+                  </div>
+                </div>
+                <div class="expanded-section">
+                  <div class="expanded-label">Approach</div>
+                  <p class="expanded-text">Identify and develop relationships with power users who can advocate for the platform. Focus on demonstrating value directly to VP and CTO rather than relying on champion. Document ROI and success metrics for stakeholder transition.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Email Overlay (initially hidden) -->
+        <div class="email-overlay" id="emailOverlay">
+          <div class="email-header">
+            <div>
+              <div class="email-title">Draft Email</div>
+              <div class="email-subtitle" id="emailActionName">for: Schedule exec alignment call</div>
+            </div>
+            <button class="close-btn" onclick="closeEmailOverlay()">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M4 4L12 12M12 4L4 12"/>
+              </svg>
+            </button>
+          </div>
+          <div class="email-body">
+            <div class="email-field">
+              <label class="email-label">To</label>
+              <input type="text" class="email-input" id="emailTo" value="sarah.mitchell@acmelearning.com">
+            </div>
+            <div class="email-field">
+              <label class="email-label">Subject</label>
+              <input type="text" class="email-input" id="emailSubject" value="Executive Alignment: Gainsight Partnership Discussion">
+            </div>
+            <div class="email-field">
+              <label class="email-label">Message</label>
+              <textarea class="email-textarea" id="emailContent">Hi Sarah,
+
+I wanted to reach out directly to discuss the partnership between Acme Learning Systems and Gainsight. I understand there have been some concerns about workflow integration between Gainsight and Salesforce, and I'd like to arrange an executive discussion to address these directly.
+
+Our VP of Customer Success, Jennifer Park, would like to connect with you to:
+
+1. Understand your specific integration challenges and consolidation goals
+2. Share our updated integration roadmap that specifically addresses workflow duplication
+3. Discuss how we can better support your team during this evaluation period
+
+We've seen similar situations with other customers in the education space, and the key to success has been getting executive alignment on the path forward early in the process.
+
+Would you be available for a 30-minute call next week? I'll send a calendar invite once you confirm a time that works.
+
+Looking forward to reconnecting.
+
+Best regards,
+[Your name]</textarea>
+            </div>
+          </div>
+          <div class="email-actions">
+            <button class="email-btn primary" onclick="copyEmailToClipboard()">
+              <svg class="icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="4" y="4" width="8" height="10" rx="1"/>
+                <path d="M8 2H11C11.5523 2 12 2.44772 12 3V4"/>
+              </svg>
+              Copy to Clipboard
+            </button>
+            <button class="email-btn secondary" onclick="openInEmailClient()">
+              <svg class="icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="1" y="3" width="14" height="10" rx="1"/>
+                <path d="M1 4L8 9L15 4"/>
+              </svg>
+              Open in Email Client
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Panel -->
+      <div class="right-panel" id="rightPanel">
+        <div class="tab-bar">
+          <button class="tab-btn active" data-tab="actions" onclick="switchTab('actions')">Actions</button>
+          <button class="tab-btn" data-tab="stakeholders" onclick="switchTab('stakeholders')">Stakeholders</button>
+        </div>
+
+        <div class="tab-content">
+          <!-- Actions Tab -->
+          <div class="tab-pane active" id="actionsTab">
+            <div class="strategy-section">
+              <div class="strategy-label">Strategy</div>
+              <p class="strategy-text">Acme is consolidating to Salesforce due to workflow duplication. Key approach: demonstrate integration value through technical deep-dive, engage VP for exec alignment, address technical blockers with dedicated SE support. Similar accounts retained 73% when exec alignment happened within 2 weeks.</p>
+            </div>
+
+            <div class="actions-list">
+              <div class="action-card">
+                <div class="action-number">Action 1</div>
+                <div class="action-name">Schedule exec alignment call</div>
+                <p class="action-description">Set up VP-to-VP discussion to address integration concerns and demonstrate commitment. Goal: Secure commitment to 60-day evaluation period.</p>
+                <button class="action-btn primary" onclick="openEmailDraft('Schedule exec alignment call', 'sarah.mitchell@acmelearning.com')">
+                  <svg class="icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="1" y="3" width="14" height="10" rx="1"/>
+                    <path d="M1 4L8 9L15 4"/>
+                  </svg>
+                  Draft Email
+                </button>
+              </div>
+
+              <div class="action-card">
+                <div class="action-number">Action 2</div>
+                <div class="action-name">Prepare competitive battlecard</div>
+                <p class="action-description">Document Salesforce CS limitations vs Gainsight strengths for integration, analytics, and automation. Share with account team before exec call.</p>
+                <button class="action-btn secondary">
+                  <svg class="icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="2" y="2" width="12" height="12" rx="1"/>
+                    <path d="M5 6H11M5 8H11M5 10H8"/>
+                  </svg>
+                  View Template
+                </button>
+              </div>
+
+              <div class="action-card">
+                <div class="action-number">Action 3</div>
+                <div class="action-name">Technical deep-dive on integration</div>
+                <p class="action-description">Schedule technical session with SE to walk through integration architecture and address specific workflow duplication concerns raised by CTO.</p>
+                <button class="action-btn primary" onclick="openEmailDraft('Technical deep-dive on integration', 'james.chen@acmelearning.com')">
+                  <svg class="icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="1" y="3" width="14" height="10" rx="1"/>
+                    <path d="M1 4L8 9L15 4"/>
+                  </svg>
+                  Draft Email
+                </button>
+              </div>
+
+              <div class="action-card">
+                <div class="action-number">Action 4</div>
+                <div class="action-name">Executive business review</div>
+                <p class="action-description">Present ROI analysis and success metrics to leadership team. Align on success criteria for next 90 days post-renewal.</p>
+                <button class="action-btn primary" onclick="openEmailDraft('Executive business review', 'sarah.mitchell@acmelearning.com')">
+                  <svg class="icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="1" y="3" width="14" height="10" rx="1"/>
+                    <path d="M1 4L8 9L15 4"/>
+                  </svg>
+                  Draft Email
+                </button>
+              </div>
+
+              <div class="action-card">
+                <div class="action-number">Action 5</div>
+                <div class="action-name">Customer success plan refresh</div>
+                <p class="action-description">Update success plan with specific integration milestones and ownership. Share with customer for alignment on path forward.</p>
+                <button class="action-btn secondary">
+                  <svg class="icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="2" y="2" width="12" height="12" rx="1"/>
+                    <path d="M5 6H11M5 8H11M5 10H8"/>
+                  </svg>
+                  View Template
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Stakeholders Tab -->
+          <div class="tab-pane" id="stakeholdersTab">
+            <div class="stakeholders-list">
+              <div class="stakeholder-card">
+                <div class="stakeholder-header">
+                  <div class="stakeholder-avatar">👤</div>
+                  <div class="stakeholder-info">
+                    <div class="stakeholder-name">Sarah Mitchell</div>
+                    <div class="stakeholder-role">VP Customer Success</div>
+                  </div>
+                  <span class="sentiment-pill detractor">🔴 Detractor</span>
+                </div>
+                <p class="stakeholder-summary">Driving the competitive evaluation. Frustrated with integration complexity. Key decision maker for renewal. Has escalated concerns to CEO about tool consolidation.</p>
+                <div class="engagement-metrics">
+                  <span class="metric-item">📧 12 emails</span>
+                  <span class="metric-item">📅 3 meetings</span>
+                  <span class="metric-item">🎫 5 tickets</span>
+                </div>
+              </div>
+
+              <div class="stakeholder-card">
+                <div class="stakeholder-header">
+                  <div class="stakeholder-avatar">👤</div>
+                  <div class="stakeholder-info">
+                    <div class="stakeholder-name">James Chen</div>
+                    <div class="stakeholder-role">CTO</div>
+                  </div>
+                  <span class="sentiment-pill neutral">🟡 Neutral</span>
+                </div>
+                <p class="stakeholder-summary">Technical evaluator. Open to discussion but needs concrete integration path. Focused on reducing technical complexity across the stack.</p>
+                <div class="engagement-metrics">
+                  <span class="metric-item">📧 4 emails</span>
+                  <span class="metric-item">📅 2 meetings</span>
+                  <span class="metric-item">🎫 0 tickets</span>
+                </div>
+              </div>
+
+              <div class="stakeholder-card">
+                <div class="stakeholder-header">
+                  <div class="stakeholder-avatar">👤</div>
+                  <div class="stakeholder-info">
+                    <div class="stakeholder-name">Marcus Wong</div>
+                    <div class="stakeholder-role">Director, CS Ops</div>
+                  </div>
+                  <span class="sentiment-pill advocate">🟢 Advocate</span>
+                </div>
+                <p class="stakeholder-summary">Primary champion (currently on leave). Built most of the Gainsight implementation. Expected to return in January. May be able to influence remotely.</p>
+                <div class="engagement-metrics">
+                  <span class="metric-item">📧 28 emails</span>
+                  <span class="metric-item">📅 8 meetings</span>
+                  <span class="metric-item">🎫 12 tickets</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Tab switching
+    function switchTab(tabName) {
+      // Update tab buttons
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.tab === tabName);
+      });
+
+      // Update tab panes
+      document.getElementById('actionsTab').classList.toggle('active', tabName === 'actions');
+      document.getElementById('stakeholdersTab').classList.toggle('active', tabName === 'stakeholders');
+    }
+
+    // Risk card expand/collapse
+    function toggleRiskCard(card) {
+      card.classList.toggle('expanded');
+    }
+
+    // Draft email overlay
+    function openEmailDraft(actionName, recipient) {
+      const overlay = document.getElementById('emailOverlay');
+      const actionNameEl = document.getElementById('emailActionName');
+      const toEl = document.getElementById('emailTo');
+      const rightPanel = document.getElementById('rightPanel');
+      const leftPanel = document.getElementById('leftPanel');
+
+      actionNameEl.textContent = `for: ${actionName}`;
+      toEl.value = recipient;
+
+      // Update email content based on action
+      const emailContent = document.getElementById('emailContent');
+      const emailSubject = document.getElementById('emailSubject');
+
+      if (actionName.includes('exec alignment')) {
+        emailSubject.value = 'Executive Alignment: Gainsight Partnership Discussion';
+        emailContent.value = `Hi Sarah,
+
+I wanted to reach out directly to discuss the partnership between Acme Learning Systems and Gainsight. I understand there have been some concerns about workflow integration between Gainsight and Salesforce, and I'd like to arrange an executive discussion to address these directly.
+
+Our VP of Customer Success, Jennifer Park, would like to connect with you to:
+
+1. Understand your specific integration challenges and consolidation goals
+2. Share our updated integration roadmap that specifically addresses workflow duplication
+3. Discuss how we can better support your team during this evaluation period
+
+We've seen similar situations with other customers in the education space, and the key to success has been getting executive alignment on the path forward early in the process.
+
+Would you be available for a 30-minute call next week? I'll send a calendar invite once you confirm a time that works.
+
+Looking forward to reconnecting.
+
+Best regards,
+[Your name]`;
+      } else if (actionName.includes('Technical')) {
+        emailSubject.value = 'Technical Deep-Dive: Salesforce Integration Architecture';
+        emailContent.value = `Hi James,
+
+Following up on our recent conversation about the Salesforce integration, I'd like to schedule a technical deep-dive session with our Solutions Engineering team.
+
+We've prepared a focused session covering:
+
+1. Current integration architecture and how it maps to your Salesforce environment
+2. Specific solutions for the workflow duplication issues you mentioned
+3. Our integration roadmap for Q1 2026 with timeline commitments
+4. Best practices from similar enterprise deployments
+
+This would be a working session where we can address your specific technical concerns and demonstrate concrete solutions.
+
+Could we schedule 90 minutes sometime next week? I'll have our Senior SE, Mike Thompson, join who has deep expertise in enterprise Salesforce integrations.
+
+Let me know what works for your schedule.
+
+Best,
+[Your name]`;
+      } else if (actionName.includes('business review')) {
+        emailSubject.value = 'Executive Business Review: Gainsight ROI & Success Metrics';
+        emailContent.value = `Hi Sarah,
+
+I'd like to schedule an Executive Business Review to present the ROI analysis and success metrics for your Gainsight implementation.
+
+The agenda would cover:
+
+1. Value delivered over the past 12 months (quantified)
+2. Usage analytics and adoption trends across your CS team
+3. Success criteria alignment for the next 90 days
+4. Integration roadmap addressing your consolidation goals
+
+This is an important discussion before your renewal, and I want to make sure we're aligned on the path forward and the value Gainsight brings to your customer success operations.
+
+Would you be able to carve out 45 minutes next week for this review?
+
+Best regards,
+[Your name]`;
+      }
+
+      overlay.classList.add('visible');
+      rightPanel.classList.add('dimmed');
+    }
+
+    function closeEmailOverlay() {
+      const overlay = document.getElementById('emailOverlay');
+      const rightPanel = document.getElementById('rightPanel');
+
+      overlay.classList.remove('visible');
+      rightPanel.classList.remove('dimmed');
+    }
+
+    function copyEmailToClipboard() {
+      const to = document.getElementById('emailTo').value;
+      const subject = document.getElementById('emailSubject').value;
+      const content = document.getElementById('emailContent').value;
+
+      const fullEmail = `To: ${to}\nSubject: ${subject}\n\n${content}`;
+
+      navigator.clipboard.writeText(fullEmail).then(() => {
+        alert('Email copied to clipboard!');
+      });
+    }
+
+    function openInEmailClient() {
+      const to = document.getElementById('emailTo').value;
+      const subject = encodeURIComponent(document.getElementById('emailSubject').value);
+      const body = encodeURIComponent(document.getElementById('emailContent').value);
+
+      window.location.href = `mailto:${to}?subject=${subject}&body=${body}`;
+    }
+
+    function showEscalateToast() {
+      alert('Escalation would be sent to:\n• Your manager\n• Account Executive\n• Slack #critical-accounts channel\n\n(Demo - not actually sent)');
+    }
+  </script>
+</body>
+</html>
