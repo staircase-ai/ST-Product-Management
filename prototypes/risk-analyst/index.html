@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Risk Analyst v3 — Acme Learning Systems</title>
+  <title>Risk Analyst v4 — Acme Learning Systems</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -119,14 +119,141 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      width: 44px;
-      height: 44px;
+      width: 36px;
+      height: 36px;
       border-radius: 50%;
       border: 3px solid var(--st-neutral);
       font-weight: 600;
-      font-size: 16px;
+      font-size: 14px;
       color: var(--st-text);
-      margin-left: auto;
+      margin-left: 4px;
+    }
+
+    .account-name-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* ========================================
+       AI CANVAS - TOP BAR
+       ======================================== */
+    .smart-prompts {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      margin-bottom: var(--st-space-1);
+      font-size: 13px;
+    }
+
+    .smart-prompt {
+      color: var(--st-primary);
+      cursor: pointer;
+      transition: text-decoration 0.15s ease;
+      padding: 0 8px;
+    }
+
+    .smart-prompt:hover {
+      text-decoration: underline;
+    }
+
+    .smart-prompt:first-child {
+      padding-left: 0;
+    }
+
+    .prompt-divider {
+      color: var(--st-text-caption);
+    }
+
+    .ask-staircase-bar {
+      display: flex;
+      align-items: center;
+      background: var(--st-bg-card);
+      border: 1px solid var(--st-border);
+      border-radius: var(--st-radius);
+      padding: 10px 14px;
+      margin-bottom: var(--st-space-2);
+    }
+
+    .ask-staircase-bar input {
+      flex: 1;
+      border: none;
+      outline: none;
+      font-family: var(--st-font);
+      font-size: 14px;
+      color: var(--st-text);
+      background: transparent;
+    }
+
+    .ask-staircase-bar input::placeholder {
+      color: var(--st-text-caption);
+    }
+
+    .ask-bar-icons {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--st-text-secondary);
+    }
+
+    .ask-bar-icon {
+      width: 20px;
+      height: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      border-radius: 4px;
+      transition: background 0.15s ease;
+    }
+
+    .ask-bar-icon:hover {
+      background: var(--st-bg);
+    }
+
+    .canvas-tabs {
+      display: flex;
+      border-bottom: 1px solid var(--st-border);
+      margin-bottom: var(--st-space-3);
+    }
+
+    .canvas-tab {
+      padding: var(--st-space-1) var(--st-space-2);
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--st-text-secondary);
+      background: none;
+      border: none;
+      cursor: pointer;
+      position: relative;
+      transition: color 0.15s ease;
+    }
+
+    .canvas-tab:first-child {
+      padding-left: 0;
+    }
+
+    .canvas-tab:hover {
+      color: var(--st-text);
+    }
+
+    .canvas-tab.active {
+      color: var(--st-text);
+      font-weight: 600;
+    }
+
+    .canvas-tab.active::after {
+      content: '';
+      position: absolute;
+      bottom: -1px;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: var(--st-text);
+    }
+
+    .canvas-tab:first-child.active::after {
+      left: 0;
     }
 
     .main-content {
@@ -137,21 +264,34 @@
     }
 
     /* ========================================
-       LEFT PANEL
+       AI CANVAS (LEFT PANEL)
        ======================================== */
-    .left-panel {
-      display: flex;
-      flex-direction: column;
-      gap: var(--st-space-3);
-    }
-
-    /* Account Header Card */
-    .account-header-card {
+    .ai-canvas {
       background: var(--st-bg-card);
       border-radius: var(--st-radius-lg);
       box-shadow: var(--st-shadow);
       padding: var(--st-space-3);
+      display: flex;
+      flex-direction: column;
       position: relative;
+      overflow: hidden;
+    }
+
+    .canvas-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .canvas-content.hidden {
+      display: none;
+    }
+
+    /* Risk Header (no card styling - flat) */
+    .risk-header {
+      padding-bottom: var(--st-space-3);
+      border-bottom: 1px solid var(--st-border);
+      margin-bottom: var(--st-space-3);
     }
 
     .header-top-row {
@@ -291,26 +431,33 @@
     .risk-reasons-list {
       display: flex;
       flex-direction: column;
-      gap: var(--st-space-2);
+      gap: 0;
     }
 
-    /* Risk Reason Card */
-    .risk-reason-card {
-      background: var(--st-bg-card);
-      border-radius: var(--st-radius-lg);
-      box-shadow: var(--st-shadow);
-      padding: var(--st-space-2) var(--st-space-3);
+    /* Risk Reason (flat with dividers) */
+    .risk-reason {
+      padding: var(--st-space-2) 0;
       cursor: pointer;
-      transition: all 0.2s ease;
-      border: 1px solid transparent;
+      transition: background 0.15s ease;
+      border-bottom: 1px solid var(--st-border);
     }
 
-    .risk-reason-card:hover {
-      border-color: var(--st-border-hover);
+    .risk-reason:last-child {
+      border-bottom: none;
     }
 
-    .risk-reason-card.expanded {
-      border-color: var(--st-primary);
+    .risk-reason:hover {
+      background: var(--st-bg-hover);
+      margin: 0 calc(-1 * var(--st-space-3));
+      padding-left: var(--st-space-3);
+      padding-right: var(--st-space-3);
+    }
+
+    .risk-reason.expanded {
+      background: transparent;
+      margin: 0;
+      padding-left: 0;
+      padding-right: 0;
     }
 
     .card-header {
@@ -400,7 +547,7 @@
       flex-shrink: 0;
     }
 
-    .risk-reason-card.expanded .expand-icon {
+    .risk-reason.expanded .expand-icon {
       transform: rotate(180deg);
     }
 
@@ -412,8 +559,73 @@
       border-top: 1px solid var(--st-border);
     }
 
-    .risk-reason-card.expanded .expanded-content {
+    .risk-reason.expanded .expanded-content {
       display: block;
+    }
+
+    /* Add Context Form */
+    .add-context-section {
+      margin-top: var(--st-space-2);
+      padding-top: var(--st-space-2);
+      border-top: 1px solid var(--st-border);
+    }
+
+    .add-context-trigger {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--st-primary);
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      background: none;
+      border: none;
+      padding: 0;
+    }
+
+    .add-context-trigger:hover {
+      text-decoration: underline;
+    }
+
+    .add-context-form {
+      display: none;
+      margin-top: var(--st-space-2);
+    }
+
+    .add-context-form.visible {
+      display: block;
+    }
+
+    .add-context-form textarea {
+      width: 100%;
+      min-height: 80px;
+      padding: var(--st-space-1);
+      border: 1px solid var(--st-border);
+      border-radius: var(--st-radius);
+      font-family: var(--st-font);
+      font-size: 13px;
+      resize: vertical;
+      margin-bottom: var(--st-space-1);
+    }
+
+    .add-context-form textarea:focus {
+      outline: none;
+      border-color: var(--st-primary);
+    }
+
+    .add-context-form button {
+      padding: 6px 12px;
+      background: var(--st-primary);
+      color: white;
+      border: none;
+      border-radius: var(--st-radius);
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+    }
+
+    .add-context-form button:hover {
+      background: var(--st-primary-hover);
     }
 
     .expanded-section {
@@ -586,10 +798,10 @@
       border-color: var(--st-border-hover);
     }
 
-    .action-number {
-      font-size: 12px;
-      font-weight: 600;
-      color: var(--st-primary);
+    .action-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
       margin-bottom: 4px;
     }
 
@@ -597,7 +809,12 @@
       font-size: 14px;
       font-weight: 600;
       color: var(--st-text);
-      margin-bottom: 4px;
+    }
+
+    .action-number {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--st-text-caption);
     }
 
     .action-description {
@@ -732,128 +949,131 @@
     }
 
     /* ========================================
-       DRAFT EMAIL OVERLAY
+       INLINE EMAIL DRAFT VIEW
        ======================================== */
-    .email-overlay {
+    .email-draft-view {
       display: none;
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: var(--st-bg-card);
-      border-radius: var(--st-radius-lg);
-      z-index: 100;
       flex-direction: column;
+      flex: 1;
     }
 
-    .email-overlay.visible {
+    .email-draft-view.visible {
       display: flex;
     }
 
-    .email-header {
+    .email-draft-header {
       display: flex;
-      align-items: center;
+      align-items: flex-start;
       justify-content: space-between;
-      padding: var(--st-space-2) var(--st-space-3);
-      border-bottom: 1px solid var(--st-border);
+      margin-bottom: var(--st-space-2);
     }
 
-    .email-title {
-      font-size: 16px;
-      font-weight: 600;
+    .email-draft-prompt {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      font-size: 14px;
       color: var(--st-text);
     }
 
-    .email-subtitle {
-      font-size: 13px;
+    .email-draft-prompt .prompt-x {
       color: var(--st-text-secondary);
+      font-weight: 500;
     }
 
-    .close-btn {
-      width: 32px;
-      height: 32px;
+    .close-draft-btn {
+      width: 28px;
+      height: 28px;
       display: flex;
       align-items: center;
       justify-content: center;
       border-radius: var(--st-radius);
       border: none;
-      background: var(--st-bg);
+      background: transparent;
       color: var(--st-text-secondary);
       cursor: pointer;
       transition: all 0.15s ease;
+      flex-shrink: 0;
     }
 
-    .close-btn:hover {
-      background: var(--st-negative-light);
-      color: var(--st-negative);
+    .close-draft-btn:hover {
+      background: var(--st-bg);
+      color: var(--st-text);
     }
 
-    .email-body {
+    .email-fields {
+      margin-bottom: var(--st-space-2);
+      padding-bottom: var(--st-space-2);
+      border-bottom: 1px solid var(--st-border);
+    }
+
+    .email-field-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 4px 0;
+      font-size: 14px;
+    }
+
+    .email-field-label {
+      font-weight: 500;
+      color: var(--st-text-secondary);
+      min-width: 60px;
+    }
+
+    .email-field-value {
+      color: var(--st-text);
+    }
+
+    .email-body-content {
       flex: 1;
-      padding: var(--st-space-3);
-      overflow-y: auto;
+      font-size: 14px;
+      line-height: 1.7;
+      color: var(--st-text);
+      white-space: pre-wrap;
     }
 
-    .email-field {
+    .email-body-content p {
       margin-bottom: var(--st-space-2);
     }
 
-    .email-label {
-      font-size: 12px;
-      font-weight: 600;
-      color: var(--st-text-secondary);
-      margin-bottom: 4px;
-      display: block;
+    .email-body-content ul {
+      margin: var(--st-space-2) 0;
+      padding-left: var(--st-space-3);
     }
 
-    .email-input {
-      width: 100%;
-      padding: 8px 12px;
-      border: 1px solid var(--st-border);
-      border-radius: var(--st-radius);
-      font-family: var(--st-font);
-      font-size: 14px;
-      color: var(--st-text);
+    .email-body-content li {
+      margin-bottom: var(--st-space-1);
     }
 
-    .email-input:focus {
-      outline: none;
-      border-color: var(--st-primary);
+    .calendly-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--st-primary);
+      text-decoration: none;
+      font-weight: 500;
     }
 
-    .email-textarea {
-      width: 100%;
-      min-height: 250px;
-      padding: 12px;
-      border: 1px solid var(--st-border);
-      border-radius: var(--st-radius);
-      font-family: var(--st-font);
-      font-size: 14px;
-      color: var(--st-text);
-      line-height: 1.6;
-      resize: vertical;
+    .calendly-link:hover {
+      text-decoration: underline;
     }
 
-    .email-textarea:focus {
-      outline: none;
-      border-color: var(--st-primary);
-    }
-
-    .email-actions {
+    .email-draft-actions {
       display: flex;
+      justify-content: flex-end;
       gap: var(--st-space-2);
-      padding: var(--st-space-2) var(--st-space-3);
-      border-top: 1px solid var(--st-border);
+      padding-top: var(--st-space-3);
+      margin-top: auto;
     }
 
     .email-btn {
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      padding: 10px 20px;
+      padding: 8px 16px;
       border-radius: var(--st-radius);
-      font-size: 14px;
+      font-size: 13px;
       font-weight: 500;
       cursor: pointer;
       transition: all 0.15s ease;
@@ -900,252 +1120,337 @@
     <!-- Page Header -->
     <div class="page-header">
       <div class="account-avatar">AL</div>
-      <div>
+      <div class="account-name-group">
         <div class="account-name">Acme Learning Systems</div>
+        <div class="health-score">52</div>
       </div>
-      <div class="health-score">52</div>
     </div>
 
     <!-- Main Content -->
     <div class="main-content">
-      <!-- Left Panel -->
-      <div class="left-panel" id="leftPanel">
-        <!-- Account Header Card -->
-        <div class="account-header-card">
-          <div class="header-top-row">
-            <div class="severity-indicator">
-              <span class="severity-dot filled"></span>
-              <span class="severity-dot filled"></span>
-              <span class="severity-dot filled"></span>
-              <span class="severity-dot filled"></span>
-              <span class="severity-dot"></span>
-              <span class="severity-label">4/5</span>
-            </div>
-            <div class="risk-type-badge competitive">
-              <span>🔥</span>
-              <span>Competitive</span>
-            </div>
-            <button class="escalate-btn" onclick="showEscalateToast()">
-              <span>Escalate</span>
-              <svg class="icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M4 12L12 4M12 4H5M12 4V11"/>
+      <!-- AI Canvas (Left Panel) -->
+      <div class="ai-canvas" id="aiCanvas">
+        <!-- Smart Prompts -->
+        <div class="smart-prompts">
+          <span class="smart-prompt" onclick="handleSmartPrompt('exec')">Schedule exec alignment call</span>
+          <span class="prompt-divider">|</span>
+          <span class="smart-prompt" onclick="handleSmartPrompt('stakeholder')">Deep dive on Sarah Mitchell</span>
+          <span class="prompt-divider">|</span>
+          <span class="smart-prompt" onclick="handleSmartPrompt('timeline')">Competitive evaluation timeline</span>
+        </div>
+
+        <!-- Ask Staircase Bar -->
+        <div class="ask-staircase-bar">
+          <input type="text" placeholder="Ask Staircase about Acme Learning Systems">
+          <div class="ask-bar-icons">
+            <div class="ask-bar-icon">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+                <circle cx="8" cy="6" r="4"/>
+                <path d="M8 10v4M6 12h4"/>
               </svg>
-            </button>
-          </div>
-
-          <div class="metadata-row">
-            <div class="metadata-item">
-              <span>ARR:</span>
-              <span class="metadata-value">$180K</span>
             </div>
-            <span class="metadata-divider"></span>
-            <div class="metadata-item">
-              <span>Renewal:</span>
-              <span class="metadata-value">45 days</span>
-            </div>
-            <span class="metadata-divider"></span>
-            <div class="metadata-item">
-              <span>Products:</span>
-              <span class="metadata-value">CS, PX</span>
-            </div>
-          </div>
-
-          <div class="generated-info">Generated December 17, 2025</div>
-
-          <p class="med-summary">
-            Acme Learning Systems is consolidating CS capabilities into their Salesforce environment due to workflow duplication concerns. VP Customer Success is frustrated with integration complexity and is actively evaluating native Salesforce CS tools. Key champion recently went on leave, creating additional uncertainty around the renewal.
-          </p>
-        </div>
-
-        <!-- Risk Reasons Section -->
-        <div class="risk-reasons-section">
-          <h3 class="section-title">Risk Reasons</h3>
-          <div class="risk-reasons-list">
-            <!-- Risk Reason 1 -->
-            <div class="risk-reason-card" onclick="toggleRiskCard(this)">
-              <div class="card-header">
-                <div class="card-content">
-                  <div class="risk-name">Competitive Pressure</div>
-                  <div class="mini-summary">Active evaluation with competitor, VP comparing pricing and integration capabilities</div>
-                  <div class="card-pills">
-                    <span class="severity-pill high">🔴 High</span>
-                    <span class="category-pill">Competitive</span>
-                    <span class="signal-count">3 signals</span>
-                  </div>
-                </div>
-                <div class="expand-icon">
-                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M4 6L8 10L12 6"/>
-                  </svg>
-                </div>
-              </div>
-              <div class="expanded-content">
-                <div class="expanded-section">
-                  <div class="expanded-label">Summary</div>
-                  <p class="expanded-text">Customer is actively evaluating Salesforce-native CS capabilities as alternative to Gainsight CS. Workflow duplication between systems is driving consolidation consideration. VP Customer Success is leading the evaluation with support from CTO.</p>
-                </div>
-                <div class="expanded-section">
-                  <div class="expanded-label">Key Players</div>
-                  <div class="key-players-list">
-                    <span class="key-player-tag">Sarah Mitchell</span>
-                    <span class="key-player-tag">James Chen</span>
-                  </div>
-                </div>
-                <div class="expanded-section">
-                  <div class="expanded-label">Approach</div>
-                  <p class="expanded-text">Lead with integration roadmap demonstrating reduced workflow duplication. Engage VP for exec alignment on value delivered. Avoid discussing pricing until value is re-established. Similar accounts retained when exec alignment happened within 2 weeks.</p>
-                </div>
-                <div class="expanded-section">
-                  <div class="expanded-label">Evidence</div>
-                  <div class="reference-card">
-                    <p class="reference-quote">"We are pausing the use of Gainsight CS... adoption has been poor and the duplication of work in Gainsight and Salesforce has been challenging"</p>
-                    <p class="reference-attribution">— Sarah Mitchell, VP Customer Success • December 8, 2025 • Email</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Risk Reason 2 -->
-            <div class="risk-reason-card" onclick="toggleRiskCard(this)">
-              <div class="card-header">
-                <div class="card-content">
-                  <div class="risk-name">Product Friction</div>
-                  <div class="mini-summary">Integration complexity concerns, CTO requesting dedicated technical resources</div>
-                  <div class="card-pills">
-                    <span class="severity-pill medium">🟡 Medium</span>
-                    <span class="category-pill">Product</span>
-                    <span class="signal-count">2 signals</span>
-                  </div>
-                </div>
-                <div class="expand-icon">
-                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M4 6L8 10L12 6"/>
-                  </svg>
-                </div>
-              </div>
-              <div class="expanded-content">
-                <div class="expanded-section">
-                  <div class="expanded-label">Summary</div>
-                  <p class="expanded-text">CTO has raised concerns about the technical complexity of the Salesforce integration. Team is requesting dedicated SE support to address specific workflow issues and demonstrate the integration roadmap.</p>
-                </div>
-                <div class="expanded-section">
-                  <div class="expanded-label">Key Players</div>
-                  <div class="key-players-list">
-                    <span class="key-player-tag">James Chen</span>
-                  </div>
-                </div>
-                <div class="expanded-section">
-                  <div class="expanded-label">Approach</div>
-                  <p class="expanded-text">Schedule technical deep-dive with SE to walk through integration architecture. Address specific workflow duplication concerns with concrete solutions. Provide clear timeline for upcoming integration improvements.</p>
-                </div>
-                <div class="expanded-section">
-                  <div class="expanded-label">Evidence</div>
-                  <div class="reference-card">
-                    <p class="reference-quote">"We are investing heavily in making CS fit nicely inside Salesforce. I need to understand if Gainsight can be part of that vision."</p>
-                    <p class="reference-attribution">— James Chen, CTO • December 5, 2025 • Meeting</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Risk Reason 3 -->
-            <div class="risk-reason-card" onclick="toggleRiskCard(this)">
-              <div class="card-header">
-                <div class="card-content">
-                  <div class="risk-name">Stakeholder Uncertainty</div>
-                  <div class="mini-summary">Key champion on extended leave, unclear who is driving renewal decision</div>
-                  <div class="card-pills">
-                    <span class="severity-pill medium">🟡 Medium</span>
-                    <span class="category-pill">Stakeholder</span>
-                    <span class="signal-count">2 signals</span>
-                  </div>
-                </div>
-                <div class="expand-icon">
-                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M4 6L8 10L12 6"/>
-                  </svg>
-                </div>
-              </div>
-              <div class="expanded-content">
-                <div class="expanded-section">
-                  <div class="expanded-label">Summary</div>
-                  <p class="expanded-text">The primary Gainsight champion (Director of CS Ops) went on extended medical leave in November. Decision-making authority has shifted to VP and CTO, who are less familiar with the platform's value and more focused on consolidation.</p>
-                </div>
-                <div class="expanded-section">
-                  <div class="expanded-label">Key Players</div>
-                  <div class="key-players-list">
-                    <span class="key-player-tag">Sarah Mitchell</span>
-                    <span class="key-player-tag">James Chen</span>
-                    <span class="key-player-tag">Marcus Wong (on leave)</span>
-                  </div>
-                </div>
-                <div class="expanded-section">
-                  <div class="expanded-label">Approach</div>
-                  <p class="expanded-text">Identify and develop relationships with power users who can advocate for the platform. Focus on demonstrating value directly to VP and CTO rather than relying on champion. Document ROI and success metrics for stakeholder transition.</p>
-                </div>
-              </div>
+            <div class="ask-bar-icon">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M4 6l4 4 4-4"/>
+              </svg>
             </div>
           </div>
         </div>
 
-        <!-- Email Overlay (initially hidden) -->
-        <div class="email-overlay" id="emailOverlay">
-          <div class="email-header">
-            <div>
-              <div class="email-title">Draft Email</div>
-              <div class="email-subtitle" id="emailActionName">for: Schedule exec alignment call</div>
+        <!-- Canvas Tabs -->
+        <div class="canvas-tabs">
+          <button class="canvas-tab" onclick="switchCanvasTab('summary')">Summary</button>
+          <button class="canvas-tab" onclick="switchCanvasTab('expansion')">Expansion</button>
+          <button class="canvas-tab active" onclick="switchCanvasTab('risk')">Risk</button>
+          <button class="canvas-tab" onclick="switchCanvasTab('renewal')">Renewal</button>
+        </div>
+
+        <!-- Risk Content (main canvas content) -->
+        <div class="canvas-content" id="riskContent">
+          <!-- Risk Header -->
+          <div class="risk-header">
+            <div class="header-top-row">
+              <div class="severity-indicator">
+                <span class="severity-dot filled"></span>
+                <span class="severity-dot filled"></span>
+                <span class="severity-dot filled"></span>
+                <span class="severity-dot filled"></span>
+                <span class="severity-dot"></span>
+                <span class="severity-label">4/5</span>
+              </div>
+              <div class="risk-type-badge competitive">
+                <span>🔥</span>
+                <span>Competitive</span>
+              </div>
+              <button class="escalate-btn" onclick="showEscalateToast()">
+                <span>Escalate</span>
+                <svg class="icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M4 12L12 4M12 4H5M12 4V11"/>
+                </svg>
+              </button>
             </div>
-            <button class="close-btn" onclick="closeEmailOverlay()">
+
+            <div class="metadata-row">
+              <div class="metadata-item">
+                <span>ARR:</span>
+                <span class="metadata-value">$180K</span>
+              </div>
+              <span class="metadata-divider"></span>
+              <div class="metadata-item">
+                <span>Renewal:</span>
+                <span class="metadata-value">45 days</span>
+              </div>
+              <span class="metadata-divider"></span>
+              <div class="metadata-item">
+                <span>Products:</span>
+                <span class="metadata-value">CS, PX</span>
+              </div>
+            </div>
+
+            <div class="generated-info">Generated December 17, 2025</div>
+
+            <p class="med-summary">
+              Acme Learning Systems is consolidating CS capabilities into their Salesforce environment due to workflow duplication concerns. VP Customer Success is frustrated with integration complexity and is actively evaluating native Salesforce CS tools. Key champion recently went on leave, creating additional uncertainty around the renewal.
+            </p>
+          </div>
+
+          <!-- Risk Reasons Section -->
+          <div class="risk-reasons-section">
+            <h3 class="section-title">Risk Reasons</h3>
+            <div class="risk-reasons-list">
+              <!-- Risk Reason 1 -->
+              <div class="risk-reason" onclick="toggleRiskReason(this, event)">
+                <div class="card-header">
+                  <div class="card-content">
+                    <div class="risk-name">Competitive Pressure</div>
+                    <div class="mini-summary">Active evaluation with competitor, VP comparing pricing and integration capabilities</div>
+                    <div class="card-pills">
+                      <span class="severity-pill high">🔴 High</span>
+                      <span class="category-pill">Competitive</span>
+                      <span class="signal-count">3 signals</span>
+                    </div>
+                  </div>
+                  <div class="expand-icon">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M4 6L8 10L12 6"/>
+                    </svg>
+                  </div>
+                </div>
+                <div class="expanded-content">
+                  <div class="expanded-section">
+                    <div class="expanded-label">Summary</div>
+                    <p class="expanded-text">Customer is actively evaluating Salesforce-native CS capabilities as alternative to Gainsight CS. Workflow duplication between systems is driving consolidation consideration. VP Customer Success is leading the evaluation with support from CTO.</p>
+                  </div>
+                  <div class="expanded-section">
+                    <div class="expanded-label">Key Players</div>
+                    <div class="key-players-list">
+                      <span class="key-player-tag">Sarah Mitchell</span>
+                      <span class="key-player-tag">James Chen</span>
+                    </div>
+                  </div>
+                  <div class="expanded-section">
+                    <div class="expanded-label">Approach</div>
+                    <p class="expanded-text">Lead with integration roadmap demonstrating reduced workflow duplication. Engage VP for exec alignment on value delivered. Avoid discussing pricing until value is re-established. Similar accounts retained when exec alignment happened within 2 weeks.</p>
+                  </div>
+                  <div class="expanded-section">
+                    <div class="expanded-label">Evidence</div>
+                    <div class="reference-card">
+                      <p class="reference-quote">"We are pausing the use of Gainsight CS... adoption has been poor and the duplication of work in Gainsight and Salesforce has been challenging"</p>
+                      <p class="reference-attribution">— Sarah Mitchell, VP Customer Success • December 8, 2025 • Email</p>
+                    </div>
+                  </div>
+                  <div class="add-context-section">
+                    <button class="add-context-trigger" onclick="toggleAddContext(this, event)">
+                      <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="8" cy="8" r="6"/>
+                        <path d="M8 5v6M5 8h6"/>
+                      </svg>
+                      Add context
+                    </button>
+                    <div class="add-context-form">
+                      <textarea placeholder="Share additional context the AI might be missing..."></textarea>
+                      <button onclick="submitContext(event)">Add to Risk Context</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Risk Reason 2 -->
+              <div class="risk-reason" onclick="toggleRiskReason(this, event)">
+                <div class="card-header">
+                  <div class="card-content">
+                    <div class="risk-name">Product Friction</div>
+                    <div class="mini-summary">Integration complexity concerns, CTO requesting dedicated technical resources</div>
+                    <div class="card-pills">
+                      <span class="severity-pill medium">🟡 Medium</span>
+                      <span class="category-pill">Product</span>
+                      <span class="signal-count">2 signals</span>
+                    </div>
+                  </div>
+                  <div class="expand-icon">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M4 6L8 10L12 6"/>
+                    </svg>
+                  </div>
+                </div>
+                <div class="expanded-content">
+                  <div class="expanded-section">
+                    <div class="expanded-label">Summary</div>
+                    <p class="expanded-text">CTO has raised concerns about the technical complexity of the Salesforce integration. Team is requesting dedicated SE support to address specific workflow issues and demonstrate the integration roadmap.</p>
+                  </div>
+                  <div class="expanded-section">
+                    <div class="expanded-label">Key Players</div>
+                    <div class="key-players-list">
+                      <span class="key-player-tag">James Chen</span>
+                    </div>
+                  </div>
+                  <div class="expanded-section">
+                    <div class="expanded-label">Approach</div>
+                    <p class="expanded-text">Schedule technical deep-dive with SE to walk through integration architecture. Address specific workflow duplication concerns with concrete solutions. Provide clear timeline for upcoming integration improvements.</p>
+                  </div>
+                  <div class="expanded-section">
+                    <div class="expanded-label">Evidence</div>
+                    <div class="reference-card">
+                      <p class="reference-quote">"We are investing heavily in making CS fit nicely inside Salesforce. I need to understand if Gainsight can be part of that vision."</p>
+                      <p class="reference-attribution">— James Chen, CTO • December 5, 2025 • Meeting</p>
+                    </div>
+                  </div>
+                  <div class="add-context-section">
+                    <button class="add-context-trigger" onclick="toggleAddContext(this, event)">
+                      <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="8" cy="8" r="6"/>
+                        <path d="M8 5v6M5 8h6"/>
+                      </svg>
+                      Add context
+                    </button>
+                    <div class="add-context-form">
+                      <textarea placeholder="Share additional context the AI might be missing..."></textarea>
+                      <button onclick="submitContext(event)">Add to Risk Context</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Risk Reason 3 -->
+              <div class="risk-reason" onclick="toggleRiskReason(this, event)">
+                <div class="card-header">
+                  <div class="card-content">
+                    <div class="risk-name">Stakeholder Uncertainty</div>
+                    <div class="mini-summary">Key champion on extended leave, unclear who is driving renewal decision</div>
+                    <div class="card-pills">
+                      <span class="severity-pill medium">🟡 Medium</span>
+                      <span class="category-pill">Stakeholder</span>
+                      <span class="signal-count">2 signals</span>
+                    </div>
+                  </div>
+                  <div class="expand-icon">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M4 6L8 10L12 6"/>
+                    </svg>
+                  </div>
+                </div>
+                <div class="expanded-content">
+                  <div class="expanded-section">
+                    <div class="expanded-label">Summary</div>
+                    <p class="expanded-text">The primary Gainsight champion (Director of CS Ops) went on extended medical leave in November. Decision-making authority has shifted to VP and CTO, who are less familiar with the platform's value and more focused on consolidation.</p>
+                  </div>
+                  <div class="expanded-section">
+                    <div class="expanded-label">Key Players</div>
+                    <div class="key-players-list">
+                      <span class="key-player-tag">Sarah Mitchell</span>
+                      <span class="key-player-tag">James Chen</span>
+                      <span class="key-player-tag">Marcus Wong (on leave)</span>
+                    </div>
+                  </div>
+                  <div class="expanded-section">
+                    <div class="expanded-label">Approach</div>
+                    <p class="expanded-text">Identify and develop relationships with power users who can advocate for the platform. Focus on demonstrating value directly to VP and CTO rather than relying on champion. Document ROI and success metrics for stakeholder transition.</p>
+                  </div>
+                  <div class="add-context-section">
+                    <button class="add-context-trigger" onclick="toggleAddContext(this, event)">
+                      <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="8" cy="8" r="6"/>
+                        <path d="M8 5v6M5 8h6"/>
+                      </svg>
+                      Add context
+                    </button>
+                    <div class="add-context-form">
+                      <textarea placeholder="Share additional context the AI might be missing..."></textarea>
+                      <button onclick="submitContext(event)">Add to Risk Context</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Email Draft View (replaces canvas content when active) -->
+        <div class="email-draft-view" id="emailDraftView">
+          <div class="email-draft-header">
+            <div class="email-draft-prompt">
+              <span class="prompt-x">✕</span>
+              <span id="emailPromptText">Q: Schedule exec alignment call with Sarah Mitchell</span>
+            </div>
+            <button class="close-draft-btn" onclick="closeEmailDraft()">
               <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M4 4L12 12M12 4L4 12"/>
               </svg>
             </button>
           </div>
-          <div class="email-body">
-            <div class="email-field">
-              <label class="email-label">To</label>
-              <input type="text" class="email-input" id="emailTo" value="sarah.mitchell@acmelearning.com">
+
+          <div class="email-fields">
+            <div class="email-field-row">
+              <span class="email-field-label">To:</span>
+              <span class="email-field-value" id="emailToDisplay">sarah.mitchell@acmelearning.com</span>
             </div>
-            <div class="email-field">
-              <label class="email-label">Subject</label>
-              <input type="text" class="email-input" id="emailSubject" value="Executive Alignment: Gainsight Partnership Discussion">
+            <div class="email-field-row">
+              <span class="email-field-label">CC:</span>
+              <span class="email-field-value" id="emailCcDisplay">james.chen@acmelearning.com</span>
             </div>
-            <div class="email-field">
-              <label class="email-label">Message</label>
-              <textarea class="email-textarea" id="emailContent">Hi Sarah,
+            <div class="email-field-row">
+              <span class="email-field-label">Subject:</span>
+              <span class="email-field-value" id="emailSubjectDisplay">Executive Alignment: Gainsight Partnership Discussion</span>
+            </div>
+          </div>
+
+          <div class="email-body-content" id="emailBodyContent">
+Hi Sarah,
 
 I wanted to reach out directly to discuss the partnership between Acme Learning Systems and Gainsight. I understand there have been some concerns about workflow integration between Gainsight and Salesforce, and I'd like to arrange an executive discussion to address these directly.
 
 Our VP of Customer Success, Jennifer Park, would like to connect with you to:
 
-1. Understand your specific integration challenges and consolidation goals
-2. Share our updated integration roadmap that specifically addresses workflow duplication
-3. Discuss how we can better support your team during this evaluation period
+• Understand your specific integration challenges and consolidation goals
+• Share our updated integration roadmap that specifically addresses workflow duplication
+• Discuss how we can better support your team during this evaluation period
 
 We've seen similar situations with other customers in the education space, and the key to success has been getting executive alignment on the path forward early in the process.
 
-Would you be available for a 30-minute call next week? I'll send a calendar invite once you confirm a time that works.
+<a href="https://calendly.com/gainsight/acme-exec-alignment" class="calendly-link">📅 Schedule a 30-minute call</a>
 
 Looking forward to reconnecting.
 
 Best regards,
-[Your name]</textarea>
-            </div>
+Michelle Chen
+Senior Customer Success Manager
+Gainsight
           </div>
-          <div class="email-actions">
-            <button class="email-btn primary" onclick="copyEmailToClipboard()">
+
+          <div class="email-draft-actions">
+            <button class="email-btn secondary" onclick="copyEmailToClipboard()">
               <svg class="icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2">
                 <rect x="4" y="4" width="8" height="10" rx="1"/>
                 <path d="M8 2H11C11.5523 2 12 2.44772 12 3V4"/>
               </svg>
               Copy to Clipboard
             </button>
-            <button class="email-btn secondary" onclick="openInEmailClient()">
+            <button class="email-btn primary" onclick="openInGmail()">
               <svg class="icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2">
                 <rect x="1" y="3" width="14" height="10" rx="1"/>
                 <path d="M1 4L8 9L15 4"/>
               </svg>
-              Open in Email Client
+              Open in Gmail
             </button>
           </div>
         </div>
@@ -1154,13 +1459,13 @@ Best regards,
       <!-- Right Panel -->
       <div class="right-panel" id="rightPanel">
         <div class="tab-bar">
-          <button class="tab-btn active" data-tab="actions" onclick="switchTab('actions')">Actions</button>
+          <button class="tab-btn active" data-tab="playbook" onclick="switchTab('playbook')">Playbook</button>
           <button class="tab-btn" data-tab="stakeholders" onclick="switchTab('stakeholders')">Stakeholders</button>
         </div>
 
         <div class="tab-content">
-          <!-- Actions Tab -->
-          <div class="tab-pane active" id="actionsTab">
+          <!-- Playbook Tab -->
+          <div class="tab-pane active" id="playbookTab">
             <div class="strategy-section">
               <div class="strategy-label">Strategy</div>
               <p class="strategy-text">Acme is consolidating to Salesforce due to workflow duplication. Key approach: demonstrate integration value through technical deep-dive, engage VP for exec alignment, address technical blockers with dedicated SE support. Similar accounts retained 73% when exec alignment happened within 2 weeks.</p>
@@ -1168,10 +1473,12 @@ Best regards,
 
             <div class="actions-list">
               <div class="action-card">
-                <div class="action-number">Action 1</div>
-                <div class="action-name">Schedule exec alignment call</div>
+                <div class="action-header">
+                  <div class="action-name">Schedule exec alignment call</div>
+                  <div class="action-number">Step 1</div>
+                </div>
                 <p class="action-description">Set up VP-to-VP discussion to address integration concerns and demonstrate commitment. Goal: Secure commitment to 60-day evaluation period.</p>
-                <button class="action-btn primary" onclick="openEmailDraft('Schedule exec alignment call', 'sarah.mitchell@acmelearning.com')">
+                <button class="action-btn primary" onclick="openEmailInCanvas('exec', 'sarah.mitchell@acmelearning.com', 'james.chen@acmelearning.com')">
                   <svg class="icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2">
                     <rect x="1" y="3" width="14" height="10" rx="1"/>
                     <path d="M1 4L8 9L15 4"/>
@@ -1181,8 +1488,10 @@ Best regards,
               </div>
 
               <div class="action-card">
-                <div class="action-number">Action 2</div>
-                <div class="action-name">Prepare competitive battlecard</div>
+                <div class="action-header">
+                  <div class="action-name">Prepare competitive battlecard</div>
+                  <div class="action-number">Step 2</div>
+                </div>
                 <p class="action-description">Document Salesforce CS limitations vs Gainsight strengths for integration, analytics, and automation. Share with account team before exec call.</p>
                 <button class="action-btn secondary">
                   <svg class="icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2">
@@ -1194,10 +1503,12 @@ Best regards,
               </div>
 
               <div class="action-card">
-                <div class="action-number">Action 3</div>
-                <div class="action-name">Technical deep-dive on integration</div>
+                <div class="action-header">
+                  <div class="action-name">Technical deep-dive on integration</div>
+                  <div class="action-number">Step 3</div>
+                </div>
                 <p class="action-description">Schedule technical session with SE to walk through integration architecture and address specific workflow duplication concerns raised by CTO.</p>
-                <button class="action-btn primary" onclick="openEmailDraft('Technical deep-dive on integration', 'james.chen@acmelearning.com')">
+                <button class="action-btn primary" onclick="openEmailInCanvas('technical', 'james.chen@acmelearning.com', 'sarah.mitchell@acmelearning.com')">
                   <svg class="icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2">
                     <rect x="1" y="3" width="14" height="10" rx="1"/>
                     <path d="M1 4L8 9L15 4"/>
@@ -1207,10 +1518,12 @@ Best regards,
               </div>
 
               <div class="action-card">
-                <div class="action-number">Action 4</div>
-                <div class="action-name">Executive business review</div>
+                <div class="action-header">
+                  <div class="action-name">Executive business review</div>
+                  <div class="action-number">Step 4</div>
+                </div>
                 <p class="action-description">Present ROI analysis and success metrics to leadership team. Align on success criteria for next 90 days post-renewal.</p>
-                <button class="action-btn primary" onclick="openEmailDraft('Executive business review', 'sarah.mitchell@acmelearning.com')">
+                <button class="action-btn primary" onclick="openEmailInCanvas('ebr', 'sarah.mitchell@acmelearning.com', 'james.chen@acmelearning.com')">
                   <svg class="icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2">
                     <rect x="1" y="3" width="14" height="10" rx="1"/>
                     <path d="M1 4L8 9L15 4"/>
@@ -1220,8 +1533,10 @@ Best regards,
               </div>
 
               <div class="action-card">
-                <div class="action-number">Action 5</div>
-                <div class="action-name">Customer success plan refresh</div>
+                <div class="action-header">
+                  <div class="action-name">Customer success plan refresh</div>
+                  <div class="action-number">Step 5</div>
+                </div>
                 <p class="action-description">Update success plan with specific integration milestones and ownership. Share with customer for alignment on path forward.</p>
                 <button class="action-btn secondary">
                   <svg class="icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2">
@@ -1295,132 +1610,201 @@ Best regards,
   </div>
 
   <script>
-    // Tab switching
-    function switchTab(tabName) {
-      // Update tab buttons
-      document.querySelectorAll('.tab-btn').forEach(btn => {
-        btn.classList.toggle('active', btn.dataset.tab === tabName);
-      });
-
-      // Update tab panes
-      document.getElementById('actionsTab').classList.toggle('active', tabName === 'actions');
-      document.getElementById('stakeholdersTab').classList.toggle('active', tabName === 'stakeholders');
-    }
-
-    // Risk card expand/collapse
-    function toggleRiskCard(card) {
-      card.classList.toggle('expanded');
-    }
-
-    // Draft email overlay
-    function openEmailDraft(actionName, recipient) {
-      const overlay = document.getElementById('emailOverlay');
-      const actionNameEl = document.getElementById('emailActionName');
-      const toEl = document.getElementById('emailTo');
-      const rightPanel = document.getElementById('rightPanel');
-      const leftPanel = document.getElementById('leftPanel');
-
-      actionNameEl.textContent = `for: ${actionName}`;
-      toEl.value = recipient;
-
-      // Update email content based on action
-      const emailContent = document.getElementById('emailContent');
-      const emailSubject = document.getElementById('emailSubject');
-
-      if (actionName.includes('exec alignment')) {
-        emailSubject.value = 'Executive Alignment: Gainsight Partnership Discussion';
-        emailContent.value = `Hi Sarah,
+    // Email templates data
+    const emailTemplates = {
+      exec: {
+        prompt: 'Schedule exec alignment call with Sarah Mitchell',
+        subject: 'Executive Alignment: Gainsight Partnership Discussion',
+        body: `Hi Sarah,
 
 I wanted to reach out directly to discuss the partnership between Acme Learning Systems and Gainsight. I understand there have been some concerns about workflow integration between Gainsight and Salesforce, and I'd like to arrange an executive discussion to address these directly.
 
 Our VP of Customer Success, Jennifer Park, would like to connect with you to:
 
-1. Understand your specific integration challenges and consolidation goals
-2. Share our updated integration roadmap that specifically addresses workflow duplication
-3. Discuss how we can better support your team during this evaluation period
+• Understand your specific integration challenges and consolidation goals
+• Share our updated integration roadmap that specifically addresses workflow duplication
+• Discuss how we can better support your team during this evaluation period
 
 We've seen similar situations with other customers in the education space, and the key to success has been getting executive alignment on the path forward early in the process.
 
-Would you be available for a 30-minute call next week? I'll send a calendar invite once you confirm a time that works.
+<a href="https://calendly.com/gainsight/acme-exec-alignment" class="calendly-link">📅 Schedule a 30-minute call</a>
 
 Looking forward to reconnecting.
 
 Best regards,
-[Your name]`;
-      } else if (actionName.includes('Technical')) {
-        emailSubject.value = 'Technical Deep-Dive: Salesforce Integration Architecture';
-        emailContent.value = `Hi James,
+Michelle Chen
+Senior Customer Success Manager
+Gainsight`
+      },
+      technical: {
+        prompt: 'Technical deep-dive on integration with James Chen',
+        subject: 'Technical Deep-Dive: Salesforce Integration Architecture',
+        body: `Hi James,
 
 Following up on our recent conversation about the Salesforce integration, I'd like to schedule a technical deep-dive session with our Solutions Engineering team.
 
 We've prepared a focused session covering:
 
-1. Current integration architecture and how it maps to your Salesforce environment
-2. Specific solutions for the workflow duplication issues you mentioned
-3. Our integration roadmap for Q1 2026 with timeline commitments
-4. Best practices from similar enterprise deployments
+• Current integration architecture and how it maps to your Salesforce environment
+• Specific solutions for the workflow duplication issues you mentioned
+• Our integration roadmap for Q1 2026 with timeline commitments
+• Best practices from similar enterprise deployments
 
 This would be a working session where we can address your specific technical concerns and demonstrate concrete solutions.
 
-Could we schedule 90 minutes sometime next week? I'll have our Senior SE, Mike Thompson, join who has deep expertise in enterprise Salesforce integrations.
+<a href="https://calendly.com/gainsight/acme-technical-deepdive" class="calendly-link">📅 Schedule a 90-minute session</a>
 
 Let me know what works for your schedule.
 
 Best,
-[Your name]`;
-      } else if (actionName.includes('business review')) {
-        emailSubject.value = 'Executive Business Review: Gainsight ROI & Success Metrics';
-        emailContent.value = `Hi Sarah,
+Michelle Chen
+Senior Customer Success Manager
+Gainsight`
+      },
+      ebr: {
+        prompt: 'Executive business review with Sarah Mitchell',
+        subject: 'Executive Business Review: Gainsight ROI & Success Metrics',
+        body: `Hi Sarah,
 
 I'd like to schedule an Executive Business Review to present the ROI analysis and success metrics for your Gainsight implementation.
 
 The agenda would cover:
 
-1. Value delivered over the past 12 months (quantified)
-2. Usage analytics and adoption trends across your CS team
-3. Success criteria alignment for the next 90 days
-4. Integration roadmap addressing your consolidation goals
+• Value delivered over the past 12 months (quantified)
+• Usage analytics and adoption trends across your CS team
+• Success criteria alignment for the next 90 days
+• Integration roadmap addressing your consolidation goals
 
 This is an important discussion before your renewal, and I want to make sure we're aligned on the path forward and the value Gainsight brings to your customer success operations.
 
-Would you be able to carve out 45 minutes next week for this review?
+<a href="https://calendly.com/gainsight/acme-ebr" class="calendly-link">📅 Schedule a 45-minute review</a>
 
 Best regards,
-[Your name]`;
+Michelle Chen
+Senior Customer Success Manager
+Gainsight`
       }
+    };
 
-      overlay.classList.add('visible');
-      rightPanel.classList.add('dimmed');
+    // Right panel tab switching
+    function switchTab(tabName) {
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.tab === tabName);
+      });
+      document.getElementById('playbookTab').classList.toggle('active', tabName === 'playbook');
+      document.getElementById('stakeholdersTab').classList.toggle('active', tabName === 'stakeholders');
     }
 
-    function closeEmailOverlay() {
-      const overlay = document.getElementById('emailOverlay');
-      const rightPanel = document.getElementById('rightPanel');
+    // Canvas tab switching (visual only for non-Risk tabs)
+    function switchCanvasTab(tabName) {
+      document.querySelectorAll('.canvas-tab').forEach(tab => {
+        tab.classList.remove('active');
+      });
+      event.target.classList.add('active');
 
-      overlay.classList.remove('visible');
-      rightPanel.classList.remove('dimmed');
+      if (tabName !== 'risk') {
+        alert(`${tabName.charAt(0).toUpperCase() + tabName.slice(1)} tab coming soon!\n\nThis prototype focuses on the Risk tab.`);
+        // Reset to Risk tab
+        document.querySelectorAll('.canvas-tab').forEach(tab => {
+          tab.classList.toggle('active', tab.textContent === 'Risk');
+        });
+      }
     }
 
+    // Risk reason expand/collapse
+    function toggleRiskReason(card, event) {
+      // Don't toggle if clicking on add context elements
+      if (event.target.closest('.add-context-section')) {
+        return;
+      }
+      card.classList.toggle('expanded');
+    }
+
+    // Add context form toggle
+    function toggleAddContext(button, event) {
+      event.stopPropagation();
+      const form = button.nextElementSibling;
+      form.classList.toggle('visible');
+      if (form.classList.contains('visible')) {
+        form.querySelector('textarea').focus();
+      }
+    }
+
+    // Submit context (demo)
+    function submitContext(event) {
+      event.stopPropagation();
+      const form = event.target.closest('.add-context-form');
+      const textarea = form.querySelector('textarea');
+      if (textarea.value.trim()) {
+        alert('Context added! (Demo - not actually saved)\n\nYour input:\n"' + textarea.value.trim().substring(0, 100) + '..."');
+        textarea.value = '';
+        form.classList.remove('visible');
+      }
+    }
+
+    // Open email draft in canvas (replaces risk content)
+    function openEmailInCanvas(templateKey, to, cc) {
+      const template = emailTemplates[templateKey];
+      const riskContent = document.getElementById('riskContent');
+      const emailDraftView = document.getElementById('emailDraftView');
+
+      // Update email content
+      document.getElementById('emailPromptText').textContent = 'Q: ' + template.prompt;
+      document.getElementById('emailToDisplay').textContent = to;
+      document.getElementById('emailCcDisplay').textContent = cc || '';
+      document.getElementById('emailSubjectDisplay').textContent = template.subject;
+      document.getElementById('emailBodyContent').innerHTML = template.body;
+
+      // Switch views
+      riskContent.classList.add('hidden');
+      emailDraftView.classList.add('visible');
+    }
+
+    // Close email draft, return to risk view
+    function closeEmailDraft() {
+      const riskContent = document.getElementById('riskContent');
+      const emailDraftView = document.getElementById('emailDraftView');
+
+      riskContent.classList.remove('hidden');
+      emailDraftView.classList.remove('visible');
+    }
+
+    // Smart prompt handlers
+    function handleSmartPrompt(type) {
+      if (type === 'exec') {
+        openEmailInCanvas('exec', 'sarah.mitchell@acmelearning.com', 'james.chen@acmelearning.com');
+      } else if (type === 'stakeholder') {
+        alert('Deep dive on Sarah Mitchell\n\nThis would show detailed stakeholder analysis:\n• Communication history\n• Sentiment trends\n• Key concerns\n• Relationship strength\n\n(Demo - not implemented)');
+      } else if (type === 'timeline') {
+        alert('Competitive evaluation timeline\n\nThis would show:\n• Dec 8: Initial pause announcement\n• Dec 12: CTO technical questions\n• Dec 15: Budget review meeting\n• Jan 15: Expected decision date\n\n(Demo - not implemented)');
+      }
+    }
+
+    // Copy email to clipboard
     function copyEmailToClipboard() {
-      const to = document.getElementById('emailTo').value;
-      const subject = document.getElementById('emailSubject').value;
-      const content = document.getElementById('emailContent').value;
+      const to = document.getElementById('emailToDisplay').textContent;
+      const cc = document.getElementById('emailCcDisplay').textContent;
+      const subject = document.getElementById('emailSubjectDisplay').textContent;
+      const body = document.getElementById('emailBodyContent').innerText;
 
-      const fullEmail = `To: ${to}\nSubject: ${subject}\n\n${content}`;
+      const fullEmail = `To: ${to}\nCC: ${cc}\nSubject: ${subject}\n\n${body}`;
 
       navigator.clipboard.writeText(fullEmail).then(() => {
         alert('Email copied to clipboard!');
       });
     }
 
-    function openInEmailClient() {
-      const to = document.getElementById('emailTo').value;
-      const subject = encodeURIComponent(document.getElementById('emailSubject').value);
-      const body = encodeURIComponent(document.getElementById('emailContent').value);
+    // Open in Gmail
+    function openInGmail() {
+      const to = document.getElementById('emailToDisplay').textContent;
+      const cc = document.getElementById('emailCcDisplay').textContent;
+      const subject = encodeURIComponent(document.getElementById('emailSubjectDisplay').textContent);
+      const body = encodeURIComponent(document.getElementById('emailBodyContent').innerText);
 
-      window.location.href = `mailto:${to}?subject=${subject}&body=${body}`;
+      window.open(`https://mail.google.com/mail/?view=cm&to=${to}&cc=${cc}&su=${subject}&body=${body}`, '_blank');
     }
 
+    // Escalate action
     function showEscalateToast() {
       alert('Escalation would be sent to:\n• Your manager\n• Account Executive\n• Slack #critical-accounts channel\n\n(Demo - not actually sent)');
     }
