@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Risk Analyst MVP — Netradyne</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --st-primary: #0369E9;
+      --st-primary-hover: #0255c7;
+      --st-primary-light: #E8F2FD;
+      --st-positive: #13AD68;
+      --st-positive-light: #E6F7EF;
+      --st-neutral: #FFBB00;
+      --st-neutral-light: #FFF8E6;
+      --st-negative: #DC3626;
+      --st-negative-light: #FDECEB;
+      --st-warning: #FA6B0B;
+      --st-text: #181F26;
+      --st-text-secondary: #5F6C7A;
+      --st-text-caption: #7F859A;
+      --st-bg: #F8F9FA;
+      --st-bg-card: #FFFFFF;
+      --st-bg-hover: #F3F4F5;
+      --st-border: #E3E4E4;
+      --st-border-hover: #D1D3D4;
+      --st-font: 'Noto Sans', system-ui, -apple-system, sans-serif;
+      --st-text-base: 14px;
+      --st-line-height: 1.5;
+      --st-space-1: 8px;
+      --st-space-2: 16px;
+      --st-space-3: 24px;
+      --st-space-4: 32px;
+      --st-space-5: 40px;
+      --st-radius: 6px;
+      --st-radius-lg: 16px;
+      --st-radius-pill: 20px;
+      --st-shadow: 0 2px 4px 0 rgba(52, 56, 58, 0.06), 0 0 1px 0 rgba(52, 56, 58, 0.24);
+      --st-shadow-lg: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: var(--st-font); font-size: var(--st-text-base); line-height: var(--st-line-height); color: var(--st-text); background: var(--st-bg); min-height: 100vh; }
+    .app-container { max-width: 1400px; margin: 0 auto; padding: var(--st-space-3); }
+    .page-header { display: flex; align-items: center; gap: var(--st-space-2); margin-bottom: var(--st-space-3); }
+    .account-avatar { width: 56px; height: 56px; background: linear-gradient(135deg, #0369E9 0%, #00B4D8 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 18px; }
+    .account-name { font-size: 24px; font-weight: 600; color: var(--st-text); }
+    .health-score { display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; border-radius: 50%; border: 3px solid var(--st-neutral); font-weight: 600; font-size: 14px; color: var(--st-text); margin-left: 4px; }
+    .account-name-group { display: flex; align-items: center; gap: 8px; }
+    .ask-staircase-bar { display: flex; align-items: center; background: var(--st-bg-card); border: 1px solid var(--st-border); border-radius: var(--st-radius); padding: 10px 14px; margin-bottom: var(--st-space-2); }
+    .ask-staircase-bar input { flex: 1; border: none; outline: none; font-family: var(--st-font); font-size: 14px; color: var(--st-text); background: transparent; }
+    .ask-staircase-bar input::placeholder { color: var(--st-text-caption); }
+    .ask-bar-icons { display: flex; align-items: center; gap: 8px; color: var(--st-text-secondary); }
+    .ask-bar-icon { width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; cursor: pointer; border-radius: 4px; transition: background 0.15s ease; }
+    .ask-bar-icon:hover { background: var(--st-bg); }
+    .canvas-tabs { display: flex; border-bottom: 1px solid var(--st-border); margin-bottom: var(--st-space-3); }
+    .canvas-tab { padding: var(--st-space-1) var(--st-space-2); font-size: 14px; font-weight: 500; color: var(--st-text-secondary); background: none; border: none; cursor: pointer; position: relative; transition: color 0.15s ease; }
+    .canvas-tab:first-child { padding-left: 0; }
+    .canvas-tab:hover { color: var(--st-text); }
+    .canvas-tab.active { color: var(--st-text); font-weight: 600; }
+    .canvas-tab.active::after { content: ''; position: absolute; bottom: -1px; left: 0; right: 0; height: 2px; background: var(--st-text); }
+    .main-content { display: grid; grid-template-columns: 55% 45%; gap: var(--st-space-3); min-height: calc(100vh - 150px); }
+    .ai-canvas { background: var(--st-bg-card); border-radius: var(--st-radius-lg); box-shadow: var(--st-shadow); padding: var(--st-space-3); display: flex; flex-direction: column; position: relative; overflow: hidden; }
+    .canvas-content { flex: 1; display: flex; flex-direction: column; }
+    .risk-header { padding-bottom: var(--st-space-3); border-bottom: 1px solid var(--st-border); margin-bottom: var(--st-space-3); }
+    .header-top-row { display: flex; align-items: center; gap: var(--st-space-2); margin-bottom: var(--st-space-2); flex-wrap: wrap; }
+    .severity-indicator { display: flex; align-items: center; gap: 4px; }
+    .severity-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--st-border); }
+    .severity-dot.filled { background: var(--st-negative); }
+    .severity-label { font-weight: 500; color: var(--st-text-secondary); margin-left: 4px; font-size: 13px; }
+    .state-badge { display: inline-flex; align-items: center; gap: 4px; padding: 4px 12px; border-radius: var(--st-radius-pill); font-size: 13px; font-weight: 500; }
+    .state-badge.escalating { background: var(--st-negative-light); color: var(--st-negative); }
+    .state-badge.volatile { background: var(--st-neutral-light); color: #996600; }
+    .state-badge.stable { background: var(--st-bg); color: var(--st-text-secondary); }
+    .state-badge.improving { background: var(--st-positive-light); color: var(--st-positive); }
+    .state-badge .arrow { font-size: 11px; }
+    .metadata-row { display: flex; align-items: center; gap: var(--st-space-2); margin-bottom: var(--st-space-2); font-size: 13px; color: var(--st-text-secondary); flex-wrap: wrap; }
+    .metadata-item { display: flex; align-items: center; gap: 4px; }
+    .metadata-value { font-weight: 600; color: var(--st-text); }
+    .metadata-divider { width: 4px; height: 4px; border-radius: 50%; background: var(--st-border); }
+    .generated-info { font-size: 12px; color: var(--st-text-caption); margin-bottom: var(--st-space-2); }
+    .med-summary { font-size: 14px; line-height: 1.6; color: var(--st-text); }
+    .products-row { display: flex; align-items: center; gap: var(--st-space-1); margin-top: var(--st-space-2); flex-wrap: wrap; }
+    .product-pill { display: inline-flex; align-items: center; padding: 4px 10px; background: var(--st-bg); border-radius: var(--st-radius-pill); font-size: 12px; color: var(--st-text-secondary); }
+    .risk-reasons-section { flex: 1; display: flex; flex-direction: column; }
+    .section-title { font-size: 16px; font-weight: 600; color: var(--st-text); margin-bottom: var(--st-space-2); }
+    .risk-reasons-list { display: flex; flex-direction: column; gap: 0; }
+    .risk-reason { padding: var(--st-space-2) 0; cursor: pointer; transition: background 0.15s ease; border-bottom: 1px solid var(--st-border); }
+    .risk-reason:last-child { border-bottom: none; }
+    .risk-reason:hover { background: var(--st-bg-hover); margin: 0 calc(-1 * var(--st-space-3)); padding-left: var(--st-space-3); padding-right: var(--st-space-3); }
+    .risk-reason.expanded { background: transparent; margin: 0; padding-left: 0; padding-right: 0; }
+    .card-header { display: flex; align-items: flex-start; justify-content: space-between; }
+    .card-content { flex: 1; }
+    .risk-name { font-size: 15px; font-weight: 600; color: var(--st-text); margin-bottom: 4px; }
+    .mini-summary { font-size: 13px; color: var(--st-text-secondary); margin-bottom: var(--st-space-1); }
+    .card-pills { display: flex; align-items: center; gap: var(--st-space-1); flex-wrap: wrap; }
+    .severity-pill { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: var(--st-radius-pill); font-size: 12px; font-weight: 500; }
+    .severity-pill.high { background: var(--st-negative-light); color: var(--st-negative); }
+    .severity-pill.medium { background: var(--st-neutral-light); color: #996600; }
+    .severity-pill.low { background: var(--st-bg); color: var(--st-text-secondary); }
+    .signal-count { font-size: 12px; color: var(--st-text-caption); }
+    .expand-icon { width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; color: var(--st-text-secondary); transition: transform 0.2s ease; flex-shrink: 0; }
+    .risk-reason.expanded .expand-icon { transform: rotate(180deg); }
+    .expanded-content { display: none; padding-top: var(--st-space-2); margin-top: var(--st-space-2); border-top: 1px solid var(--st-border); }
+    .risk-reason.expanded .expanded-content { display: block; }
+    .expanded-section { margin-bottom: var(--st-space-2); }
+    .expanded-section:last-child { margin-bottom: 0; }
+    .expanded-label { font-size: 12px; font-weight: 600; color: var(--st-text-secondary); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+    .expanded-text { font-size: 13px; color: var(--st-text); line-height: 1.6; }
+    .key-players-list { display: flex; flex-wrap: wrap; gap: 6px; }
+    .key-player-tag { display: inline-flex; align-items: center; padding: 4px 10px; background: var(--st-bg); border-radius: var(--st-radius); font-size: 13px; color: var(--st-text); }
+    .reference-card { background: var(--st-bg); border-radius: var(--st-radius); padding: var(--st-space-2); margin-top: 8px; }
+    .reference-card:first-of-type { margin-top: 0; }
+    .reference-quote { font-size: 13px; font-style: italic; color: var(--st-text); margin-bottom: 8px; line-height: 1.5; }
+    .reference-attribution { font-size: 12px; color: var(--st-text-secondary); }
+    .right-panel { background: var(--st-bg-card); border-radius: var(--st-radius-lg); box-shadow: var(--st-shadow); display: flex; flex-direction: column; overflow: hidden; position: relative; }
+    .tab-bar { display: flex; border-bottom: 1px solid var(--st-border); padding: 0 var(--st-space-3); }
+    .tab-btn { padding: var(--st-space-2) var(--st-space-2); font-size: 14px; font-weight: 500; color: var(--st-text-secondary); background: none; border: none; cursor: pointer; position: relative; transition: color 0.15s ease; }
+    .tab-btn:hover { color: var(--st-text); }
+    .tab-btn.active { color: var(--st-primary); }
+    .tab-btn.active::after { content: ''; position: absolute; bottom: -1px; left: 0; right: 0; height: 2px; background: var(--st-primary); border-radius: 2px 2px 0 0; }
+    .tab-content { flex: 1; overflow-y: auto; padding: var(--st-space-3); }
+    .tab-pane { display: none; }
+    .tab-pane.active { display: block; }
+    .strategy-section { background: var(--st-bg); border-radius: var(--st-radius); padding: var(--st-space-2); margin-bottom: var(--st-space-3); }
+    .strategy-label { font-size: 12px; font-weight: 600; color: var(--st-text-secondary); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
+    .strategy-text { font-size: 13px; color: var(--st-text); line-height: 1.6; }
+    .actions-list { display: flex; flex-direction: column; gap: var(--st-space-2); }
+    .action-card { background: var(--st-bg-card); border: 1px solid var(--st-border); border-radius: var(--st-radius); padding: var(--st-space-2); transition: border-color 0.15s ease; }
+    .action-card:hover { border-color: var(--st-border-hover); }
+    .action-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; }
+    .action-name { font-size: 14px; font-weight: 600; color: var(--st-text); }
+    .action-meta { display: flex; align-items: center; gap: 8px; }
+    .action-timeline { font-size: 11px; font-weight: 500; padding: 2px 8px; border-radius: var(--st-radius-pill); background: var(--st-bg); color: var(--st-text-secondary); }
+    .action-timeline.immediate { background: var(--st-negative-light); color: var(--st-negative); }
+    .action-timeline.short-term { background: var(--st-neutral-light); color: #996600; }
+    .action-description { font-size: 13px; color: var(--st-text-secondary); line-height: 1.5; }
+    .action-owner { font-size: 12px; color: var(--st-text-caption); margin-top: 8px; }
+    .stakeholders-section { margin-bottom: var(--st-space-3); }
+    .stakeholders-section:last-child { margin-bottom: 0; }
+    .stakeholders-section-title { font-size: 13px; font-weight: 600; color: var(--st-text-secondary); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: var(--st-space-2); padding-bottom: 8px; border-bottom: 1px solid var(--st-border); }
+    .stakeholders-list { display: flex; flex-direction: column; gap: var(--st-space-2); }
+    .stakeholder-card { background: var(--st-bg-card); border: 1px solid var(--st-border); border-radius: var(--st-radius); padding: var(--st-space-2); }
+    .stakeholder-header { display: flex; align-items: center; gap: var(--st-space-1); margin-bottom: 8px; }
+    .stakeholder-avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--st-bg); display: flex; align-items: center; justify-content: center; font-size: 14px; }
+    .stakeholder-info { flex: 1; }
+    .stakeholder-name { font-size: 14px; font-weight: 600; color: var(--st-text); }
+    .stakeholder-role { font-size: 12px; color: var(--st-text-secondary); }
+    .sentiment-pill { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: var(--st-radius-pill); font-size: 12px; font-weight: 500; }
+    .sentiment-pill.detractor { background: var(--st-negative-light); color: var(--st-negative); }
+    .sentiment-pill.neutral { background: var(--st-neutral-light); color: #996600; }
+    .sentiment-pill.advocate { background: var(--st-positive-light); color: var(--st-positive); }
+    .stakeholder-summary { font-size: 13px; color: var(--st-text); line-height: 1.5; }
+    .stakeholder-card-internal .stakeholder-summary { color: var(--st-text-secondary); }
+    .stakeholder-separator { display: flex; align-items: center; gap: var(--st-space-2); margin: var(--st-space-2) 0; }
+    .stakeholder-separator::before, .stakeholder-separator::after { content: ''; flex: 1; height: 1px; background: var(--st-border); }
+    .stakeholder-separator span { font-size: 11px; font-weight: 600; color: var(--st-text-caption); text-transform: uppercase; letter-spacing: 0.5px; }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <div class="page-header">
+      <div class="account-avatar">NR</div>
+      <div class="account-name-group">
+        <div class="account-name">Netradyne</div>
+        <div class="health-score">58</div>
+      </div>
+    </div>
+    <div class="main-content">
+      <div class="ai-canvas" id="aiCanvas">
+        <div class="ask-staircase-bar">
+          <input type="text" placeholder="Ask Staircase about Netradyne">
+          <div class="ask-bar-icons">
+            <div class="ask-bar-icon"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="6" r="4"/><path d="M8 10v4M6 12h4"/></svg></div>
+            <div class="ask-bar-icon"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 6l4 4 4-4"/></svg></div>
+          </div>
+        </div>
+        <div class="canvas-tabs">
+          <button class="canvas-tab" onclick="switchCanvasTab('summary')">Summary</button>
+          <button class="canvas-tab" onclick="switchCanvasTab('expansion')">Expansion</button>
+          <button class="canvas-tab active" onclick="switchCanvasTab('risk')">Risk</button>
+          <button class="canvas-tab" onclick="switchCanvasTab('renewal')">Renewal</button>
+        </div>
+        <div class="canvas-content" id="riskContent">
+          <div class="risk-header">
+            <div class="header-top-row">
+              <div class="severity-indicator" title="Risk Severity: 4 of 5">
+                <span class="severity-dot filled"></span>
+                <span class="severity-dot filled"></span>
+                <span class="severity-dot filled"></span>
+                <span class="severity-dot filled"></span>
+                <span class="severity-dot"></span>
+                <span class="severity-label">Severity 4/5</span>
+              </div>
+              <div class="state-badge volatile" title="Risk is unstable, could go either direction">
+                <span class="arrow">&#8597;</span>
+                <span>Volatile</span>
+              </div>
+            </div>
+            <div class="metadata-row">
+              <div class="metadata-item"><span>Days to action:</span><span class="metadata-value">7</span></div>
+              <span class="metadata-divider"></span>
+              <div class="metadata-item"><span>Renewal:</span><span class="metadata-value">2026</span></div>
+            </div>
+            <div class="generated-info">Generated November 26, 2025</div>
+            <p class="med-summary">Netradyne is a highly engaged multi-product Gainsight customer pushing near-term launches: Spaces to customers in Q4 and a community soft launch. Confidence has been damaged by Staircase meeting summary inaccuracies/duplicates and a CE→CS data discrepancy that blocks Spaces. Multiple escalations (incl. CEO) reflect urgency and service strain.</p>
+            <div class="products-row">
+              <span class="product-pill">Gainsight CS</span>
+              <span class="product-pill">Staircase AI</span>
+              <span class="product-pill">CE→CS Connector</span>
+              <span class="product-pill">Communities</span>
+            </div>
+          </div>
+          <div class="risk-reasons-section">
+            <h3 class="section-title">Risk Reasons</h3>
+            <div class="risk-reasons-list">
+              <div class="risk-reason" onclick="toggleRiskReason(this, event)">
+                <div class="card-header">
+                  <div class="card-content">
+                    <div class="risk-name">CE→CS data mismatch blocking Spaces deployment</div>
+                    <div class="mini-summary">Integration not propagating deletions; stale data persists</div>
+                    <div class="card-pills"><span class="severity-pill high">High</span><span class="signal-count">3 signals</span></div>
+                  </div>
+                  <div class="expand-icon"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6L8 10L12 6"/></svg></div>
+                </div>
+                <div class="expanded-content">
+                  <div class="expanded-section"><div class="expanded-label">Summary</div><p class="expanded-text">The CE→CS connector is not handling deletions or backfills properly, causing thousands of stale "Assigned but not started" records to persist in CS after being deleted in CE. This is a show-stopper for their Q4 Spaces launch and ties directly to their Skilljar migration timeline. Multiple workarounds have failed including toggling the connector on/off.</p></div>
+                  <div class="expanded-section"><div class="expanded-label">Key Players</div><div class="key-players-list"><span class="key-player-tag">Shaun Martin</span><span class="key-player-tag">Samartha Subraya</span><span class="key-player-tag">Sriram</span></div></div>
+                  <div class="expanded-section"><div class="expanded-label">Evidence</div><div class="reference-card"><p class="reference-quote">"Show stopper for deploying Spaces... want to assess if Skilljar fixes it"</p><p class="reference-attribution">— Shaun Martin, CS Ops</p></div><div class="reference-card"><p class="reference-quote">"CS shows thousands 'Assigned but not started' after deleting in CE"</p><p class="reference-attribution">— Sriram/Samartha, CS Operations</p></div><div class="reference-card"><p class="reference-quote">"Tried turning connector off/on; still importing 6K records"</p><p class="reference-attribution">— Shaun/Samartha, CS Operations</p></div></div>
+                </div>
+              </div>
+              <div class="risk-reason" onclick="toggleRiskReason(this, event)">
+                <div class="card-header">
+                  <div class="card-content">
+                    <div class="risk-name">Staircase meeting summaries inaccurate and duplicative</div>
+                    <div class="mini-summary">Incorrect prep undermines trust and adoption</div>
+                    <div class="card-pills"><span class="severity-pill high">High</span><span class="signal-count">4 signals</span></div>
+                  </div>
+                  <div class="expand-icon"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6L8 10L12 6"/></svg></div>
+                </div>
+                <div class="expanded-content">
+                  <div class="expanded-section"><div class="expanded-label">Summary</div><p class="expanded-text">Staircase ingestion and meeting association logic is brittle, especially for recurring meetings and prep notifications. This has resulted in fake meeting summaries, summaries tied to wrong meetings, and recurring weekly duplicates. Latency (2-4 hours for summaries) also reduces usefulness versus alternatives. These issues have been escalated to L2 support.</p></div>
+                  <div class="expanded-section"><div class="expanded-label">Key Players</div><div class="key-players-list"><span class="key-player-tag">Shaun Martin</span><span class="key-player-tag">Samartha Subraya</span><span class="key-player-tag">Rinton</span></div></div>
+                  <div class="expanded-section"><div class="expanded-label">Evidence</div><div class="reference-card"><p class="reference-quote">"Fake meeting summary... prep sent for wrong meeting"</p><p class="reference-attribution">— Shaun Martin, CS Ops</p></div><div class="reference-card"><p class="reference-quote">"Duplicates weekly on recurring call... persists despite checks"</p><p class="reference-attribution">— Samartha Subraya, CS Operations</p></div><div class="reference-card"><p class="reference-quote">"Summary tied to unrelated meeting; hallucination noted"</p><p class="reference-attribution">— Shaun/Rinton/Sayed, CS Ops/Support</p></div></div>
+                </div>
+              </div>
+              <div class="risk-reason" onclick="toggleRiskReason(this, event)">
+                <div class="card-header">
+                  <div class="card-content">
+                    <div class="risk-name">Support quality concerns and repeated misclosure</div>
+                    <div class="mini-summary">Declining support quality eroding confidence</div>
+                    <div class="card-pills"><span class="severity-pill high">High</span><span class="signal-count">3 signals</span></div>
+                  </div>
+                  <div class="expand-icon"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6L8 10L12 6"/></svg></div>
+                </div>
+                <div class="expanded-content">
+                  <div class="expanded-section"><div class="expanded-label">Summary</div><p class="expanded-text">Service operations quality (L1) has degraded with slow and incorrect responses. Customer has explicitly flagged declining support quality including repeat questions and premature ticket closures. Historic service failures from onboarding are still influencing sentiment. The customer has previously requested a refund from their CAM.</p></div>
+                  <div class="expanded-section"><div class="expanded-label">Key Players</div><div class="key-players-list"><span class="key-player-tag">Shaun Martin</span><span class="key-player-tag">Andrew Biehle</span></div></div>
+                  <div class="expanded-section"><div class="expanded-label">Evidence</div><div class="reference-card"><p class="reference-quote">"Quality of response... repeat questions... too quick to close"</p><p class="reference-attribution">— Shaun Martin, CS Ops</p></div><div class="reference-card"><p class="reference-quote">"Onboarding appalling; requesting refund from CAM"</p><p class="reference-attribution">— Shaun Martin, CS Ops</p></div></div>
+                </div>
+              </div>
+              <div class="risk-reason" onclick="toggleRiskReason(this, event)">
+                <div class="card-header">
+                  <div class="card-content">
+                    <div class="risk-name">Spaces–Community coupling caused unintended dependency</div>
+                    <div class="mini-summary">Default association misaligned with staged rollout plan</div>
+                    <div class="card-pills"><span class="severity-pill medium">Medium</span><span class="signal-count">3 signals</span></div>
+                  </div>
+                  <div class="expand-icon"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6L8 10L12 6"/></svg></div>
+                </div>
+                <div class="expanded-content">
+                  <div class="expanded-section"><div class="expanded-label">Summary</div><p class="expanded-text">Cross-product integration defaults between Spaces and Community are misaligned with Netradyne's staged rollout needs. They need to decouple logins to launch Spaces standalone without Community redirects. This has required CEO/exec team involvement to review the implications and has consumed significant executive time.</p></div>
+                  <div class="expanded-section"><div class="expanded-label">Key Players</div><div class="key-players-list"><span class="key-player-tag">Shaun Martin</span><span class="key-player-tag">Samartha Subraya</span><span class="key-player-tag">Chuck (CEO)</span></div></div>
+                  <div class="expanded-section"><div class="expanded-label">Evidence</div><div class="reference-card"><p class="reference-quote">"Need to decouple logins to launch Spaces standalone"</p><p class="reference-attribution">— Shaun/Samartha, CS Ops</p></div><div class="reference-card"><p class="reference-quote">"CEO/exec team pulled in to review association implications"</p><p class="reference-attribution">— Paulina/Chuck, CSM/CEO</p></div></div>
+                </div>
+              </div>
+              <div class="risk-reason" onclick="toggleRiskReason(this, event)">
+                <div class="card-header">
+                  <div class="card-content">
+                    <div class="risk-name">Confusion over AI Follow-Up vs Staircase summaries</div>
+                    <div class="mini-summary">Change management gap could stall AI feature adoption</div>
+                    <div class="card-pills"><span class="severity-pill medium">Medium</span><span class="signal-count">3 signals</span></div>
+                  </div>
+                  <div class="expand-icon"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6L8 10L12 6"/></svg></div>
+                </div>
+                <div class="expanded-content">
+                  <div class="expanded-section"><div class="expanded-label">Summary</div><p class="expanded-text">Insufficient structured onboarding and change management across AI features has created confusion about when to use Staircase meeting summaries versus AI Follow-Up. Sales teams prefer summaries while CSMs prefer AI Follow-Up for CTAs. This mixed usage pattern requires prescriptive enablement. Low adoption of success plans also indicates broader AI feature underutilization.</p></div>
+                  <div class="expanded-section"><div class="expanded-label">Key Players</div><div class="key-players-list"><span class="key-player-tag">Shaun Martin</span><span class="key-player-tag">Paulina Rodriguez</span></div></div>
+                  <div class="expanded-section"><div class="expanded-label">Evidence</div><div class="reference-card"><p class="reference-quote">"Need clear guidance... what actions/tasks look like"</p><p class="reference-attribution">— Shaun Martin, CS Ops</p></div><div class="reference-card"><p class="reference-quote">"Sales prefer summaries; CSMs prefer AI follow-up for CTAs"</p><p class="reference-attribution">— Paulina Rodriguez, CSM</p></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="right-panel" id="rightPanel">
+        <div class="tab-bar">
+          <button class="tab-btn active" data-tab="playbook" onclick="switchTab('playbook')">Playbook</button>
+          <button class="tab-btn" data-tab="stakeholders" onclick="switchTab('stakeholders')">Stakeholders</button>
+        </div>
+        <div class="tab-content">
+          <div class="tab-pane active" id="playbookTab">
+            <div class="strategy-section">
+              <div class="strategy-label">Strategy</div>
+              <p class="strategy-text">Near-term launches are jeopardized by two acute issues: CE→CS connector stale data blocking Spaces and Staircase meeting-summary inaccuracies. The strategy prioritizes SWAT stabilization: (1) purge/backfill for CE→CS so Spaces can launch, (2) L2/Engineering-led fix path on Staircase defects. In parallel: tighten change management, finalize Spaces–Community decoupling, and establish white-glove support lane.</p>
+            </div>
+            <div class="actions-list">
+              <div class="action-card"><div class="action-header"><div class="action-name">Stand up daily SWAT bridge for CE→CS remediation</div><div class="action-meta"><span class="action-timeline immediate">Immediate</span></div></div><p class="action-description">Remediate stale "Assigned but not started" records and unblock Spaces. Agree on purge/backfill or filter-based workaround and ETA.</p><p class="action-owner">Owner: Engineering</p></div>
+              <div class="action-card"><div class="action-header"><div class="action-name">Resolve Staircase duplicates/hallucinations</div><div class="action-meta"><span class="action-timeline immediate">Immediate</span></div></div><p class="action-description">Aggregate examples, reauthorize MS Teams, instrument logs, commit defect fixes and SLA improvements (&lt;2h summaries). Temporarily disable prep emails if noisy.</p><p class="action-owner">Owner: Support Manager</p></div>
+              <div class="action-card"><div class="action-header"><div class="action-name">Spaces–Community separation hardening</div><div class="action-meta"><span class="action-timeline immediate">Immediate</span></div></div><p class="action-description">Confirm decoupled login, remove unintended branding, document admin steps. Execute pilot invite with QA checklist.</p><p class="action-owner">Owner: Product</p></div>
+              <div class="action-card"><div class="action-header"><div class="action-name">Establish white-glove support lane</div><div class="action-meta"><span class="action-timeline immediate">Immediate</span></div></div><p class="action-description">Weekly case QA review with L2 assigned, TheLoops guidance enforced, no ticket closure without customer confirmation for critical items.</p><p class="action-owner">Owner: Support Manager</p></div>
+              <div class="action-card"><div class="action-header"><div class="action-name">Publish CSM playbook for AI features</div><div class="action-meta"><span class="action-timeline short-term">Short-term</span></div></div><p class="action-description">1-page playbook + 20-min enablement on Staircase Meeting Summaries vs AI Follow-Up. Cover how tasks convert to CTAs and when to use which.</p><p class="action-owner">Owner: CSM</p></div>
+            </div>
+          </div>
+          <div class="tab-pane" id="stakeholdersTab">
+            <div class="stakeholders-section">
+              <div class="stakeholders-section-title">Key Stakeholders (Customer)</div>
+              <div class="stakeholders-list">
+                <div class="stakeholder-card"><div class="stakeholder-header"><div class="stakeholder-avatar">HE</div><div class="stakeholder-info"><div class="stakeholder-name">Heather Engen</div><div class="stakeholder-role">Chief Customer Officer (Exec Sponsor)</div></div><span class="sentiment-pill advocate">Advocate</span></div><p class="stakeholder-summary">Executive sponsor. Run a focused EBR on launch readiness, risks, and executive-level commitments for Spaces pilot, Staircase fixes, and Skilljar plan.</p></div>
+                <div class="stakeholder-card"><div class="stakeholder-header"><div class="stakeholder-avatar">SM</div><div class="stakeholder-info"><div class="stakeholder-name">Shaun Martin</div><div class="stakeholder-role">Senior Director, CS Operations</div></div><span class="sentiment-pill detractor">Detractor</span></div><p class="stakeholder-summary">Primary escalator, frustrated with data quality and support issues. Operate daily SWAT bridge with Shaun as co-owner; provide transparent defect dashboards.</p></div>
+                <div class="stakeholder-card"><div class="stakeholder-header"><div class="stakeholder-avatar">SS</div><div class="stakeholder-info"><div class="stakeholder-name">Samartha Subraya</div><div class="stakeholder-role">CS Ops / Admin</div></div><span class="sentiment-pill neutral">Neutral</span></div><p class="stakeholder-summary">Give step-by-step config changes, provide sandbox-tested artifacts and recordings. Co-build admin rules for license/permission automation.</p></div>
+              </div>
+            </div>
+            <div class="stakeholder-separator"><span>Internal Team Involved</span></div>
+            <div class="stakeholders-section">
+              <div class="stakeholders-list">
+                <div class="stakeholder-card stakeholder-card-internal"><div class="stakeholder-header"><div class="stakeholder-avatar">PR</div><div class="stakeholder-info"><div class="stakeholder-name">Paulina Rodriguez</div><div class="stakeholder-role">Gainsight CSM (Owner)</div></div><span class="sentiment-pill advocate">Advocate</span></div><p class="stakeholder-summary">Single-threaded orchestrator; runs SWAT bridge, aligns PM/Eng/Support, publishes weekly outcomes. Lead enablement and value tracking.</p></div>
+                <div class="stakeholder-card stakeholder-card-internal"><div class="stakeholder-header"><div class="stakeholder-avatar">LM</div><div class="stakeholder-info"><div class="stakeholder-name">Lindsey McElroy</div><div class="stakeholder-role">Customer Account Manager</div></div><span class="sentiment-pill neutral">Neutral</span></div><p class="stakeholder-summary">Co-term pricing clarity for PX, confirm $0 Skilljar migration SOW and dates; sequence commercials only after stabilization.</p></div>
+                <div class="stakeholder-card stakeholder-card-internal"><div class="stakeholder-header"><div class="stakeholder-avatar">BB</div><div class="stakeholder-info"><div class="stakeholder-name">Brady (Staircase PM)</div><div class="stakeholder-role">Product Manager, Staircase</div></div><span class="sentiment-pill neutral">Neutral</span></div><p class="stakeholder-summary">Secure bug ownership (duplication/hallucinations), publish ETA and interim guidance. Attend SWAT updates.</p></div>
+                <div class="stakeholder-card stakeholder-card-internal"><div class="stakeholder-header"><div class="stakeholder-avatar">AB</div><div class="stakeholder-info"><div class="stakeholder-name">Andrew Biehle</div><div class="stakeholder-role">Support Manager</div></div><span class="sentiment-pill neutral">Neutral</span></div><p class="stakeholder-summary">Establish quality gate for Netradyne tickets; ensure L2+ engagement; weekly ticket review with CS Ops.</p></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>
+    function switchTab(tabName) {
+      document.querySelectorAll('.tab-btn').forEach(btn => { btn.classList.toggle('active', btn.dataset.tab === tabName); });
+      document.getElementById('playbookTab').classList.toggle('active', tabName === 'playbook');
+      document.getElementById('stakeholdersTab').classList.toggle('active', tabName === 'stakeholders');
+    }
+    function switchCanvasTab(tabName) {
+      document.querySelectorAll('.canvas-tab').forEach(tab => { tab.classList.remove('active'); });
+      event.target.classList.add('active');
+      if (tabName !== 'risk') {
+        alert(`${tabName.charAt(0).toUpperCase() + tabName.slice(1)} tab coming soon!\n\nThis prototype focuses on the Risk tab.`);
+        document.querySelectorAll('.canvas-tab').forEach(tab => { tab.classList.toggle('active', tab.textContent === 'Risk'); });
+      }
+    }
+    function toggleRiskReason(card, event) { card.classList.toggle('expanded'); }
+  </script>
+</body>
+</html>
