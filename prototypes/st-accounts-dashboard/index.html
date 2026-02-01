@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Staircase AI Portfolio Intelligence</title>
+    <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: #0f1419;
+            color: #e7e9ea;
+            min-height: 100vh;
+        }
+        .header {
+            background: linear-gradient(135deg, #1a1f2e 0%, #0f1419 100%);
+            padding: 24px 32px;
+            border-bottom: 1px solid #2f3336;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .header h1 {
+            font-size: 24px;
+            font-weight: 600;
+            color: #fff;
+        }
+        .header .subtitle {
+            font-size: 14px;
+            color: #71767b;
+            margin-top: 4px;
+        }
+        .filters {
+            display: flex;
+            gap: 12px;
+        }
+        .filter-chip {
+            background: #2f3336;
+            border: 1px solid #3d4144;
+            border-radius: 20px;
+            padding: 8px 16px;
+            font-size: 13px;
+            color: #e7e9ea;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .filter-chip:hover {
+            background: #3d4144;
+        }
+        .filter-chip.active {
+            background: #1d9bf0;
+            border-color: #1d9bf0;
+        }
+        .container {
+            padding: 24px 32px;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+        .kpi-row {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        .kpi-card {
+            background: #16181c;
+            border: 1px solid #2f3336;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+        }
+        .kpi-card.alert {
+            border-color: #f4212e;
+            background: linear-gradient(135deg, #16181c 0%, #1a1215 100%);
+        }
+        .kpi-card.warning {
+            border-color: #ffd400;
+            background: linear-gradient(135deg, #16181c 0%, #1a1a15 100%);
+        }
+        .kpi-card.success {
+            border-color: #00ba7c;
+            background: linear-gradient(135deg, #16181c 0%, #151a18 100%);
+        }
+        .kpi-label {
+            font-size: 12px;
+            color: #71767b;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+        .kpi-value {
+            font-size: 32px;
+            font-weight: 700;
+            color: #fff;
+        }
+        .kpi-value.red { color: #f4212e; }
+        .kpi-value.yellow { color: #ffd400; }
+        .kpi-value.green { color: #00ba7c; }
+        .kpi-trend {
+            font-size: 12px;
+            color: #71767b;
+            margin-top: 4px;
+        }
+        .chart-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+        .chart-card {
+            background: #16181c;
+            border: 1px solid #2f3336;
+            border-radius: 12px;
+            padding: 20px;
+        }
+        .chart-card.full-width {
+            grid-column: 1 / -1;
+        }
+        .chart-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #e7e9ea;
+            margin-bottom: 16px;
+        }
+        .chart-subtitle {
+            font-size: 12px;
+            color: #71767b;
+            margin-top: -12px;
+            margin-bottom: 16px;
+        }
+        .table-container {
+            overflow-x: auto;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+        th {
+            text-align: left;
+            padding: 12px 16px;
+            background: #1a1f2e;
+            color: #71767b;
+            font-weight: 500;
+            text-transform: uppercase;
+            font-size: 11px;
+            letter-spacing: 0.5px;
+            border-bottom: 1px solid #2f3336;
+        }
+        td {
+            padding: 12px 16px;
+            border-bottom: 1px solid #2f3336;
+            color: #e7e9ea;
+        }
+        tr:hover td {
+            background: #1a1f2e;
+        }
+        .health-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+        .health-badge.critical { background: #f4212e20; color: #f4212e; }
+        .health-badge.at-risk { background: #ffd40020; color: #ffd400; }
+        .health-badge.healthy { background: #00ba7c20; color: #00ba7c; }
+        .tier-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            background: #2f3336;
+            color: #71767b;
+        }
+        .tier-badge.strategic { background: #8b5cf620; color: #a78bfa; }
+        .tier-badge.enterprise { background: #3b82f620; color: #60a5fa; }
+        .tier-badge.scale { background: #71767b20; color: #a1a1aa; }
+        .arr-cell {
+            font-family: 'SF Mono', Monaco, monospace;
+            font-weight: 500;
+        }
+        .renewal-cell {
+            font-size: 12px;
+        }
+        .renewal-cell.urgent { color: #f4212e; font-weight: 600; }
+        .renewal-cell.soon { color: #ffd400; }
+        .footer {
+            text-align: center;
+            padding: 24px;
+            color: #71767b;
+            font-size: 12px;
+            border-top: 1px solid #2f3336;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div>
+            <h1>Staircase AI Portfolio Intelligence</h1>
+            <div class="subtitle">Executive Dashboard &mdash; Updated Jan 31, 2026</div>
+        </div>
+        <div class="filters">
+            <span class="filter-chip active" data-filter="all">All Tiers</span>
+            <span class="filter-chip" data-filter="strategic">Strategic</span>
+            <span class="filter-chip" data-filter="enterprise">Enterprise</span>
+            <span class="filter-chip" data-filter="scale">Scale</span>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="kpi-row">
+            <div class="kpi-card">
+                <div class="kpi-label">Total ARR</div>
+                <div class="kpi-value" id="kpi-total-arr">$15.2M</div>
+                <div class="kpi-trend">82 paying accounts</div>
+            </div>
+            <div class="kpi-card alert">
+                <div class="kpi-label">ARR at Risk</div>
+                <div class="kpi-value red" id="kpi-arr-risk">$3.1M</div>
+                <div class="kpi-trend">Health score &lt;50</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-label">Portfolio Health</div>
+                <div class="kpi-value" id="kpi-health">58</div>
+                <div class="kpi-trend">Avg composite score</div>
+            </div>
+            <div class="kpi-card warning">
+                <div class="kpi-label">Renewals (90d)</div>
+                <div class="kpi-value yellow" id="kpi-renewals">18</div>
+                <div class="kpi-trend">$4.2M ARR expiring</div>
+            </div>
+            <div class="kpi-card alert">
+                <div class="kpi-label">Critical Accounts</div>
+                <div class="kpi-value red" id="kpi-critical">8</div>
+                <div class="kpi-trend">Score &lt;40</div>
+            </div>
+        </div>
+
+        <div class="chart-row">
+            <div class="chart-card">
+                <div class="chart-title">ARR by Health Tier</div>
+                <div class="chart-subtitle">Revenue distribution across health levels</div>
+                <div id="chart-arr-health" style="height: 280px;"></div>
+            </div>
+            <div class="chart-card">
+                <div class="chart-title">Risk by Segment</div>
+                <div class="chart-subtitle">ARR at risk by customer tier</div>
+                <div id="chart-risk-segment" style="height: 280px;"></div>
+            </div>
+        </div>
+
+        <div class="chart-row">
+            <div class="chart-card full-width">
+                <div class="chart-title">Renewal Pipeline (Next 90 Days)</div>
+                <div class="chart-subtitle">Bubble size = ARR &bull; Color = Health Score (red = low, green = high)</div>
+                <div id="chart-renewal-scatter" style="height: 350px;"></div>
+            </div>
+        </div>
+
+        <div class="chart-row">
+            <div class="chart-card">
+                <div class="chart-title">Health Score Distribution</div>
+                <div class="chart-subtitle">Account count by composite health score</div>
+                <div id="chart-health-dist" style="height: 280px;"></div>
+            </div>
+            <div class="chart-card">
+                <div class="chart-title">Engagement Summary</div>
+                <div class="chart-subtitle">Accounts by engagement level</div>
+                <div id="chart-engagement" style="height: 280px;"></div>
+            </div>
+        </div>
+
+        <div class="chart-card full-width">
+            <div class="chart-title">Top 10 At-Risk Accounts</div>
+            <div class="chart-subtitle">Sorted by lowest composite health score — immediate attention required</div>
+            <div class="table-container">
+                <table id="at-risk-table">
+                    <thead>
+                        <tr>
+                            <th>Account</th>
+                            <th>Tier</th>
+                            <th>ARR</th>
+                            <th>Health</th>
+                            <th>Engagement</th>
+                            <th>Sentiment</th>
+                            <th>Composite</th>
+                            <th>Renewal</th>
+                        </tr>
+                    </thead>
+                    <tbody id="at-risk-tbody"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        Staircase AI &bull; Portfolio Intelligence Dashboard &bull; Data refreshed Jan 31, 2026
+    </div>
+
+    <script>
+        // Account data from account-health-matrix.csv
+        const accountData = [
+            {account:"ServiceTitan",tier:"Strategic",arr:509208,health:69,healthLabel:"Average",engagement:22,engagementLabel:"Low",sentiment:25,sentimentLabel:"Issues detected",renewal:"2026-06-04",composite:49.2},
+            {account:"Cornerstone",tier:"Strategic",arr:691200,health:52,healthLabel:"Average",engagement:59,engagementLabel:"Average",sentiment:27,sentimentLabel:"Issues detected",renewal:"2026-04-30",composite:53.9},
+            {account:"Frontline Education",tier:"Strategic",arr:317000,health:66,healthLabel:"Average",engagement:0,engagementLabel:"Low",sentiment:30,sentimentLabel:"Neutral",renewal:"2026-10-31",composite:60.6},
+            {account:"Verizon Connect",tier:"Strategic",arr:1126817,health:70,healthLabel:"Average",engagement:100,engagementLabel:"High",sentiment:39,sentimentLabel:"Neutral",renewal:"2026-05-14",composite:75.8},
+            {account:"Model N",tier:"Scale",arr:63000,health:70,healthLabel:"Average",engagement:100,engagementLabel:"High",sentiment:50,sentimentLabel:"Neutral",renewal:"2027-09-30",composite:78.0},
+            {account:"ABC Fitness",tier:"Strategic",arr:328909,health:60,healthLabel:"Average",engagement:3,engagementLabel:"Low",sentiment:68,sentimentLabel:"Neutral",renewal:"2026-02-28",composite:48.5},
+            {account:"PROS",tier:"Scale",arr:25000,health:100,healthLabel:"High",engagement:60,engagementLabel:"Average",sentiment:59,sentimentLabel:"Neutral",renewal:"2026-09-30",composite:79.8},
+            {account:"Tricentis",tier:"Strategic",arr:576061,health:100,healthLabel:"High",engagement:89,engagementLabel:"High",sentiment:56,sentimentLabel:"Neutral",renewal:"2026-07-27",composite:87.9},
+            {account:"NetDocuments",tier:"Enterprise",arr:220115,health:39,healthLabel:"Average",engagement:77,engagementLabel:"High",sentiment:33,sentimentLabel:"Neutral",renewal:"2026-04-30",composite:55.3},
+            {account:"CivicPlus",tier:"Enterprise",arr:65000,health:31,healthLabel:"Average",engagement:1,engagementLabel:"Low",sentiment:null,sentimentLabel:null,renewal:"2027-11-09",composite:28.4},
+            {account:"Samsara",tier:"Strategic",arr:545312,health:50,healthLabel:"Average",engagement:5,engagementLabel:"Low",sentiment:61,sentimentLabel:"Neutral",renewal:"2026-09-30",composite:43.7},
+            {account:"Exiger",tier:"Scale",arr:60250,health:81,healthLabel:"High",engagement:100,engagementLabel:"High",sentiment:45,sentimentLabel:"Neutral",renewal:"2028-10-12",composite:81.4},
+            {account:"ExtraHop Networks",tier:"Enterprise",arr:182555,health:38,healthLabel:"Average",engagement:90,engagementLabel:"High",sentiment:15,sentimentLabel:"Issues detected",renewal:"2026-02-18",composite:55.2},
+            {account:"StellarAlgo",tier:"Scale",arr:20000,health:65,healthLabel:"Average",engagement:78,engagementLabel:"High",sentiment:50,sentimentLabel:"Neutral",renewal:"2026-01-29",composite:69.4},
+            {account:"TCP Software",tier:"Strategic",arr:475903,health:52,healthLabel:"Average",engagement:71,engagementLabel:"High",sentiment:53,sentimentLabel:"Neutral",renewal:"2027-08-25",composite:62.7},
+            {account:"Zuora",tier:"Enterprise",arr:292571,health:39,healthLabel:"Average",engagement:96,engagementLabel:"High",sentiment:18,sentimentLabel:"Issues detected",renewal:"2027-01-11",composite:58.0},
+            {account:"Ellucian",tier:"Strategic",arr:690790,health:56,healthLabel:"Average",engagement:3,engagementLabel:"Low",sentiment:62,sentimentLabel:"Neutral",renewal:"2028-03-31",composite:45.7},
+            {account:"Juniper Square",tier:"Scale",arr:67677,health:70,healthLabel:"Average",engagement:100,engagementLabel:"High",sentiment:47,sentimentLabel:"Neutral",renewal:"2026-08-03",composite:77.4},
+            {account:"6sense",tier:"Enterprise",arr:283464,health:73,healthLabel:"High",engagement:86,engagementLabel:"High",sentiment:51,sentimentLabel:"Neutral",renewal:"2027-09-24",composite:75.2},
+            {account:"Hyperscience",tier:"Scale",arr:18000,health:48,healthLabel:"Average",engagement:40,engagementLabel:"Average",sentiment:null,sentimentLabel:null,renewal:"2027-07-24",composite:51.5},
+            {account:"Hyland",tier:"Enterprise",arr:241470,health:71,healthLabel:"High",engagement:60,engagementLabel:"Average",sentiment:60,sentimentLabel:"Neutral",renewal:"2028-07-30",composite:68.4},
+            {account:"Rockwell Automation",tier:"Strategic",arr:1493312,health:51,healthLabel:"Average",engagement:100,engagementLabel:"High",sentiment:45,sentimentLabel:"Neutral",renewal:"2028-01-14",composite:69.4},
+            {account:"BetterCloud",tier:"Scale",arr:35100,health:63,healthLabel:"Average",engagement:60,engagementLabel:"Average",sentiment:57,sentimentLabel:"Neutral",renewal:"2026-01-05",composite:64.6},
+            {account:"Stayntouch",tier:"Scale",arr:18000,health:68,healthLabel:"Average",engagement:60,engagementLabel:"Average",sentiment:50,sentimentLabel:"Neutral",renewal:"2027-01-02",composite:65.2},
+            {account:"Salesloft",tier:"Enterprise",arr:234537,health:63,healthLabel:"Average",engagement:42,engagementLabel:"Average",sentiment:35,sentimentLabel:"Neutral",renewal:"2028-07-31",composite:54.8},
+            {account:"TigerConnect",tier:"Strategic",arr:304914,health:52,healthLabel:"Average",engagement:15,engagementLabel:"Low",sentiment:55,sentimentLabel:"Neutral",renewal:"2026-08-01",composite:46.3},
+            {account:"Pushpay",tier:"Enterprise",arr:200191,health:94,healthLabel:"High",engagement:98,engagementLabel:"High",sentiment:36,sentimentLabel:"Neutral",renewal:"2028-07-31",composite:84.2},
+            {account:"Aqua Security",tier:"Scale",arr:30000,health:81,healthLabel:"High",engagement:19,engagementLabel:"Low",sentiment:45,sentimentLabel:"Neutral",renewal:"2027-01-31",composite:57.1},
+            {account:"Ciena",tier:"Enterprise",arr:240001,health:41,healthLabel:"Average",engagement:56,engagementLabel:"Average",sentiment:20,sentimentLabel:"Issues detected",renewal:"2028-08-03",composite:47.2},
+            {account:"DailyPay",tier:"Enterprise",arr:150000,health:69,healthLabel:"Average",engagement:98,engagementLabel:"High",sentiment:51,sentimentLabel:"Neutral",renewal:"2027-04-14",composite:77.2},
+            {account:"Silverfort",tier:"Enterprise",arr:98700,health:72,healthLabel:"High",engagement:97,engagementLabel:"High",sentiment:60,sentimentLabel:"Neutral",renewal:"2026-07-13",composite:79.9},
+            {account:"8x8",tier:"Enterprise",arr:50000,health:27,healthLabel:"Low",engagement:3,engagementLabel:"Low",sentiment:50,sentimentLabel:"Neutral",renewal:"2026-04-30",composite:31.7},
+            {account:"RTB House",tier:"Scale",arr:56000,health:47,healthLabel:"Average",engagement:20,engagementLabel:"Low",sentiment:33,sentimentLabel:"Neutral",renewal:"2026-08-03",composite:41.4},
+            {account:"Claritas Rx",tier:"Scale",arr:21600,health:92,healthLabel:"High",engagement:59,engagementLabel:"Average",sentiment:50,sentimentLabel:"Neutral",renewal:"2027-01-05",composite:74.5},
+            {account:"Dealhub",tier:"Enterprise",arr:55001,health:28,healthLabel:"Low",engagement:27,engagementLabel:"Low",sentiment:null,sentimentLabel:null,renewal:"2026-06-26",composite:36.6},
+            {account:"JAGGAER",tier:"Enterprise",arr:51600,health:57,healthLabel:"Average",engagement:47,engagementLabel:"Average",sentiment:31,sentimentLabel:"Neutral",renewal:"2027-09-30",composite:53.1},
+            {account:"Tackle",tier:"Scale",arr:35000,health:39,healthLabel:"Average",engagement:60,engagementLabel:"Average",sentiment:44,sentimentLabel:"Neutral",renewal:"2026-01-31",composite:52.4},
+            {account:"Netradyne",tier:"Enterprise",arr:182199,health:27,healthLabel:"Low",engagement:97,engagementLabel:"High",sentiment:6,sentimentLabel:"Issues detected",renewal:"2026-10-30",composite:51.1},
+            {account:"Ping Identity",tier:"Enterprise",arr:286004,health:66,healthLabel:"Average",engagement:77,engagementLabel:"High",sentiment:66,sentimentLabel:"Neutral",renewal:"2027-06-29",composite:72.7},
+            {account:"Citeline",tier:"Enterprise",arr:180900,health:45,healthLabel:"Average",engagement:40,engagementLabel:"Average",sentiment:39,sentimentLabel:"Neutral",renewal:"2026-10-14",composite:47.8},
+            {account:"MaintainX",tier:"Enterprise",arr:126888,health:67,healthLabel:"Average",engagement:93,engagementLabel:"High",sentiment:51,sentimentLabel:"Neutral",renewal:"2026-10-31",composite:74.9},
+            {account:"Claroty",tier:"Enterprise",arr:122535,health:80,healthLabel:"High",engagement:93,engagementLabel:"High",sentiment:42,sentimentLabel:"Neutral",renewal:"2026-07-17",composite:78.3},
+            {account:"Bloomreach",tier:"Enterprise",arr:195123,health:79,healthLabel:"High",engagement:90,engagementLabel:"High",sentiment:69,sentimentLabel:"Neutral",renewal:"2027-03-16",composite:82.4},
+            {account:"Xactly",tier:"Enterprise",arr:233505,health:79,healthLabel:"High",engagement:95,engagementLabel:"High",sentiment:62,sentimentLabel:"Neutral",renewal:"2027-03-15",composite:82.5},
+            {account:"Mend",tier:"Enterprise",arr:83940,health:44,healthLabel:"Average",engagement:33,engagementLabel:"Average",sentiment:null,sentimentLabel:null,renewal:"2026-06-12",composite:46.9},
+            {account:"Calabrio",tier:"Enterprise",arr:124000,health:35,healthLabel:"Average",engagement:57,engagementLabel:"Average",sentiment:37,sentimentLabel:"Neutral",renewal:"2028-01-31",composite:48.5},
+            {account:"Acquia",tier:"Strategic",arr:579942,health:44,healthLabel:"Average",engagement:19,engagementLabel:"Low",sentiment:55,sentimentLabel:"Neutral",renewal:"2026-02-27",composite:44.3},
+            {account:"Kentik",tier:"Scale",arr:50000,health:63,healthLabel:"Average",engagement:58,engagementLabel:"Average",sentiment:50,sentimentLabel:"Neutral",renewal:"2027-11-02",composite:62.6},
+            {account:"Resilinc",tier:"Scale",arr:78000,health:59,healthLabel:"Average",engagement:100,engagementLabel:"High",sentiment:11,sentimentLabel:"Issues detected",renewal:"2027-02-23",composite:65.8},
+            {account:"Coderpad",tier:"Scale",arr:50000,health:30,healthLabel:"Average",engagement:0,engagementLabel:"Low",sentiment:null,sentimentLabel:null,renewal:"2027-11-27",composite:44.0},
+            {account:"Oktopost",tier:"Scale",arr:6999,health:68,healthLabel:"Average",engagement:58,engagementLabel:"Average",sentiment:45,sentimentLabel:"Neutral",renewal:"2027-06-10",composite:63.6},
+            {account:"Vena Solutions",tier:"Enterprise",arr:124790,health:48,healthLabel:"Average",engagement:92,engagementLabel:"High",sentiment:26,sentimentLabel:"Issues detected",renewal:"2026-01-31",composite:62.0},
+            {account:"PLEX",tier:"Enterprise",arr:265079,health:43,healthLabel:"Average",engagement:1,engagementLabel:"Low",sentiment:50,sentimentLabel:"Neutral",renewal:"2027-09-30",composite:37.5},
+            {account:"Cymulate",tier:"Scale",arr:27000,health:73,healthLabel:"High",engagement:100,engagementLabel:"High",sentiment:45,sentimentLabel:"Neutral",renewal:"2026-03-09",composite:78.2},
+            {account:"Securonix",tier:"Enterprise",arr:255209,health:61,healthLabel:"Average",engagement:77,engagementLabel:"High",sentiment:57,sentimentLabel:"Neutral",renewal:"2026-02-25",composite:68.9},
+            {account:"Branch",tier:"Scale",arr:41850,health:71,healthLabel:"High",engagement:96,engagementLabel:"High",sentiment:50,sentimentLabel:"Neutral",renewal:"2026-03-31",composite:77.2},
+            {account:"Vertice",tier:"Scale",arr:64806,health:34,healthLabel:"Average",engagement:60,engagementLabel:"Average",sentiment:40,sentimentLabel:"Neutral",renewal:"2026-01-30",composite:49.6},
+            {account:"Appspace",tier:"Enterprise",arr:226598,health:36,healthLabel:"Average",engagement:89,engagementLabel:"High",sentiment:30,sentimentLabel:"Neutral",renewal:"2028-01-31",composite:57.1},
+            {account:"Jamf",tier:"Strategic",arr:741964,health:100,healthLabel:"High",engagement:100,engagementLabel:"High",sentiment:63,sentimentLabel:"Neutral",renewal:"2028-01-14",composite:92.6},
+            {account:"Fountain",tier:"Scale",arr:21492,health:76,healthLabel:"High",engagement:100,engagementLabel:"High",sentiment:52,sentimentLabel:"Neutral",renewal:"2027-02-14",composite:80.8},
+            {account:"InvoiceCloud",tier:"Enterprise",arr:63000,health:43,healthLabel:"Average",engagement:14,engagementLabel:"Low",sentiment:55,sentimentLabel:"Neutral",renewal:"2027-10-31",composite:42.4},
+            {account:"Alegeus",tier:"Scale",arr:20000,health:60,healthLabel:"Average",engagement:58,engagementLabel:"Average",sentiment:55,sentimentLabel:"Neutral",renewal:"2026-01-31",composite:62.4},
+            {account:"Marcura",tier:"Enterprise",arr:143901,health:69,healthLabel:"Average",engagement:56,engagementLabel:"Average",sentiment:50,sentimentLabel:"Neutral",renewal:"2026-08-31",composite:64.4},
+            {account:"Smartbear",tier:"Scale",arr:29000,health:0,healthLabel:"Low",engagement:40,engagementLabel:"Average",sentiment:null,sentimentLabel:null,renewal:"2026-01-30",composite:55.0},
+            {account:"Duco",tier:"Scale",arr:18000,health:45,healthLabel:"Average",engagement:40,engagementLabel:"Average",sentiment:null,sentimentLabel:null,renewal:"2027-04-30",composite:50.0},
+            {account:"EnterpriseDB",tier:"Scale",arr:48000,health:0,healthLabel:"Low",engagement:100,engagementLabel:"High",sentiment:41,sentimentLabel:"Neutral",renewal:"2025-12-01",composite:80.3},
+            {account:"Xceptor",tier:"Scale",arr:65862,health:74,healthLabel:"High",engagement:100,engagementLabel:"High",sentiment:58,sentimentLabel:"Neutral",renewal:"2026-07-21",composite:81.2},
+            {account:"Vaisala",tier:"Scale",arr:18300,health:57,healthLabel:"Average",engagement:59,engagementLabel:"Average",sentiment:45,sentimentLabel:"Neutral",renewal:"2026-09-21",composite:59.5},
+            {account:"PartsSource",tier:"Enterprise",arr:143500,health:71,healthLabel:"High",engagement:84,engagementLabel:"High",sentiment:30,sentimentLabel:"Neutral",renewal:"2026-11-03",composite:69.6},
+            {account:"Kaminashi",tier:"Enterprise",arr:82063,health:28,healthLabel:"Low",engagement:61,engagementLabel:"Average",sentiment:null,sentimentLabel:null,renewal:"2026-02-28",composite:49.4},
+            {account:"Duck Creek",tier:"Scale",arr:33200,health:56,healthLabel:"Average",engagement:100,engagementLabel:"High",sentiment:56,sentimentLabel:"Neutral",renewal:"2027-09-30",composite:73.6},
+            {account:"Mediafly",tier:"Enterprise",arr:99451,health:100,healthLabel:"High",engagement:98,engagementLabel:"High",sentiment:70,sentimentLabel:"Neutral",renewal:"2026-11-02",composite:93.4},
+            {account:"Sievo",tier:"Enterprise",arr:138171,health:30,healthLabel:"Average",engagement:71,engagementLabel:"High",sentiment:20,sentimentLabel:"Issues detected",renewal:"2028-08-28",composite:47.3},
+            {account:"Singular",tier:"Scale",arr:24000,health:30,healthLabel:"Average",engagement:98,engagementLabel:"High",sentiment:50,sentimentLabel:"Neutral",renewal:"2025-12-31",composite:61.4},
+            {account:"Boomi",tier:"Strategic",arr:602577,health:67,healthLabel:"Average",engagement:79,engagementLabel:"High",sentiment:40,sentimentLabel:"Neutral",renewal:"2026-07-02",composite:68.5},
+            {account:"Autify",tier:"Enterprise",arr:12850,health:36,healthLabel:"Average",engagement:20,engagementLabel:"Low",sentiment:null,sentimentLabel:null,renewal:"2026-07-31",composite:38.0},
+            {account:"Nielsen",tier:"Strategic",arr:323116,health:63,healthLabel:"Average",engagement:73,engagementLabel:"High",sentiment:28,sentimentLabel:"Issues detected",renewal:"2027-09-27",composite:62.7},
+            {account:"Oroppas",tier:"Enterprise",arr:68570,health:74,healthLabel:"High",engagement:55,engagementLabel:"Average",sentiment:50,sentimentLabel:"Neutral",renewal:"2026-10-31",composite:66.1},
+            {account:"Via Transportation",tier:"Scale",arr:33264,health:44,healthLabel:"Average",engagement:20,engagementLabel:"Low",sentiment:35,sentimentLabel:"Neutral",renewal:"2026-11-30",composite:40.6},
+            {account:"Gnosis Freight",tier:"Scale",arr:78900,health:54,healthLabel:"Average",engagement:20,engagementLabel:"Low",sentiment:59,sentimentLabel:"Neutral",renewal:"2027-05-31",composite:49.4},
+            {account:"Bonterra",tier:"Strategic",arr:353520,health:86,healthLabel:"High",engagement:93,engagementLabel:"High",sentiment:53,sentimentLabel:"Neutral",renewal:"2026-10-31",composite:82.9},
+            {account:"Total Expert",tier:"Scale",arr:25000,health:68,healthLabel:"Average",engagement:100,engagementLabel:"High",sentiment:56,sentimentLabel:"Neutral",renewal:"2026-06-08",composite:78.4},
+            {account:"Critical Start",tier:"Enterprise",arr:149512,health:61,healthLabel:"Average",engagement:82,engagementLabel:"High",sentiment:41,sentimentLabel:"Neutral",renewal:"2026-05-03",composite:67.2},
+            {account:"Bizreach",tier:"Enterprise",arr:243028,health:100,healthLabel:"High",engagement:80,engagementLabel:"High",sentiment:50,sentimentLabel:"Neutral",renewal:"2026-09-30",composite:84.0},
+            {account:"ACTO",tier:"Scale",arr:18461,health:74,healthLabel:"High",engagement:56,engagementLabel:"Average",sentiment:62,sentimentLabel:"Neutral",renewal:"2026-09-21",composite:68.8},
+            {account:"Blackbaud",tier:"Strategic",arr:451580,health:52,healthLabel:"Average",engagement:46,engagementLabel:"Average",sentiment:31,sentimentLabel:"Neutral",renewal:"2026-09-18",composite:50.8},
+            {account:"Monday",tier:"Enterprise",arr:136389,health:42,healthLabel:"Average",engagement:6,engagementLabel:"Low",sentiment:50,sentimentLabel:"Neutral",renewal:"2026-05-31",composite:38.6},
+            {account:"Klue",tier:"Scale",arr:35000,health:56,healthLabel:"Average",engagement:16,engagementLabel:"Low",sentiment:62,sentimentLabel:"Neutral",renewal:"2026-12-14",composite:49.6},
+            {account:"Sales Marker",tier:"Enterprise",arr:142857,health:33,healthLabel:"Average",engagement:4,engagementLabel:"Low",sentiment:null,sentimentLabel:null,renewal:"2026-05-29",composite:30.5},
+            {account:"ABBYY",tier:"Enterprise",arr:105000,health:57,healthLabel:"Average",engagement:37,engagementLabel:"Average",sentiment:50,sentimentLabel:"Neutral",renewal:"2028-01-31",composite:51.4},
+            {account:"Instructure",tier:"Strategic",arr:575525,health:49,healthLabel:"Average",engagement:36,engagementLabel:"Average",sentiment:51,sentimentLabel:"Neutral",renewal:"2026-08-29",composite:48.1},
+            {account:"Gelato",tier:"Scale",arr:42000,health:48,healthLabel:"Average",engagement:19,engagementLabel:"Low",sentiment:45,sentimentLabel:"Neutral",renewal:"2026-05-31",composite:41.4},
+            {account:"IT Weapons",tier:"Scale",arr:23500,health:77,healthLabel:"High",engagement:60,engagementLabel:"Average",sentiment:58,sentimentLabel:"Neutral",renewal:"2026-11-27",composite:65.4}
+        ];
+
+        // Calculate KPIs
+        const totalARR = accountData.reduce((sum, a) => sum + (a.arr || 0), 0);
+        const atRiskAccounts = accountData.filter(a => a.composite < 50);
+        const arrAtRisk = atRiskAccounts.reduce((sum, a) => sum + (a.arr || 0), 0);
+        const avgHealth = Math.round(accountData.reduce((sum, a) => sum + (a.composite || 0), 0) / accountData.length);
+        const criticalAccounts = accountData.filter(a => a.composite < 40);
+
+        // Renewals in next 90 days
+        const today = new Date('2026-01-31');
+        const in90Days = new Date(today);
+        in90Days.setDate(in90Days.getDate() + 90);
+        const renewalAccounts = accountData.filter(a => {
+            if (!a.renewal) return false;
+            const renewalDate = new Date(a.renewal);
+            return renewalDate >= today && renewalDate <= in90Days;
+        });
+        const renewalARR = renewalAccounts.reduce((sum, a) => sum + (a.arr || 0), 0);
+
+        // Update KPI cards
+        document.getElementById('kpi-total-arr').textContent = '$' + (totalARR / 1000000).toFixed(1) + 'M';
+        document.getElementById('kpi-arr-risk').textContent = '$' + (arrAtRisk / 1000000).toFixed(1) + 'M';
+        document.getElementById('kpi-health').textContent = avgHealth;
+        document.getElementById('kpi-renewals').textContent = renewalAccounts.length;
+        document.querySelector('#kpi-renewals').parentElement.querySelector('.kpi-trend').textContent = '$' + (renewalARR / 1000000).toFixed(1) + 'M ARR expiring';
+        document.getElementById('kpi-critical').textContent = criticalAccounts.length;
+
+        // Chart colors
+        const colors = {
+            green: '#00ba7c',
+            yellow: '#ffd400',
+            red: '#f4212e',
+            blue: '#1d9bf0',
+            purple: '#8b5cf6',
+            gray: '#71767b',
+            bg: '#16181c',
+            grid: '#2f3336'
+        };
+
+        const plotlyLayout = {
+            paper_bgcolor: 'transparent',
+            plot_bgcolor: 'transparent',
+            font: { color: '#e7e9ea', family: '-apple-system, BlinkMacSystemFont, sans-serif' },
+            margin: { l: 60, r: 20, t: 10, b: 40 },
+            xaxis: { gridcolor: colors.grid, zerolinecolor: colors.grid },
+            yaxis: { gridcolor: colors.grid, zerolinecolor: colors.grid }
+        };
+
+        // Chart 1: ARR by Health Tier
+        const healthTiers = [
+            { label: 'Healthy (>=70)', filter: a => a.composite >= 70, color: colors.green },
+            { label: 'At-Risk (50-69)', filter: a => a.composite >= 50 && a.composite < 70, color: colors.yellow },
+            { label: 'Critical (<50)', filter: a => a.composite < 50, color: colors.red }
+        ];
+
+        const arrByHealth = healthTiers.map(t => ({
+            label: t.label,
+            arr: accountData.filter(t.filter).reduce((sum, a) => sum + (a.arr || 0), 0),
+            color: t.color
+        }));
+
+        Plotly.newPlot('chart-arr-health', [{
+            type: 'bar',
+            orientation: 'h',
+            y: arrByHealth.map(d => d.label),
+            x: arrByHealth.map(d => d.arr / 1000000),
+            marker: { color: arrByHealth.map(d => d.color) },
+            text: arrByHealth.map(d => '$' + (d.arr / 1000000).toFixed(1) + 'M'),
+            textposition: 'outside',
+            hovertemplate: '%{y}: $%{x:.1f}M<extra></extra>'
+        }], {
+            ...plotlyLayout,
+            xaxis: { ...plotlyLayout.xaxis, title: 'ARR (Millions)' },
+            yaxis: { ...plotlyLayout.yaxis, automargin: true }
+        }, {responsive: true, displayModeBar: false});
+
+        // Chart 2: Risk by Segment
+        const tiers = ['Strategic', 'Enterprise', 'Scale'];
+        const riskLevels = ['Healthy', 'At-Risk', 'Critical'];
+
+        const segmentData = tiers.map(tier => {
+            const tierAccounts = accountData.filter(a => a.tier === tier);
+            return {
+                tier,
+                healthy: tierAccounts.filter(a => a.composite >= 70).reduce((s, a) => s + (a.arr || 0), 0),
+                atRisk: tierAccounts.filter(a => a.composite >= 50 && a.composite < 70).reduce((s, a) => s + (a.arr || 0), 0),
+                critical: tierAccounts.filter(a => a.composite < 50).reduce((s, a) => s + (a.arr || 0), 0)
+            };
+        });
+
+        Plotly.newPlot('chart-risk-segment', [
+            {
+                name: 'Healthy',
+                type: 'bar',
+                x: segmentData.map(d => d.tier),
+                y: segmentData.map(d => d.healthy / 1000000),
+                marker: { color: colors.green },
+                hovertemplate: '%{x} Healthy: $%{y:.1f}M<extra></extra>'
+            },
+            {
+                name: 'At-Risk',
+                type: 'bar',
+                x: segmentData.map(d => d.tier),
+                y: segmentData.map(d => d.atRisk / 1000000),
+                marker: { color: colors.yellow },
+                hovertemplate: '%{x} At-Risk: $%{y:.1f}M<extra></extra>'
+            },
+            {
+                name: 'Critical',
+                type: 'bar',
+                x: segmentData.map(d => d.tier),
+                y: segmentData.map(d => d.critical / 1000000),
+                marker: { color: colors.red },
+                hovertemplate: '%{x} Critical: $%{y:.1f}M<extra></extra>'
+            }
+        ], {
+            ...plotlyLayout,
+            barmode: 'stack',
+            yaxis: { ...plotlyLayout.yaxis, title: 'ARR (Millions)' },
+            legend: { orientation: 'h', y: 1.1, x: 0.5, xanchor: 'center' }
+        }, {responsive: true, displayModeBar: false});
+
+        // Chart 3: Renewal Pipeline Scatter
+        const renewalData = accountData.filter(a => {
+            if (!a.renewal) return false;
+            const renewalDate = new Date(a.renewal);
+            return renewalDate >= today && renewalDate <= in90Days;
+        }).map(a => {
+            const renewalDate = new Date(a.renewal);
+            const daysToRenewal = Math.round((renewalDate - today) / (1000 * 60 * 60 * 24));
+            return { ...a, daysToRenewal };
+        });
+
+        const getHealthColor = (score) => {
+            if (score >= 70) return colors.green;
+            if (score >= 50) return colors.yellow;
+            return colors.red;
+        };
+
+        Plotly.newPlot('chart-renewal-scatter', [{
+            type: 'scatter',
+            mode: 'markers',
+            x: renewalData.map(d => d.daysToRenewal),
+            y: renewalData.map(d => d.arr / 1000),
+            text: renewalData.map(d => d.account),
+            marker: {
+                size: renewalData.map(d => Math.max(10, Math.sqrt(d.arr / 5000))),
+                color: renewalData.map(d => d.composite),
+                colorscale: [[0, colors.red], [0.5, colors.yellow], [1, colors.green]],
+                cmin: 30,
+                cmax: 90,
+                opacity: 0.8,
+                line: { color: '#fff', width: 1 }
+            },
+            hovertemplate: '<b>%{text}</b><br>Days to Renewal: %{x}<br>ARR: $%{y:.0f}K<br>Health: %{marker.color:.0f}<extra></extra>'
+        }], {
+            ...plotlyLayout,
+            xaxis: { ...plotlyLayout.xaxis, title: 'Days Until Renewal', range: [0, 95] },
+            yaxis: { ...plotlyLayout.yaxis, title: 'ARR ($K)' },
+            annotations: [{
+                x: 15,
+                y: Math.max(...renewalData.map(d => d.arr / 1000)) * 0.9,
+                text: 'DANGER ZONE',
+                showarrow: false,
+                font: { color: colors.red, size: 12 }
+            }],
+            shapes: [{
+                type: 'rect',
+                x0: 0, x1: 30,
+                y0: 0, y1: Math.max(...renewalData.map(d => d.arr / 1000)) * 1.1,
+                fillcolor: colors.red,
+                opacity: 0.05,
+                line: { width: 0 }
+            }]
+        }, {responsive: true, displayModeBar: false});
+
+        // Chart 4: Health Distribution Histogram
+        const healthScores = accountData.map(a => a.composite).filter(s => s != null);
+
+        Plotly.newPlot('chart-health-dist', [{
+            type: 'histogram',
+            x: healthScores,
+            xbins: { start: 20, end: 100, size: 10 },
+            marker: {
+                color: healthScores.map(s => s >= 70 ? colors.green : s >= 50 ? colors.yellow : colors.red),
+                line: { color: '#fff', width: 1 }
+            },
+            hovertemplate: 'Score %{x}: %{y} accounts<extra></extra>'
+        }], {
+            ...plotlyLayout,
+            xaxis: { ...plotlyLayout.xaxis, title: 'Composite Health Score', dtick: 10 },
+            yaxis: { ...plotlyLayout.yaxis, title: 'Account Count' },
+            bargap: 0.1
+        }, {responsive: true, displayModeBar: false});
+
+        // Chart 5: Engagement Summary
+        const engagementCounts = {
+            high: accountData.filter(a => a.engagementLabel === 'High').length,
+            average: accountData.filter(a => a.engagementLabel === 'Average').length,
+            low: accountData.filter(a => a.engagementLabel === 'Low').length
+        };
+
+        Plotly.newPlot('chart-engagement', [{
+            type: 'pie',
+            labels: ['High Engagement', 'Average Engagement', 'Low Engagement'],
+            values: [engagementCounts.high, engagementCounts.average, engagementCounts.low],
+            marker: { colors: [colors.green, colors.yellow, colors.red] },
+            hole: 0.5,
+            textinfo: 'label+value',
+            textposition: 'outside',
+            hovertemplate: '%{label}: %{value} accounts (%{percent})<extra></extra>'
+        }], {
+            ...plotlyLayout,
+            showlegend: false
+        }, {responsive: true, displayModeBar: false});
+
+        // Table: Top 10 At-Risk Accounts
+        const atRiskSorted = [...accountData]
+            .filter(a => a.composite != null)
+            .sort((a, b) => a.composite - b.composite)
+            .slice(0, 10);
+
+        const tbody = document.getElementById('at-risk-tbody');
+        atRiskSorted.forEach(a => {
+            const renewalDate = a.renewal ? new Date(a.renewal) : null;
+            const daysToRenewal = renewalDate ? Math.round((renewalDate - today) / (1000 * 60 * 60 * 24)) : null;
+
+            const healthClass = a.composite < 40 ? 'critical' : a.composite < 50 ? 'at-risk' : 'healthy';
+            const tierClass = a.tier ? a.tier.toLowerCase() : '';
+            const renewalClass = daysToRenewal && daysToRenewal <= 30 ? 'urgent' : daysToRenewal && daysToRenewal <= 90 ? 'soon' : '';
+
+            tbody.innerHTML += '<tr>' +
+                '<td><strong>' + a.account + '</strong></td>' +
+                '<td><span class="tier-badge ' + tierClass + '">' + (a.tier || '-') + '</span></td>' +
+                '<td class="arr-cell">$' + (a.arr / 1000).toFixed(0) + 'K</td>' +
+                '<td>' + (a.health || '-') + '</td>' +
+                '<td>' + (a.engagement || '-') + '</td>' +
+                '<td>' + (a.sentiment || '-') + '</td>' +
+                '<td><span class="health-badge ' + healthClass + '">' + a.composite.toFixed(0) + '</span></td>' +
+                '<td class="renewal-cell ' + renewalClass + '">' + (a.renewal ? a.renewal.substring(5) + (daysToRenewal ? ' (' + daysToRenewal + 'd)' : '') : '-') + '</td>' +
+                '</tr>';
+        });
+
+        // Filter functionality
+        document.querySelectorAll('.filter-chip').forEach(chip => {
+            chip.addEventListener('click', () => {
+                document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+                chip.classList.add('active');
+                const filter = chip.dataset.filter;
+                console.log('Filter:', filter);
+            });
+        });
+    </script>
+</body>
+</html>
