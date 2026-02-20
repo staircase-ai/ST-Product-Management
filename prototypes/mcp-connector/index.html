@@ -1,0 +1,2137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gainsight Staircase AI — MCP Connector</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    :root {
+      --brand-blue: #4F46E5;
+      --brand-purple: #7C3AED;
+      --brand-gradient: linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%);
+    }
+
+    * { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background: #fafafa;
+      color: #1a1a2e;
+      line-height: 1.6;
+    }
+
+    /* ── Gradient utilities ── */
+    .grad-text {
+      background: var(--brand-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .grad-bg { background: var(--brand-gradient); }
+    .grad-border {
+      border: 2px solid transparent;
+      background-clip: padding-box;
+      position: relative;
+    }
+    .grad-border::before {
+      content: '';
+      position: absolute;
+      inset: -2px;
+      border-radius: inherit;
+      background: var(--brand-gradient);
+      z-index: -1;
+    }
+
+    /* ── Sticky Nav ── */
+    #sticky-nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      background: rgba(255,255,255,0.95);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid #e5e7eb;
+      transform: translateY(-100%);
+      transition: transform 0.3s ease;
+    }
+    #sticky-nav.visible { transform: translateY(0); }
+
+    /* ── Hero ── */
+    #hero {
+      background: linear-gradient(160deg, #f0f0ff 0%, #fafafa 60%);
+      padding: 6rem 1.5rem 5rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    #hero::before {
+      content: '';
+      position: absolute;
+      top: -180px; right: -180px;
+      width: 500px; height: 500px;
+      background: radial-gradient(circle, rgba(124,58,237,0.08) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    #hero::after {
+      content: '';
+      position: absolute;
+      bottom: -120px; left: -120px;
+      width: 400px; height: 400px;
+      background: radial-gradient(circle, rgba(79,70,229,0.07) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    /* ── Platform badges ── */
+    .platform-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      background: white;
+      border: 1px solid #e5e7eb;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: #374151;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    }
+
+    /* ── Video placeholder ── */
+    .video-placeholder {
+      background: linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #4c1d95 100%);
+      border-radius: 16px;
+      aspect-ratio: 16/9;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 25px 60px rgba(79,70,229,0.25);
+    }
+    .video-placeholder::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: repeating-linear-gradient(
+        45deg,
+        transparent,
+        transparent 40px,
+        rgba(255,255,255,0.02) 40px,
+        rgba(255,255,255,0.02) 80px
+      );
+    }
+    .play-button {
+      width: 72px; height: 72px;
+      background: rgba(255,255,255,0.15);
+      border: 2px solid rgba(255,255,255,0.4);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(8px);
+      transition: all 0.2s ease;
+    }
+    .video-placeholder:hover .play-button {
+      background: rgba(255,255,255,0.25);
+      transform: scale(1.08);
+    }
+
+    /* ── How it works ── */
+    .step-card {
+      background: white;
+      border: 1px solid #e5e7eb;
+      border-radius: 16px;
+      padding: 2rem;
+      text-align: center;
+      position: relative;
+      transition: box-shadow 0.2s ease, transform 0.2s ease;
+    }
+    .step-card:hover {
+      box-shadow: 0 8px 30px rgba(79,70,229,0.1);
+      transform: translateY(-2px);
+    }
+    .step-number {
+      width: 44px; height: 44px;
+      background: var(--brand-gradient);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 700;
+      font-size: 1.1rem;
+      margin: 0 auto 1.25rem;
+    }
+    .step-arrow {
+      position: absolute;
+      right: -24px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #9ca3af;
+      font-size: 1.5rem;
+      z-index: 1;
+    }
+
+    /* ── Category filter pills ── */
+    .filter-pill {
+      display: inline-flex;
+      align-items: center;
+      padding: 7px 16px;
+      border-radius: 999px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      cursor: pointer;
+      border: 1.5px solid #e5e7eb;
+      background: white;
+      color: #374151;
+      transition: all 0.15s ease;
+      white-space: nowrap;
+    }
+    .filter-pill:hover { border-color: var(--brand-blue); color: var(--brand-blue); }
+    .filter-pill.active {
+      background: var(--brand-gradient);
+      border-color: transparent;
+      color: white;
+    }
+    .filter-category-meeting { --cat: #2563eb; }
+    .filter-category-health { --cat: #059669; }
+    .filter-category-transitions { --cat: #7c3aed; }
+    .filter-category-outreach { --cat: #ea580c; }
+    .filter-category-portfolio { --cat: #0d9488; }
+    .filter-category-renewal { --cat: #dc2626; }
+    .filter-category-intelligence { --cat: #d97706; }
+
+    /* ── Use case cards ── */
+    .use-case-card {
+      background: white;
+      border: 1.5px solid #e5e7eb;
+      border-radius: 16px;
+      overflow: hidden;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+    .use-case-card:hover { border-color: #c4b5fd; }
+    .use-case-card.expanded {
+      border-color: var(--brand-blue);
+      box-shadow: 0 4px 24px rgba(79,70,229,0.12);
+    }
+    .card-header {
+      padding: 1.5rem;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 1rem;
+    }
+    .card-body {
+      padding: 0 1.5rem 1.5rem;
+      display: none;
+    }
+    .use-case-card.expanded .card-body { display: block; }
+    .card-chevron {
+      color: #9ca3af;
+      transition: transform 0.2s ease;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+    .use-case-card.expanded .card-chevron { transform: rotate(180deg); color: var(--brand-blue); }
+
+    .category-tag {
+      display: inline-flex;
+      align-items: center;
+      padding: 3px 10px;
+      border-radius: 999px;
+      font-size: 0.72rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 0.5rem;
+    }
+
+    .before-after-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin: 1.25rem 0;
+    }
+    @media (max-width: 640px) {
+      .before-after-grid { grid-template-columns: 1fr; }
+    }
+    .before-box {
+      background: #f9fafb;
+      border: 1px solid #e5e7eb;
+      border-radius: 10px;
+      padding: 1rem;
+    }
+    .after-box {
+      background: linear-gradient(135deg, #ede9fe 0%, #f0f0ff 100%);
+      border: 1px solid #c4b5fd;
+      border-radius: 10px;
+      padding: 1rem;
+    }
+    .box-label {
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 0.5rem;
+    }
+
+    /* ── Prompt code blocks ── */
+    .prompt-block {
+      background: #1e1b4b;
+      border-radius: 10px;
+      padding: 1.25rem;
+      position: relative;
+      margin-top: 1.25rem;
+    }
+    .prompt-block pre {
+      color: #e0e7ff;
+      font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', Consolas, monospace;
+      font-size: 0.82rem;
+      line-height: 1.6;
+      white-space: pre-wrap;
+      word-break: break-word;
+      margin: 0;
+    }
+    .prompt-label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: #a5b4fc;
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* ── Copy button ── */
+    .copy-btn {
+      position: absolute;
+      top: 0.75rem;
+      right: 0.75rem;
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.2);
+      color: #c4b5fd;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 0.72rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .copy-btn:hover { background: rgba(255,255,255,0.2); color: white; }
+    .copy-btn.copied { background: #059669; border-color: #059669; color: white; }
+
+    .copy-btn-light {
+      background: #f3f4f6;
+      border: 1px solid #e5e7eb;
+      color: #6b7280;
+      padding: 5px 12px;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      white-space: nowrap;
+    }
+    .copy-btn-light:hover { background: #e5e7eb; color: #1a1a2e; }
+    .copy-btn-light.copied { background: #d1fae5; border-color: #6ee7b7; color: #059669; }
+
+    /* ── Quick start prompts ── */
+    .quick-prompt {
+      background: white;
+      border: 1.5px solid #e5e7eb;
+      border-radius: 12px;
+      padding: 1.25rem 1.5rem;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 1rem;
+      transition: border-color 0.15s ease;
+    }
+    .quick-prompt:hover { border-color: #c4b5fd; }
+    .success-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 8px;
+      background: #d1fae5;
+      border-radius: 999px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: #065f46;
+    }
+
+    /* ── Setup tabs ── */
+    .tab-btn {
+      padding: 10px 20px;
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: #6b7280;
+      border-bottom: 2px solid transparent;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      white-space: nowrap;
+    }
+    .tab-btn:hover { color: var(--brand-blue); }
+    .tab-btn.active { color: var(--brand-blue); border-bottom-color: var(--brand-blue); font-weight: 600; }
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+
+    /* ── Setup steps ── */
+    .setup-step {
+      display: flex;
+      gap: 1rem;
+      align-items: flex-start;
+      margin-bottom: 1.5rem;
+    }
+    .step-dot {
+      width: 28px; height: 28px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      font-weight: 700;
+      flex-shrink: 0;
+      margin-top: 2px;
+      background: var(--brand-gradient);
+      color: white;
+    }
+
+    /* ── Config code block ── */
+    .config-block {
+      background: #111827;
+      border-radius: 10px;
+      padding: 1.25rem 1.25rem 1.25rem 1.25rem;
+      position: relative;
+      overflow-x: auto;
+    }
+    .config-block pre {
+      color: #d1fae5;
+      font-family: 'SF Mono', 'Fira Code', Consolas, monospace;
+      font-size: 0.8rem;
+      line-height: 1.6;
+      margin: 0;
+      white-space: pre;
+    }
+
+    /* ── Skill cards ── */
+    .skill-card {
+      background: white;
+      border: 1.5px solid #e5e7eb;
+      border-radius: 14px;
+      padding: 1.5rem;
+      transition: all 0.2s ease;
+    }
+    .skill-card:hover {
+      border-color: #c4b5fd;
+      box-shadow: 0 4px 20px rgba(79,70,229,0.1);
+      transform: translateY(-2px);
+    }
+    .skill-icon {
+      width: 44px; height: 44px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #ede9fe, #f0f0ff);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1rem;
+      font-size: 1.25rem;
+    }
+
+    /* ── Coming soon ── */
+    .coming-card {
+      background: white;
+      border: 1.5px solid #e5e7eb;
+      border-radius: 14px;
+      padding: 1.75rem;
+      display: flex;
+      gap: 1.25rem;
+      align-items: flex-start;
+    }
+    .coming-icon {
+      width: 48px; height: 48px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #ede9fe, #f0f0ff);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-size: 1.4rem;
+    }
+
+    /* ── Section labels ── */
+    .section-label {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      background: var(--brand-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 0.75rem;
+    }
+
+    /* ── Metric pills ── */
+    .metric-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 0.78rem;
+      font-weight: 500;
+      color: #6b7280;
+      background: #f3f4f6;
+      padding: 3px 10px;
+      border-radius: 999px;
+    }
+
+    /* ── Toast ── */
+    #toast {
+      position: fixed;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: #1a1a2e;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 10px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      z-index: 999;
+      transition: transform 0.3s ease;
+      pointer-events: none;
+    }
+    #toast.show { transform: translateX(-50%) translateY(0); }
+
+    /* ── Animations ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .fade-up { animation: fadeUp 0.5s ease forwards; }
+
+    /* ── Footer ── */
+    footer {
+      background: #1a1a2e;
+      color: #9ca3af;
+    }
+    footer h4 { color: white; font-size: 0.9rem; font-weight: 600; margin-bottom: 1rem; }
+    footer p { font-size: 0.85rem; line-height: 1.7; }
+    footer a { color: #a5b4fc; text-decoration: none; }
+    footer a:hover { color: white; text-decoration: underline; }
+
+    /* ── Responsive tweaks ── */
+    @media (max-width: 640px) {
+      #hero { padding: 4rem 1rem 3.5rem; }
+      .step-arrow { display: none; }
+    }
+
+    /* ── Progress tracker ── */
+    #use-case-progress {
+      font-size: 0.82rem;
+      color: #6b7280;
+      font-weight: 500;
+    }
+
+    /* ── Hidden filter states ── */
+    .use-case-card[data-hidden="true"] { display: none; }
+  </style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════ STICKY NAV -->
+<nav id="sticky-nav">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between">
+    <div class="font-semibold text-sm text-gray-900">
+      <span class="grad-text font-bold">Gainsight</span>
+      <span class="text-gray-500 mx-1">·</span>
+      <span>Staircase AI</span>
+    </div>
+    <div class="flex items-center gap-1 sm:gap-2 overflow-x-auto no-scrollbar">
+      <a href="#use-cases" class="tab-btn text-xs sm:text-sm py-2 px-3">Use Cases</a>
+      <a href="#quick-start" class="tab-btn text-xs sm:text-sm py-2 px-3">Quick Start</a>
+      <a href="#setup" class="tab-btn text-xs sm:text-sm py-2 px-3">Setup</a>
+      <a href="#power-up" class="tab-btn text-xs sm:text-sm py-2 px-3">Skills</a>
+      <a href="#setup" class="grad-bg text-white text-xs sm:text-sm font-semibold px-4 py-2 rounded-full ml-2 hover:opacity-90 transition-opacity">Get Started</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ═══════════════════════════════════════════════ HERO -->
+<section id="hero">
+  <div class="max-w-4xl mx-auto relative z-10">
+    <div class="section-label mb-4">Staircase AI MCP Connector — Now Available</div>
+    <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 leading-tight mb-6">
+      Connect Your AI to<br/>
+      <span class="grad-text">Customer Intelligence</span>
+    </h1>
+    <p class="text-lg sm:text-xl text-gray-600 max-w-2xl mx-auto mb-8 leading-relaxed">
+      Gainsight Staircase AI's MCP connector brings account health, risk signals, and stakeholder insights directly into Claude, ChatGPT, and Gemini.
+    </p>
+
+    <!-- Platform badges -->
+    <div class="flex flex-wrap justify-center gap-2 mb-10">
+      <span class="platform-badge">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" fill="#CC785C"/><path d="M7 12l3.5 3.5L17 9" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Claude Desktop
+      </span>
+      <span class="platform-badge">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" fill="#10a37f"/><path d="M7 12l3.5 3.5L17 9" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        ChatGPT Desktop
+      </span>
+      <span class="platform-badge">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" fill="#4285f4"/><path d="M7 12l3.5 3.5L17 9" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Gemini CLI
+      </span>
+    </div>
+
+    <!-- CTAs -->
+    <div class="flex flex-wrap justify-center gap-3 mb-12">
+      <a href="#use-cases" class="grad-bg text-white font-semibold px-7 py-3.5 rounded-full text-base hover:opacity-90 transition-opacity shadow-lg shadow-indigo-200">
+        See What's Possible
+      </a>
+      <a href="#setup" class="bg-white text-gray-800 font-semibold px-7 py-3.5 rounded-full text-base border border-gray-200 hover:border-indigo-300 hover:text-indigo-700 transition-all">
+        Get Started
+      </a>
+    </div>
+
+    <!-- Video placeholder -->
+    <div class="video-placeholder max-w-3xl mx-auto" onclick="alert('Video coming soon — launch demo will be embedded here.')">
+      <div class="play-button">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="white"><path d="M8 5v14l11-7z"/></svg>
+      </div>
+      <p class="text-white/70 text-sm mt-4 font-medium">Watch the Launch Demo</p>
+      <p class="text-white/40 text-xs mt-1">2 min overview</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════ HOW IT WORKS -->
+<section id="how-it-works" class="py-20 px-4 sm:px-6 bg-white">
+  <div class="max-w-5xl mx-auto">
+    <div class="text-center mb-12">
+      <div class="section-label">How It Works</div>
+      <h2 class="text-3xl sm:text-4xl font-bold text-gray-900">Ask. Fetch. Intelligence.</h2>
+      <p class="text-gray-500 mt-3 max-w-xl mx-auto">Three steps between a question and a fully-prepared answer.</p>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 sm:gap-8 relative">
+      <!-- Step 1 -->
+      <div class="step-card">
+        <div class="step-number">1</div>
+        <h3 class="font-bold text-gray-900 text-lg mb-2">You Ask</h3>
+        <p class="text-gray-500 text-sm leading-relaxed">Type a question in your AI assistant — meeting prep, account health, stakeholder research, whatever you need.</p>
+        <div class="mt-4 bg-indigo-50 rounded-lg p-3 text-sm text-indigo-700 font-medium text-left italic">
+          "Prep me for my meeting with Acme Corp tomorrow."
+        </div>
+        <div class="step-arrow hidden sm:flex">›</div>
+      </div>
+
+      <!-- Step 2 -->
+      <div class="step-card">
+        <div class="step-number">2</div>
+        <h3 class="font-bold text-gray-900 text-lg mb-2">AI Queries Staircase</h3>
+        <p class="text-gray-500 text-sm leading-relaxed">Your AI assistant securely fetches account health, communications, sentiment, and stakeholder data from Staircase — authenticated as you.</p>
+        <div class="mt-4 flex flex-wrap gap-2">
+          <span class="metric-pill">Account health</span>
+          <span class="metric-pill">Stakeholders</span>
+          <span class="metric-pill">Risk signals</span>
+        </div>
+        <div class="step-arrow hidden sm:flex">›</div>
+      </div>
+
+      <!-- Step 3 -->
+      <div class="step-card">
+        <div class="step-number">3</div>
+        <h3 class="font-bold text-gray-900 text-lg mb-2">Get Intelligence</h3>
+        <p class="text-gray-500 text-sm leading-relaxed">A polished, evidence-backed response — meeting brief, risk analysis, personalized email — delivered in seconds, not minutes.</p>
+        <div class="mt-4 flex gap-3 text-sm">
+          <span class="text-green-600 font-medium">⏱️ 60 seconds</span>
+          <span class="text-gray-400">vs. 30+ min manual</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- What is MCP link -->
+    <div class="text-center mt-10">
+      <button onclick="document.getElementById('mcp-explainer').classList.toggle('hidden')" class="text-indigo-600 text-sm font-medium hover:text-indigo-800 underline underline-offset-2">
+        What is MCP? ↓
+      </button>
+      <div id="mcp-explainer" class="hidden mt-6 max-w-2xl mx-auto bg-indigo-50 border border-indigo-100 rounded-xl p-6 text-left">
+        <h4 class="font-bold text-gray-900 mb-2">MCP = Model Context Protocol</h4>
+        <p class="text-gray-600 text-sm leading-relaxed mb-3">An open standard that lets AI assistants securely connect to business tools and data sources. Before MCP, AI only knew what you typed. With MCP, it can look things up.</p>
+        <p class="text-gray-600 text-sm leading-relaxed">Developed by Anthropic and adopted by OpenAI and Google — it's the universal adapter for AI tools. Staircase's MCP connector uses this standard to give your AI access to customer intelligence.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════ USE CASES -->
+<section id="use-cases" class="py-20 px-4 sm:px-6" style="background: #f8f9ff;">
+  <div class="max-w-6xl mx-auto">
+    <div class="text-center mb-10">
+      <div class="section-label">16 Use Cases</div>
+      <h2 class="text-3xl sm:text-4xl font-bold text-gray-900">What You Can Do With It</h2>
+      <p class="text-gray-500 mt-3 max-w-xl mx-auto">Every use case below comes from real customer workflows — backed by 64,000+ queries across 243 organizations.</p>
+    </div>
+
+    <!-- Filters + progress -->
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+      <div class="overflow-x-auto pb-1">
+        <div class="flex gap-2 min-w-max" id="filter-container">
+          <button class="filter-pill active" data-filter="all" onclick="filterCards('all', this)">All Use Cases</button>
+          <button class="filter-pill" data-filter="meeting" onclick="filterCards('meeting', this)" style="--cat:#2563eb">Meeting Prep</button>
+          <button class="filter-pill" data-filter="health" onclick="filterCards('health', this)" style="--cat:#059669">Account Health</button>
+          <button class="filter-pill" data-filter="transitions" onclick="filterCards('transitions', this)" style="--cat:#7c3aed">Transitions</button>
+          <button class="filter-pill" data-filter="outreach" onclick="filterCards('outreach', this)" style="--cat:#ea580c">Outreach</button>
+          <button class="filter-pill" data-filter="portfolio" onclick="filterCards('portfolio', this)" style="--cat:#0d9488">Portfolio</button>
+          <button class="filter-pill" data-filter="renewal" onclick="filterCards('renewal', this)" style="--cat:#dc2626">Renewal</button>
+          <button class="filter-pill" data-filter="intelligence" onclick="filterCards('intelligence', this)" style="--cat:#d97706">Intelligence</button>
+        </div>
+      </div>
+      <div id="use-case-progress" class="flex-shrink-0 text-right">0 of 16 explored</div>
+    </div>
+
+    <!-- Card grid -->
+    <div id="cards-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+
+      <!-- Card 1: Meeting Prep -->
+      <div class="use-case-card" data-category="meeting" data-id="1">
+        <div class="card-header" onclick="toggleCard(this)">
+          <div class="flex-1">
+            <span class="category-tag bg-blue-50 text-blue-700">Meeting Prep</span>
+            <h3 class="font-bold text-gray-900 text-lg leading-snug">Meeting Prep in 60 Seconds</h3>
+            <p class="text-gray-500 text-sm mt-1">Walk into every call prepared.</p>
+            <div class="flex gap-2 mt-3 flex-wrap">
+              <span class="metric-pill">⏱️ Saves 15–30 min</span>
+              <span class="metric-pill">✅ 92.9% success</span>
+            </div>
+          </div>
+          <svg class="card-chevron w-5 h-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+        </div>
+        <div class="card-body">
+          <div class="before-after-grid">
+            <div class="before-box">
+              <div class="box-label text-gray-400">Before</div>
+              <p class="text-gray-600 text-sm">Open Staircase, check Salesforce, skim email threads, scan support tickets. Cobble it together in your head 5 minutes before the call.</p>
+            </div>
+            <div class="after-box">
+              <div class="box-label text-indigo-600">With MCP</div>
+              <p class="text-gray-700 text-sm">Ask your AI to prep you. It pulls health data, recent concerns, wins, and stakeholder context — structured into a ready-to-use brief with talking points.</p>
+            </div>
+          </div>
+          <div class="prompt-block">
+            <div class="prompt-label">💡 Try This Prompt</div>
+            <button class="copy-btn" onclick="copyPrompt(this)">Copy</button>
+            <pre>I have a meeting with [Account Name] tomorrow.
+
+Query Staircase for:
+- Current account health and sentiment
+- Recent concerns or risks mentioned
+- Recent wins or positive moments
+- Key stakeholder engagement
+
+Create a meeting prep brief with:
+- Top 3 things to know going in
+- Potential landmines to avoid
+- Suggested talking points</pre>
+          </div>
+          <p class="text-sm text-gray-500 mt-3"><strong class="text-gray-700">What you get:</strong> A structured one-page brief covering health snapshot, key risks, wins to reference, and suggested conversation flow.</p>
+        </div>
+      </div>
+
+      <!-- Card 2: Account Transitions -->
+      <div class="use-case-card" data-category="transitions" data-id="2">
+        <div class="card-header" onclick="toggleCard(this)">
+          <div class="flex-1">
+            <span class="category-tag bg-purple-50 text-purple-700">Transitions & Onboarding</span>
+            <h3 class="font-bold text-gray-900 text-lg leading-snug">Account Transitions Without the Scavenger Hunt</h3>
+            <p class="text-gray-500 text-sm mt-1">Get full context on a new account without hours of digging.</p>
+            <div class="flex gap-2 mt-3 flex-wrap">
+              <span class="metric-pill">⏱️ Saves 2–4 hours</span>
+              <span class="metric-pill">✅ 92.0% success</span>
+            </div>
+          </div>
+          <svg class="card-chevron w-5 h-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+        </div>
+        <div class="card-body">
+          <div class="before-after-grid">
+            <div class="before-box">
+              <div class="box-label text-gray-400">Before</div>
+              <p class="text-gray-600 text-sm">Spend half a day reading CRM notes, searching email threads, asking colleagues "what's the deal with this account?" You still miss the nuance.</p>
+            </div>
+            <div class="after-box">
+              <div class="box-label text-indigo-600">With MCP</div>
+              <p class="text-gray-700 text-sm">Ask for a comprehensive onboarding brief. The AI synthesizes months of communication history into a handoff document — stakeholder dynamics, open issues, first actions.</p>
+            </div>
+          </div>
+          <div class="prompt-block">
+            <div class="prompt-label">💡 Try This Prompt</div>
+            <button class="copy-btn" onclick="copyPrompt(this)">Copy</button>
+            <pre>I'm taking over [Account Name] from a colleague.
+
+Query Staircase for comprehensive account context and create an onboarding brief covering:
+- Key stakeholders and their relationships
+- Recent history (wins and challenges)
+- Current priorities and concerns
+- Red flags to watch
+- Recommended first 30-day actions</pre>
+          </div>
+          <p class="text-sm text-gray-500 mt-3"><strong class="text-gray-700">What you get:</strong> A structured onboarding brief capturing months of relationship context — who the key people are, what they care about, where the risks are.</p>
+        </div>
+      </div>
+
+      <!-- Card 3: Contextual Email Drafting -->
+      <div class="use-case-card" data-category="outreach" data-id="3">
+        <div class="card-header" onclick="toggleCard(this)">
+          <div class="flex-1">
+            <span class="category-tag bg-orange-50 text-orange-700">Outreach & Content</span>
+            <h3 class="font-bold text-gray-900 text-lg leading-snug">Contextual Email Drafting</h3>
+            <p class="text-gray-500 text-sm mt-1">Personalized outreach grounded in real account context.</p>
+            <div class="flex gap-2 mt-3 flex-wrap">
+              <span class="metric-pill">⏱️ Saves 10–20 min</span>
+              <span class="metric-pill">✅ 89.4% success</span>
+            </div>
+          </div>
+          <svg class="card-chevron w-5 h-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+        </div>
+        <div class="card-body">
+          <div class="before-after-grid">
+            <div class="before-box">
+              <div class="box-label text-gray-400">Before</div>
+              <p class="text-gray-600 text-sm">Open the account in Staircase. Read recent conversations. Copy a few details into a draft. Try to make it sound natural. Repeat for every email.</p>
+            </div>
+            <div class="after-box">
+              <div class="box-label text-indigo-600">With MCP</div>
+              <p class="text-gray-700 text-sm">Tell your AI who you're writing to and why. It pulls recent context and drafts a personalized email referencing real conversations and acknowledging actual priorities.</p>
+            </div>
+          </div>
+          <div class="prompt-block">
+            <div class="prompt-label">💡 Try This Prompt</div>
+            <button class="copy-btn" onclick="copyPrompt(this)">Copy</button>
+            <pre>I need to re-engage [Stakeholder Name] at [Account Name] — we haven't connected in a while.
+
+Query Staircase for recent activity and context, then draft a personalized email that:
+- References something specific from recent communications
+- Acknowledges their priorities or challenges
+- Offers clear value for reconnecting
+- Sounds conversational, not salesy</pre>
+          </div>
+          <p class="text-sm text-gray-500 mt-3"><strong class="text-gray-700">What you get:</strong> A ready-to-send email grounded in real account context — not a template, but a message that shows you've been paying attention.</p>
+        </div>
+      </div>
+
+      <!-- Card 4: Portfolio Risk Scan -->
+      <div class="use-case-card" data-category="portfolio" data-id="4">
+        <div class="card-header" onclick="toggleCard(this)">
+          <div class="flex-1">
+            <span class="category-tag bg-teal-50 text-teal-700">Portfolio & Reporting</span>
+            <h3 class="font-bold text-gray-900 text-lg leading-snug">Portfolio Risk Scan</h3>
+            <p class="text-gray-500 text-sm mt-1">Prioritized view of what needs attention this week.</p>
+            <div class="flex gap-2 mt-3 flex-wrap">
+              <span class="metric-pill">⏱️ Saves 30–60 min/week</span>
+              <span class="metric-pill">✅ 82.0% success</span>
+            </div>
+          </div>
+          <svg class="card-chevron w-5 h-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+        </div>
+        <div class="card-body">
+          <div class="before-after-grid">
+            <div class="before-box">
+              <div class="box-label text-gray-400">Before</div>
+              <p class="text-gray-600 text-sm">Monday morning: open portfolio dashboard, scan health scores, check declining accounts, review upcoming renewals. By the time you've triaged, half the morning is gone.</p>
+            </div>
+            <div class="after-box">
+              <div class="box-label text-indigo-600">With MCP</div>
+              <p class="text-gray-700 text-sm">Ask for a prioritized portfolio view. The AI scans across all accounts for risk signals, declining engagement, and opportunities — ranked by urgency with specific recommended actions.</p>
+            </div>
+          </div>
+          <div class="prompt-block">
+            <div class="prompt-label">💡 Try This Prompt</div>
+            <button class="copy-btn" onclick="copyPrompt(this)">Copy</button>
+            <pre>What are the top concerns across my portfolio?
+
+For any accounts with risk signals, tell me:
+- What the signal is
+- How urgent it is
+- What I should do about it this week
+
+Prioritize by urgency.</pre>
+          </div>
+          <p class="text-sm text-gray-500 mt-3"><strong class="text-gray-700">What you get:</strong> A prioritized list of accounts needing attention, with specific context on why and recommended next actions — your weekly game plan in under a minute.</p>
+        </div>
+      </div>
+
+      <!-- Card 5: Executive Briefing -->
+      <div class="use-case-card" data-category="portfolio" data-id="5">
+        <div class="card-header" onclick="toggleCard(this)">
+          <div class="flex-1">
+            <span class="category-tag bg-teal-50 text-teal-700">Portfolio & Reporting</span>
+            <h3 class="font-bold text-gray-900 text-lg leading-snug">Executive Briefing on Any Account</h3>
+            <p class="text-gray-500 text-sm mt-1">On-demand account intelligence for leadership — no CSM required.</p>
+            <div class="flex gap-2 mt-3 flex-wrap">
+              <span class="metric-pill">⏱️ Saves 20–45 min</span>
+              <span class="metric-pill">✅ 93.0% success</span>
+            </div>
+          </div>
+          <svg class="card-chevron w-5 h-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+        </div>
+        <div class="card-body">
+          <div class="before-after-grid">
+            <div class="before-box">
+              <div class="box-label text-gray-400">Before</div>
+              <p class="text-gray-600 text-sm">Slack the CSM: "What's the latest on Acme?" Wait for a response. If it's urgent, dig through dashboards yourself. Go into the meeting underprepared.</p>
+            </div>
+            <div class="after-box">
+              <div class="box-label text-indigo-600">With MCP</div>
+              <p class="text-gray-700 text-sm">Ask for an executive briefing. The AI pulls health data, risks, opportunities, and recent activity — formatted for an executive audience. Concise, strategic, decision-ready.</p>
+            </div>
+          </div>
+          <div class="prompt-block">
+            <div class="prompt-label">💡 Try This Prompt</div>
+            <button class="copy-btn" onclick="copyPrompt(this)">Copy</button>
+            <pre>Summarize [Account Name]'s health, risks, and opportunities for an executive briefing.
+
+Include:
+- Health status and trend
+- Key wins from the last quarter
+- Active risks or concerns
+- Strategic opportunities
+- Recommended executive talking points</pre>
+          </div>
+          <p class="text-sm text-gray-500 mt-3"><strong class="text-gray-700">What you get:</strong> A one-page executive briefing with health trajectory, key risks, and strategic talking points — same quality as a CSM-prepared brief, available on demand.</p>
+        </div>
+      </div>
+
+      <!-- Card 6: Renewal Risk Assessment -->
+      <div class="use-case-card" data-category="renewal" data-id="6">
+        <div class="card-header" onclick="toggleCard(this)">
+          <div class="flex-1">
+            <span class="category-tag bg-red-50 text-red-700">Renewal & Expansion</span>
+            <h3 class="font-bold text-gray-900 text-lg leading-snug">Renewal Risk Assessment</h3>
+            <p class="text-gray-500 text-sm mt-1">Walk into every renewal conversation confident and prepared.</p>
+            <div class="flex gap-2 mt-3 flex-wrap">
+              <span class="metric-pill">⏱️ Saves 30–60 min</span>
+              <span class="metric-pill">✅ 91.0% success</span>
+            </div>
+          </div>
+          <svg class="card-chevron w-5 h-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+        </div>
+        <div class="card-body">
+          <div class="before-after-grid">
+            <div class="before-box">
+              <div class="box-label text-gray-400">Before</div>
+              <p class="text-gray-600 text-sm">Pull up the account 4–6 weeks before renewal. Review health scores. Scan support history. Read through meeting notes. Build a case manually.</p>
+            </div>
+            <div class="after-box">
+              <div class="box-label text-indigo-600">With MCP</div>
+              <p class="text-gray-700 text-sm">Ask for a renewal prep document. The AI reviews the full relationship arc and structures it into a renewal-ready brief with value narrative, risk mitigation, and expansion angles.</p>
+            </div>
+          </div>
+          <div class="prompt-block">
+            <div class="prompt-label">💡 Try This Prompt</div>
+            <button class="copy-btn" onclick="copyPrompt(this)">Copy</button>
+            <pre>Help me prepare for [Account Name]'s renewal conversation.
+
+Query Staircase for:
+- Relationship health summary and trend
+- Value delivered (wins and milestones)
+- Open concerns to address before renewal
+- Expansion opportunities
+- Risk factors (competitor mentions, budget concerns, stakeholder changes)
+
+Create a renewal prep document with talking points for each area.</pre>
+          </div>
+          <p class="text-sm text-gray-500 mt-3"><strong class="text-gray-700">What you get:</strong> A comprehensive renewal playbook with health trajectory, value narrative, risk mitigation plan, and expansion opportunities.</p>
+        </div>
+      </div>
+
+    </div><!-- /top 6 -->
+
+    <!-- See All toggle -->
+    <div id="show-more-container" class="text-center mb-4">
+      <button id="show-more-btn" onclick="toggleMoreCards()" class="inline-flex items-center gap-2 bg-white border border-gray-200 text-gray-700 font-semibold px-6 py-3 rounded-full hover:border-indigo-300 hover:text-indigo-700 transition-all text-sm">
+        <span>See all 16 use cases</span>
+        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+      </button>
+    </div>
+
+    <!-- Additional 10 cards (hidden by default) -->
+    <div id="extra-cards" class="grid grid-cols-1 md:grid-cols-2 gap-4 hidden">
+
+      <!-- Card 7: Weekly Portfolio Triage -->
+      <div class="use-case-card" data-category="portfolio" data-id="7">
+        <div class="card-header" onclick="toggleCard(this)">
+          <div class="flex-1">
+            <span class="category-tag bg-teal-50 text-teal-700">Portfolio & Reporting</span>
+            <h3 class="font-bold text-gray-900 text-lg leading-snug">Weekly Portfolio Triage</h3>
+            <p class="text-gray-500 text-sm mt-1">Your weekly game plan in under a minute.</p>
+            <div class="flex gap-2 mt-3 flex-wrap">
+              <span class="metric-pill">⏱️ Saves 30–60 min/week</span>
+              <span class="metric-pill">✅ 76.2% success</span>
+            </div>
+          </div>
+          <svg class="card-chevron w-5 h-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+        </div>
+        <div class="card-body">
+          <div class="prompt-block">
+            <div class="prompt-label">💡 Try This Prompt</div>
+            <button class="copy-btn" onclick="copyPrompt(this)">Copy</button>
+            <pre>What are the top concerns across my portfolio?
+
+For any accounts with risk signals, tell me:
+- What the signal is
+- How urgent it is
+- What I should do about it this week
+
+Prioritize by urgency.</pre>
+          </div>
+          <p class="text-sm text-gray-500 mt-3"><strong class="text-gray-700">What you get:</strong> A prioritized list with specific context on why each account needs attention and recommended next actions.</p>
+        </div>
+      </div>
+
+      <!-- Card 8: QBR Outline Builder -->
+      <div class="use-case-card" data-category="meeting" data-id="8">
+        <div class="card-header" onclick="toggleCard(this)">
+          <div class="flex-1">
+            <span class="category-tag bg-blue-50 text-blue-700">Meeting Prep</span>
+            <h3 class="font-bold text-gray-900 text-lg leading-snug">QBR Outline Builder</h3>
+            <p class="text-gray-500 text-sm mt-1">Structure your QBR with evidence from the last quarter.</p>
+            <div class="flex gap-2 mt-3 flex-wrap">
+              <span class="metric-pill">⏱️ Saves 45–90 min</span>
+              <span class="metric-pill">✅ 94.8% success</span>
+            </div>
+          </div>
+          <svg class="card-chevron w-5 h-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+        </div>
+        <div class="card-body">
+          <div class="prompt-block">
+            <div class="prompt-label">💡 Try This Prompt</div>
+            <button class="copy-btn" onclick="copyPrompt(this)">Copy</button>
+            <pre>I'm preparing a QBR for [Account Name].
+
+Query Staircase for the last quarter of activity and create a QBR outline covering:
+- Wins and milestones achieved
+- Challenges and how we addressed them
+- Upcoming priorities and success metrics
+- Expansion opportunities
+
+Include specific evidence where relevant.</pre>
+          </div>
+          <p class="text-sm text-gray-500 mt-3"><strong class="text-gray-700">What you get:</strong> A structured QBR outline with evidence from account communications — ready to drop into a slide deck.</p>
+        </div>
+      </div>
+
+      <!-- Card 9: Stakeholder Mapping -->
+      <div class="use-case-card" data-category="intelligence" data-id="9">
+        <div class="card-header" onclick="toggleCard(this)">
+          <div class="flex-1">
+            <span class="category-tag bg-amber-50 text-amber-700">Intelligence</span>
+            <h3 class="font-bold text-gray-900 text-lg leading-snug">Stakeholder Mapping</h3>
+            <p class="text-gray-500 text-sm mt-1">Know who matters, what they care about, and how engaged they are.</p>
+            <div class="flex gap-2 mt-3 flex-wrap">
+              <span class="metric-pill">⏱️ Saves 20–40 min</span>
+              <span class="metric-pill">✅ 80.1% success</span>
+            </div>
+          </div>
+          <svg class="card-chevron w-5 h-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+        </div>
+        <div class="card-body">
+          <div class="prompt-block">
+            <div class="prompt-label">💡 Try This Prompt</div>
+            <button class="copy-btn" onclick="copyPrompt(this)">Copy</button>
+            <pre>Who are the key stakeholders at [Account Name]?
+
+For each person, tell me:
+- Their role and influence level
+- Last engagement date
+- Recent topics they've discussed
+- Sentiment trend</pre>
+          </div>
+          <p class="text-sm text-gray-500 mt-3"><strong class="text-gray-700">What you get:</strong> A stakeholder intelligence brief showing who's active, who's gone quiet, and how to approach each person.</p>
+        </div>
+      </div>
+
+      <!-- Card 10: Risk Escalation -->
+      <div class="use-case-card" data-category="health" data-id="10">
+        <div class="card-header" onclick="toggleCard(this)">
+          <div class="flex-1">
+            <span class="category-tag bg-green-50 text-green-700">Account Health</span>
+            <h3 class="font-bold text-gray-900 text-lg leading-snug">Risk Escalation Workflow</h3>
+            <p class="text-gray-500 text-sm mt-1">Full risk context — fast — when a signal fires.</p>
+            <div class="flex gap-2 mt-3 flex-wrap">
+              <span class="metric-pill">⏱️ Saves 1–2 hours</span>
+              <span class="metric-pill">✅ 91.0% success</span>
+            </div>
+          </div>
+          <svg class="card-chevron w-5 h-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+        </div>
+        <div class="card-body">
+          <div class="prompt-block">
+            <div class="prompt-label">💡 Try This Prompt</div>
+            <button class="copy-btn" onclick="copyPrompt(this)">Copy</button>
+            <pre>[Account Name] has been flagged as at-risk.
+
+Query Staircase for a deep risk assessment:
+- What specific risk signals are present?
+- When did the sentiment shift start?
+- What stakeholders are involved?
+- What actions have already been taken?
+- What do we need to do immediately?</pre>
+          </div>
+          <p class="text-sm text-gray-500 mt-3"><strong class="text-gray-700">What you get:</strong> A risk brief with timeline of how the situation developed and a recommended response plan.</p>
+        </div>
+      </div>
+
+      <!-- Card 11: Portfolio Health Report -->
+      <div class="use-case-card" data-category="portfolio" data-id="11">
+        <div class="card-header" onclick="toggleCard(this)">
+          <div class="flex-1">
+            <span class="category-tag bg-teal-50 text-teal-700">Portfolio & Reporting</span>
+            <h3 class="font-bold text-gray-900 text-lg leading-snug">Portfolio Health Report</h3>
+            <p class="text-gray-500 text-sm mt-1">Weekly health synthesis without the data assembly work.</p>
+            <div class="flex gap-2 mt-3 flex-wrap">
+              <span class="metric-pill">⏱️ Saves 30–60 min</span>
+              <span class="metric-pill">✅ 82.0% success</span>
+            </div>
+          </div>
+          <svg class="card-chevron w-5 h-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+        </div>
+        <div class="card-body">
+          <div class="prompt-block">
+            <div class="prompt-label">💡 Try This Prompt</div>
+            <button class="copy-btn" onclick="copyPrompt(this)">Copy</button>
+            <pre>Which accounts have churn risk indicators?
+
+Group them by severity and for each include:
+- The primary risk signal
+- How long the signal has been active
+- Recommended action
+- Renewal date if known</pre>
+          </div>
+          <p class="text-sm text-gray-500 mt-3"><strong class="text-gray-700">What you get:</strong> A structured risk report sorted by severity with specific signals and recommended actions — ready to share with leadership.</p>
+        </div>
+      </div>
+
+      <!-- Card 12: Pre-Call Research for AEs -->
+      <div class="use-case-card" data-category="meeting" data-id="12">
+        <div class="card-header" onclick="toggleCard(this)">
+          <div class="flex-1">
+            <span class="category-tag bg-blue-50 text-blue-700">Meeting Prep</span>
+            <h3 class="font-bold text-gray-900 text-lg leading-snug">Pre-Call Research for AEs</h3>
+            <p class="text-gray-500 text-sm mt-1">Self-serve account context — no CSM back-channel needed.</p>
+            <div class="flex gap-2 mt-3 flex-wrap">
+              <span class="metric-pill">⏱️ Saves 15–30 min</span>
+              <span class="metric-pill">✅ ~85% success</span>
+            </div>
+          </div>
+          <svg class="card-chevron w-5 h-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+        </div>
+        <div class="card-body">
+          <div class="prompt-block">
+            <div class="prompt-label">💡 Try This Prompt</div>
+            <button class="copy-btn" onclick="copyPrompt(this)">Copy</button>
+            <pre>I'm an AE preparing for a call with [Account Name] about expanding their usage.
+
+Query Staircase for:
+- Current relationship health and satisfaction level
+- Recent product feedback or feature requests
+- Key stakeholders and what they've been discussing
+- Any expansion signals or growth indicators
+
+Create a pre-call cheat sheet with talking points.</pre>
+          </div>
+          <p class="text-sm text-gray-500 mt-3"><strong class="text-gray-700">What you get:</strong> A sales-ready cheat sheet with relationship context, recent feedback, and expansion angles.</p>
+        </div>
+      </div>
+
+      <!-- Card 13: Competitive Intelligence -->
+      <div class="use-case-card" data-category="intelligence" data-id="13">
+        <div class="card-header" onclick="toggleCard(this)">
+          <div class="flex-1">
+            <span class="category-tag bg-amber-50 text-amber-700">Intelligence</span>
+            <h3 class="font-bold text-gray-900 text-lg leading-snug">Competitive Intelligence Check</h3>
+            <p class="text-gray-500 text-sm mt-1">Surface competitor mentions before they become threats.</p>
+            <div class="flex gap-2 mt-3 flex-wrap">
+              <span class="metric-pill">⏱️ Saves 15–30 min</span>
+              <span class="metric-pill">✅ ~78% success</span>
+            </div>
+          </div>
+          <svg class="card-chevron w-5 h-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+        </div>
+        <div class="card-body">
+          <div class="prompt-block">
+            <div class="prompt-label">💡 Try This Prompt</div>
+            <button class="copy-btn" onclick="copyPrompt(this)">Copy</button>
+            <pre>Has [Account Name] mentioned any competitors recently?
+
+If so, tell me:
+- Which competitor and in what context
+- Who brought it up and when
+- What their sentiment was
+- How I should respond</pre>
+          </div>
+          <p class="text-sm text-gray-500 mt-3"><strong class="text-gray-700">What you get:</strong> A competitive intelligence brief showing exactly who mentioned a competitor, why, and recommended counter-positioning.</p>
+        </div>
+      </div>
+
+      <!-- Card 14: Value Documentation -->
+      <div class="use-case-card" data-category="renewal" data-id="14">
+        <div class="card-header" onclick="toggleCard(this)">
+          <div class="flex-1">
+            <span class="category-tag bg-red-50 text-red-700">Renewal & Expansion</span>
+            <h3 class="font-bold text-gray-900 text-lg leading-snug">Value Documentation for Renewals</h3>
+            <p class="text-gray-500 text-sm mt-1">Evidence-backed value narrative for the renewal conversation.</p>
+            <div class="flex gap-2 mt-3 flex-wrap">
+              <span class="metric-pill">⏱️ Saves 45–90 min</span>
+              <span class="metric-pill">✅ ~88% success</span>
+            </div>
+          </div>
+          <svg class="card-chevron w-5 h-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+        </div>
+        <div class="card-body">
+          <div class="prompt-block">
+            <div class="prompt-label">💡 Try This Prompt</div>
+            <button class="copy-btn" onclick="copyPrompt(this)">Copy</button>
+            <pre>Build a value narrative for [Account Name]'s renewal.
+
+Query Staircase for the past 12 months and find:
+- Specific wins or milestones the customer acknowledged
+- Positive feedback or quotes from stakeholders
+- Problems we helped them solve
+- Growth in their usage or engagement
+
+Format as a "Value Delivered" summary I can share with the customer.</pre>
+          </div>
+          <p class="text-sm text-gray-500 mt-3"><strong class="text-gray-700">What you get:</strong> An evidence-backed value narrative with specific wins, customer quotes, and outcomes for the renewal conversation.</p>
+        </div>
+      </div>
+
+      <!-- Card 15: New Hire Briefing Pack -->
+      <div class="use-case-card" data-category="transitions" data-id="15">
+        <div class="card-header" onclick="toggleCard(this)">
+          <div class="flex-1">
+            <span class="category-tag bg-purple-50 text-purple-700">Transitions & Onboarding</span>
+            <h3 class="font-bold text-gray-900 text-lg leading-snug">New Hire Account Briefing Pack</h3>
+            <p class="text-gray-500 text-sm mt-1">An entire book of business understood in hours, not weeks.</p>
+            <div class="flex gap-2 mt-3 flex-wrap">
+              <span class="metric-pill">⏱️ Saves 1–2 weeks ramp</span>
+              <span class="metric-pill">✅ 92.0% success</span>
+            </div>
+          </div>
+          <svg class="card-chevron w-5 h-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+        </div>
+        <div class="card-body">
+          <div class="prompt-block">
+            <div class="prompt-label">💡 Try This Prompt</div>
+            <button class="copy-btn" onclick="copyPrompt(this)">Copy</button>
+            <pre>I'm onboarding a new CSM who is taking over these accounts: [Account 1], [Account 2], [Account 3].
+
+For each account, query Staircase and create a brief covering:
+- Account health and sentiment summary
+- Key stakeholders and their engagement
+- Top 3 things the new CSM needs to know
+- Current risks or concerns
+- Recommended first actions</pre>
+          </div>
+          <p class="text-sm text-gray-500 mt-3"><strong class="text-gray-700">What you get:</strong> A briefing pack for the entire portfolio — what used to take weeks of shadowing, delivered before Day 1.</p>
+        </div>
+      </div>
+
+      <!-- Card 16: Voice of Customer Synthesis -->
+      <div class="use-case-card" data-category="intelligence" data-id="16">
+        <div class="card-header" onclick="toggleCard(this)">
+          <div class="flex-1">
+            <span class="category-tag bg-amber-50 text-amber-700">Intelligence</span>
+            <h3 class="font-bold text-gray-900 text-lg leading-snug">Voice of Customer Synthesis</h3>
+            <p class="text-gray-500 text-sm mt-1">Customer signal without hours of manual research.</p>
+            <div class="flex gap-2 mt-3 flex-wrap">
+              <span class="metric-pill">⏱️ Saves 1–3 hours</span>
+              <span class="metric-pill">✅ ~78% success</span>
+            </div>
+          </div>
+          <svg class="card-chevron w-5 h-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+        </div>
+        <div class="card-body">
+          <div class="prompt-block">
+            <div class="prompt-label">💡 Try This Prompt</div>
+            <button class="copy-btn" onclick="copyPrompt(this)">Copy</button>
+            <pre>What are customers saying about [Topic/Feature]?
+
+Synthesize feedback patterns:
+- Common requests or complaints
+- Which accounts mentioned it
+- Overall sentiment
+- Specific quotes or evidence</pre>
+          </div>
+          <p class="text-sm text-gray-500 mt-3"><strong class="text-gray-700">What you get:</strong> A voice-of-customer synthesis grounded in real communication data — specific accounts, quotes, and sentiment patterns.</p>
+        </div>
+      </div>
+
+    </div><!-- /extra cards -->
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════ QUICK START -->
+<section id="quick-start" class="py-20 px-4 sm:px-6 bg-white">
+  <div class="max-w-3xl mx-auto">
+    <div class="text-center mb-10">
+      <div class="section-label">Try These First</div>
+      <h2 class="text-3xl sm:text-4xl font-bold text-gray-900">6 Prompts to Start With</h2>
+      <p class="text-gray-500 mt-3">Highest success rates from 64,000+ real queries. Copy and replace <span class="font-mono text-sm bg-indigo-50 text-indigo-700 px-1.5 py-0.5 rounded">[Account Name]</span> with your account.</p>
+    </div>
+
+    <div class="space-y-3">
+
+      <div class="quick-prompt">
+        <div class="flex-1">
+          <p class="font-mono text-sm text-gray-800 leading-relaxed">"What is the current health status of <span class="text-indigo-600">[Account Name]</span>?"</p>
+          <div class="flex items-center gap-3 mt-2">
+            <span class="success-badge">✅ 80.6% success</span>
+            <span class="text-xs text-gray-400">Quick health snapshot with sentiment and signals</span>
+          </div>
+        </div>
+        <button class="copy-btn-light" onclick="copyText(this, 'What is the current health status of [Account Name]?')">Copy</button>
+      </div>
+
+      <div class="quick-prompt">
+        <div class="flex-1">
+          <p class="font-mono text-sm text-gray-800 leading-relaxed">"Prep me for my upcoming meeting with <span class="text-indigo-600">[Account Name]</span>. What should I know?"</p>
+          <div class="flex items-center gap-3 mt-2">
+            <span class="success-badge">✅ 92.9% success</span>
+            <span class="text-xs text-gray-400">Meeting brief with talking points and landmines</span>
+          </div>
+        </div>
+        <button class="copy-btn-light" onclick="copyText(this, 'Prep me for my upcoming meeting with [Account Name]. What should I know?')">Copy</button>
+      </div>
+
+      <div class="quick-prompt">
+        <div class="flex-1">
+          <p class="font-mono text-sm text-gray-800 leading-relaxed">"What topics should I cover in my next QBR with <span class="text-indigo-600">[Account Name]</span>?"</p>
+          <div class="flex items-center gap-3 mt-2">
+            <span class="success-badge">✅ 94.8% success</span>
+            <span class="text-xs text-gray-400">Evidence-backed QBR agenda from the last quarter</span>
+          </div>
+        </div>
+        <button class="copy-btn-light" onclick="copyText(this, 'What topics should I cover in my next QBR with [Account Name]?')">Copy</button>
+      </div>
+
+      <div class="quick-prompt">
+        <div class="flex-1">
+          <p class="font-mono text-sm text-gray-800 leading-relaxed">"Summarize the last 30 days of activity for <span class="text-indigo-600">[Account Name]</span>."</p>
+          <div class="flex items-center gap-3 mt-2">
+            <span class="success-badge">✅ 91.0% success</span>
+            <span class="text-xs text-gray-400">30-day account catch-up with key highlights</span>
+          </div>
+        </div>
+        <button class="copy-btn-light" onclick="copyText(this, 'Summarize the last 30 days of activity for [Account Name].')">Copy</button>
+      </div>
+
+      <div class="quick-prompt">
+        <div class="flex-1">
+          <p class="font-mono text-sm text-gray-800 leading-relaxed">"Draft a follow-up email for my last call with <span class="text-indigo-600">[Account Name]</span>."</p>
+          <div class="flex items-center gap-3 mt-2">
+            <span class="success-badge">✅ 89.4% success</span>
+            <span class="text-xs text-gray-400">Polished follow-up with context and next steps</span>
+          </div>
+        </div>
+        <button class="copy-btn-light" onclick="copyText(this, 'Draft a follow-up email for my last call with [Account Name].')">Copy</button>
+      </div>
+
+      <div class="quick-prompt">
+        <div class="flex-1">
+          <p class="font-mono text-sm text-gray-800 leading-relaxed">"I'm taking over <span class="text-indigo-600">[Account Name]</span>. Give me a comprehensive onboarding brief."</p>
+          <div class="flex items-center gap-3 mt-2">
+            <span class="success-badge">✅ 92.0% success</span>
+            <span class="text-xs text-gray-400">Full account context — stakeholders, history, risks, first actions</span>
+          </div>
+        </div>
+        <button class="copy-btn-light" onclick="copyText(this, 'I\'m taking over [Account Name]. Give me a comprehensive onboarding brief.')">Copy</button>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════ SETUP -->
+<section id="setup" class="py-20 px-4 sm:px-6" style="background: #f8f9ff;">
+  <div class="max-w-3xl mx-auto">
+    <div class="text-center mb-10">
+      <div class="section-label">Platform Setup</div>
+      <h2 class="text-3xl sm:text-4xl font-bold text-gray-900">Connect in 5 Minutes</h2>
+      <p class="text-gray-500 mt-3">One-time setup, then just ask questions. Choose your AI tool below.</p>
+    </div>
+
+    <div class="bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-sm">
+      <!-- Tab bar -->
+      <div class="flex border-b border-gray-200 overflow-x-auto">
+        <button class="tab-btn active flex-1 min-w-max" onclick="switchSetupTab('claude', this)">Claude Desktop</button>
+        <button class="tab-btn flex-1 min-w-max" onclick="switchSetupTab('chatgpt', this)">ChatGPT Desktop</button>
+        <button class="tab-btn flex-1 min-w-max" onclick="switchSetupTab('gemini', this)">Gemini CLI</button>
+      </div>
+
+      <div class="p-6 sm:p-8">
+
+        <!-- Claude tab -->
+        <div id="setup-claude" class="tab-content active">
+          <div class="setup-step">
+            <div class="step-dot">1</div>
+            <div>
+              <p class="font-semibold text-gray-900">Open Claude Desktop Settings</p>
+              <p class="text-gray-500 text-sm mt-0.5">Click <strong>Claude</strong> in the menu bar (macOS) or <strong>File</strong> (Windows) → Settings → Developer → Edit Config</p>
+            </div>
+          </div>
+          <div class="setup-step">
+            <div class="step-dot">2</div>
+            <div class="flex-1">
+              <p class="font-semibold text-gray-900 mb-2">Add Staircase MCP Configuration</p>
+              <div class="config-block relative">
+                <button class="copy-btn" onclick="copyPrompt(this)">Copy</button>
+                <pre>{
+  "mcpServers": {
+    "staircase-ai": {
+      "command": "npx",
+      "args": ["-y", "mcp-remote",
+        "https://mcp.staircase.ai/sse"]
+    }
+  }
+}</pre>
+              </div>
+            </div>
+          </div>
+          <div class="setup-step">
+            <div class="step-dot">3</div>
+            <div>
+              <p class="font-semibold text-gray-900">Save and Restart Claude Desktop</p>
+              <p class="text-gray-500 text-sm mt-0.5">Save the file, then fully quit and relaunch Claude Desktop (just closing the window is not enough).</p>
+            </div>
+          </div>
+          <div class="setup-step">
+            <div class="step-dot">4</div>
+            <div>
+              <p class="font-semibold text-gray-900">Authenticate</p>
+              <p class="text-gray-500 text-sm mt-0.5">A browser window will open automatically. Sign in with your Google or Microsoft work account and grant permission.</p>
+            </div>
+          </div>
+          <div class="setup-step">
+            <div class="step-dot">5</div>
+            <div>
+              <p class="font-semibold text-gray-900">Test the Connection</p>
+              <div class="prompt-block mt-2">
+                <button class="copy-btn" onclick="copyPrompt(this)">Copy</button>
+                <pre>Ask Staircase: What topics are trending in customer conversations?</pre>
+              </div>
+            </div>
+          </div>
+          <div class="bg-indigo-50 border border-indigo-100 rounded-xl p-4 mt-2 text-sm text-gray-600">
+            <strong class="text-gray-800">Config file location:</strong><br/>
+            macOS: <code class="text-indigo-700 text-xs">~/Library/Application Support/Claude/claude_desktop_config.json</code><br/>
+            Windows: <code class="text-indigo-700 text-xs">%APPDATA%\Claude\claude_desktop_config.json</code>
+          </div>
+        </div>
+
+        <!-- ChatGPT tab -->
+        <div id="setup-chatgpt" class="tab-content">
+          <div class="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-6 text-sm text-amber-800">
+            <strong>Subscription required:</strong> ChatGPT MCP requires a Pro, Team, or Enterprise subscription.
+          </div>
+          <div class="setup-step">
+            <div class="step-dot">1</div>
+            <div>
+              <p class="font-semibold text-gray-900">Open ChatGPT Settings</p>
+              <p class="text-gray-500 text-sm mt-0.5">Click your profile icon (bottom left) → Settings → Connectors → Advanced → Toggle <strong>Developer Mode</strong> ON</p>
+            </div>
+          </div>
+          <div class="setup-step">
+            <div class="step-dot">2</div>
+            <div>
+              <p class="font-semibold text-gray-900">Create Staircase Connector</p>
+              <p class="text-gray-500 text-sm mt-0.5">Settings → Connectors → Create Connector (+)</p>
+              <div class="mt-2 bg-gray-50 border border-gray-200 rounded-lg p-3 text-sm">
+                <div class="flex gap-4">
+                  <div><span class="text-gray-400">Name:</span> <strong class="text-gray-800">Staircase AI</strong></div>
+                  <div><span class="text-gray-400">URL:</span> <code class="text-indigo-700 text-xs">https://mcp.staircase.ai/mcp</code></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="setup-step">
+            <div class="step-dot">3</div>
+            <div>
+              <p class="font-semibold text-gray-900">Authenticate</p>
+              <p class="text-gray-500 text-sm mt-0.5">Sign in with your Google or Microsoft work account when prompted. You should see a green "Connected" status.</p>
+            </div>
+          </div>
+          <div class="setup-step">
+            <div class="step-dot">4</div>
+            <div>
+              <p class="font-semibold text-gray-900">Test the Connection</p>
+              <div class="prompt-block mt-2">
+                <button class="copy-btn" onclick="copyPrompt(this)">Copy</button>
+                <pre>Use Staircase to find accounts with recent risk signals</pre>
+              </div>
+            </div>
+          </div>
+          <div class="bg-indigo-50 border border-indigo-100 rounded-xl p-4 mt-2 text-sm text-gray-600">
+            <strong class="text-gray-800">Note:</strong> ChatGPT uses the <code class="text-indigo-700 text-xs">/mcp</code> endpoint, not <code class="text-indigo-700 text-xs">/sse</code> like Claude Desktop.
+          </div>
+        </div>
+
+        <!-- Gemini tab -->
+        <div id="setup-gemini" class="tab-content">
+          <div class="bg-blue-50 border border-blue-100 rounded-xl p-4 mb-6 text-sm text-blue-800">
+            <strong>For developers:</strong> Gemini CLI requires a Google Cloud account with Gemini API access and Node.js installed.
+          </div>
+          <div class="setup-step">
+            <div class="step-dot">1</div>
+            <div>
+              <p class="font-semibold text-gray-900">Install Gemini CLI</p>
+              <div class="config-block relative mt-2">
+                <button class="copy-btn" onclick="copyPrompt(this)">Copy</button>
+                <pre>npm install -g @google/gemini-cli</pre>
+              </div>
+            </div>
+          </div>
+          <div class="setup-step">
+            <div class="step-dot">2</div>
+            <div class="flex-1">
+              <p class="font-semibold text-gray-900 mb-2">Create config file at <code class="text-indigo-700 text-xs">~/.gemini/config.json</code></p>
+              <div class="config-block relative">
+                <button class="copy-btn" onclick="copyPrompt(this)">Copy</button>
+                <pre>{
+  "mcpServers": {
+    "staircase-ai": {
+      "command": "npx",
+      "args": ["-y", "mcp-remote",
+        "https://mcp.staircase.ai/sse"]
+    }
+  }
+}</pre>
+              </div>
+            </div>
+          </div>
+          <div class="setup-step">
+            <div class="step-dot">3</div>
+            <div>
+              <p class="font-semibold text-gray-900">Authenticate with Google</p>
+              <div class="config-block relative mt-2">
+                <button class="copy-btn" onclick="copyPrompt(this)">Copy</button>
+                <pre>gcloud auth login</pre>
+              </div>
+            </div>
+          </div>
+          <div class="setup-step">
+            <div class="step-dot">4</div>
+            <div>
+              <p class="font-semibold text-gray-900">Authenticate with Staircase</p>
+              <p class="text-gray-500 text-sm mt-0.5">On first query, a browser opens. Sign in with your work Google or Microsoft account and grant permission.</p>
+            </div>
+          </div>
+          <div class="setup-step">
+            <div class="step-dot">5</div>
+            <div>
+              <p class="font-semibold text-gray-900">Test the Connection</p>
+              <div class="prompt-block mt-2">
+                <button class="copy-btn" onclick="copyPrompt(this)">Copy</button>
+                <pre>Query Staircase for trending customer topics</pre>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="px-6 sm:px-8 pb-6 text-center">
+        <p class="text-sm text-gray-400">
+          Having trouble? <a href="#" class="text-indigo-600 hover:underline">See our detailed setup guides</a> · <a href="#" class="text-indigo-600 hover:underline">Contact Support</a>
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════ POWER UP -->
+<section id="power-up" class="py-20 px-4 sm:px-6 bg-white">
+  <div class="max-w-5xl mx-auto">
+
+    <!-- Skills -->
+    <div class="mb-16">
+      <div class="text-center mb-10">
+        <div class="section-label">Claude Skills</div>
+        <h2 class="text-3xl sm:text-4xl font-bold text-gray-900">Power Up With Skills</h2>
+        <p class="text-gray-500 mt-3 max-w-xl mx-auto">Pre-built Claude Skills for the most common Staircase workflows. Install once, use every day.</p>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+
+        <div class="skill-card">
+          <div class="skill-icon">📋</div>
+          <h3 class="font-bold text-gray-900 mb-1">Meeting Prep</h3>
+          <p class="text-gray-500 text-sm leading-relaxed mb-4">Auto-prep for customer meetings combining Staircase intelligence with calendar context.</p>
+          <button class="w-full text-center py-2 px-4 border border-indigo-200 text-indigo-700 text-sm font-medium rounded-lg hover:bg-indigo-50 transition-colors">
+            Download .skill
+          </button>
+        </div>
+
+        <div class="skill-card">
+          <div class="skill-icon">🏥</div>
+          <h3 class="font-bold text-gray-900 mb-1">Account Health Check</h3>
+          <p class="text-gray-500 text-sm leading-relaxed mb-4">Comprehensive health analysis with risk signals and actionable recommendations.</p>
+          <button class="w-full text-center py-2 px-4 border border-indigo-200 text-indigo-700 text-sm font-medium rounded-lg hover:bg-indigo-50 transition-colors">
+            Download .skill
+          </button>
+        </div>
+
+        <div class="skill-card">
+          <div class="skill-icon">🤝</div>
+          <h3 class="font-bold text-gray-900 mb-1">Account Transition Brief</h3>
+          <p class="text-gray-500 text-sm leading-relaxed mb-4">Onboarding brief generator for new CSMs inheriting accounts.</p>
+          <button class="w-full text-center py-2 px-4 border border-indigo-200 text-indigo-700 text-sm font-medium rounded-lg hover:bg-indigo-50 transition-colors">
+            Download .skill
+          </button>
+        </div>
+
+        <div class="skill-card">
+          <div class="skill-icon">📊</div>
+          <h3 class="font-bold text-gray-900 mb-1">Executive Briefing</h3>
+          <p class="text-gray-500 text-sm leading-relaxed mb-4">Multi-account executive summary creator for leadership and board prep.</p>
+          <button class="w-full text-center py-2 px-4 border border-indigo-200 text-indigo-700 text-sm font-medium rounded-lg hover:bg-indigo-50 transition-colors">
+            Download .skill
+          </button>
+        </div>
+
+        <div class="skill-card">
+          <div class="skill-icon">✉️</div>
+          <h3 class="font-bold text-gray-900 mb-1">Contextual Outreach</h3>
+          <p class="text-gray-500 text-sm leading-relaxed mb-4">Personalized email drafter with account context from Staircase.</p>
+          <button class="w-full text-center py-2 px-4 border border-indigo-200 text-indigo-700 text-sm font-medium rounded-lg hover:bg-indigo-50 transition-colors">
+            Download .skill
+          </button>
+        </div>
+
+        <div class="skill-card">
+          <div class="skill-icon">🔍</div>
+          <h3 class="font-bold text-gray-900 mb-1">Portfolio Review</h3>
+          <p class="text-gray-500 text-sm leading-relaxed mb-4">Weekly portfolio scan with risk triage and expansion opportunity detection.</p>
+          <button class="w-full text-center py-2 px-4 border border-indigo-200 text-indigo-700 text-sm font-medium rounded-lg hover:bg-indigo-50 transition-colors">
+            Download .skill
+          </button>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Project Templates -->
+    <div>
+      <div class="text-center mb-10">
+        <div class="section-label">Project Templates</div>
+        <h2 class="text-3xl sm:text-4xl font-bold text-gray-900">Save Your Setup</h2>
+        <p class="text-gray-500 mt-3 max-w-xl mx-auto">Create a Claude or ChatGPT Project with these custom instructions for a specialized Staircase assistant — no setup needed each conversation.</p>
+      </div>
+
+      <div class="bg-gray-50 border border-gray-200 rounded-2xl overflow-hidden">
+        <!-- Tab bar -->
+        <div class="flex border-b border-gray-200">
+          <button class="tab-btn active flex-1" onclick="switchProjectTab('claude-project', this)">Claude Projects</button>
+          <button class="tab-btn flex-1" onclick="switchProjectTab('chatgpt-project', this)">ChatGPT Projects</button>
+        </div>
+
+        <div class="p-6 sm:p-8">
+          <div id="claude-project" class="tab-content active">
+            <div class="space-y-4">
+
+              <!-- Template 1 -->
+              <div class="bg-white border border-gray-200 rounded-xl overflow-hidden">
+                <div class="flex items-center justify-between px-5 py-4 border-b border-gray-100">
+                  <div>
+                    <h4 class="font-semibold text-gray-900">Customer Intelligence Assistant</h4>
+                    <p class="text-xs text-gray-400 mt-0.5">Meeting prep, health checks, outreach, stakeholder research</p>
+                  </div>
+                  <button class="copy-btn-light flex-shrink-0" onclick="copyTemplateInstructions(this, 'ci-claude')">Copy</button>
+                </div>
+                <div class="p-5 hidden" id="ci-claude-preview">
+                  <pre class="text-xs text-gray-600 whitespace-pre-wrap font-mono leading-relaxed"></pre>
+                </div>
+                <button onclick="toggleTemplatePreview('ci-claude')" class="w-full text-xs text-indigo-600 py-2 hover:bg-indigo-50 transition-colors font-medium">Preview instructions ↓</button>
+              </div>
+
+              <!-- Template 2 -->
+              <div class="bg-white border border-gray-200 rounded-xl overflow-hidden">
+                <div class="flex items-center justify-between px-5 py-4 border-b border-gray-100">
+                  <div>
+                    <h4 class="font-semibold text-gray-900">Meeting Prep Specialist</h4>
+                    <p class="text-xs text-gray-400 mt-0.5">Structured prep briefs for every customer call</p>
+                  </div>
+                  <button class="copy-btn-light flex-shrink-0" onclick="copyTemplateInstructions(this, 'mp-claude')">Copy</button>
+                </div>
+                <div class="p-5 hidden" id="mp-claude-preview"></div>
+                <button onclick="toggleTemplatePreview('mp-claude')" class="w-full text-xs text-indigo-600 py-2 hover:bg-indigo-50 transition-colors font-medium">Preview instructions ↓</button>
+              </div>
+
+              <!-- Template 3 -->
+              <div class="bg-white border border-gray-200 rounded-xl overflow-hidden">
+                <div class="flex items-center justify-between px-5 py-4 border-b border-gray-100">
+                  <div>
+                    <h4 class="font-semibold text-gray-900">Portfolio Review</h4>
+                    <p class="text-xs text-gray-400 mt-0.5">Weekly portfolio triage, risk detection, expansion signals</p>
+                  </div>
+                  <button class="copy-btn-light flex-shrink-0" onclick="copyTemplateInstructions(this, 'pr-claude')">Copy</button>
+                </div>
+                <div class="p-5 hidden" id="pr-claude-preview"></div>
+                <button onclick="toggleTemplatePreview('pr-claude')" class="w-full text-xs text-indigo-600 py-2 hover:bg-indigo-50 transition-colors font-medium">Preview instructions ↓</button>
+              </div>
+
+              <!-- Template 4 -->
+              <div class="bg-white border border-gray-200 rounded-xl overflow-hidden">
+                <div class="flex items-center justify-between px-5 py-4 border-b border-gray-100">
+                  <div>
+                    <h4 class="font-semibold text-gray-900">Renewal Specialist</h4>
+                    <p class="text-xs text-gray-400 mt-0.5">Health assessment, value documentation, renewal conversation prep</p>
+                  </div>
+                  <button class="copy-btn-light flex-shrink-0" onclick="copyTemplateInstructions(this, 'rs-claude')">Copy</button>
+                </div>
+                <div class="p-5 hidden" id="rs-claude-preview"></div>
+                <button onclick="toggleTemplatePreview('rs-claude')" class="w-full text-xs text-indigo-600 py-2 hover:bg-indigo-50 transition-colors font-medium">Preview instructions ↓</button>
+              </div>
+
+            </div>
+          </div>
+
+          <div id="chatgpt-project" class="tab-content">
+            <p class="text-sm text-gray-500 mb-4">These same templates work in ChatGPT Projects (or Custom GPTs). Create a project, paste in the instructions, and save — your Staircase-aware assistant is ready.</p>
+            <div class="space-y-4">
+              <div class="bg-white border border-gray-200 rounded-xl overflow-hidden">
+                <div class="flex items-center justify-between px-5 py-4 border-b border-gray-100">
+                  <div>
+                    <h4 class="font-semibold text-gray-900">Customer Intelligence (ChatGPT)</h4>
+                    <p class="text-xs text-gray-400 mt-0.5">Same as Claude version — works in ChatGPT Projects</p>
+                  </div>
+                  <button class="copy-btn-light flex-shrink-0" onclick="copyTemplateInstructions(this, 'ci-claude')">Copy</button>
+                </div>
+              </div>
+              <div class="bg-white border border-gray-200 rounded-xl overflow-hidden">
+                <div class="flex items-center justify-between px-5 py-4 border-b border-gray-100">
+                  <div>
+                    <h4 class="font-semibold text-gray-900">Renewal Specialist (ChatGPT)</h4>
+                    <p class="text-xs text-gray-400 mt-0.5">Renewal prep adapted for ChatGPT connector</p>
+                  </div>
+                  <button class="copy-btn-light flex-shrink-0" onclick="copyTemplateInstructions(this, 'rs-claude')">Copy</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════ COMING SOON -->
+<section id="coming-soon" class="py-20 px-4 sm:px-6" style="background: #f8f9ff;">
+  <div class="max-w-4xl mx-auto">
+    <div class="text-center mb-10">
+      <div class="section-label">What's Next</div>
+      <h2 class="text-3xl sm:text-4xl font-bold text-gray-900">Coming Soon</h2>
+      <p class="text-gray-500 mt-3 max-w-xl mx-auto">The MCP connector is just the beginning. Here's what's on the roadmap.</p>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <div class="coming-card">
+        <div class="coming-icon">🤖</div>
+        <div>
+          <h3 class="font-bold text-gray-900 mb-1">Gainsight Copilot</h3>
+          <p class="text-gray-500 text-sm leading-relaxed">Ask Staircase templates built directly into Copilot — no setup required for Gainsight customers.</p>
+          <span class="inline-flex items-center mt-3 px-3 py-1 bg-indigo-50 text-indigo-700 text-xs font-medium rounded-full">H1 2026</span>
+        </div>
+      </div>
+
+      <div class="coming-card">
+        <div class="coming-icon">🏪</div>
+        <div>
+          <h3 class="font-bold text-gray-900 mb-1">App Store Listings</h3>
+          <p class="text-gray-500 text-sm leading-relaxed">Official listings in Claude's MCP marketplace and ChatGPT's connector store — one-click install.</p>
+          <span class="inline-flex items-center mt-3 px-3 py-1 bg-indigo-50 text-indigo-700 text-xs font-medium rounded-full">Coming Soon</span>
+        </div>
+      </div>
+
+      <div class="coming-card">
+        <div class="coming-icon">⚡</div>
+        <div>
+          <h3 class="font-bold text-gray-900 mb-1">Advanced Workflows</h3>
+          <p class="text-gray-500 text-sm leading-relaxed">Automated meeting prep, priority actions queue, and multi-account workflows triggered by events.</p>
+          <span class="inline-flex items-center mt-3 px-3 py-1 bg-indigo-50 text-indigo-700 text-xs font-medium rounded-full">Roadmap</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════ FOOTER -->
+<footer id="footer" class="py-16 px-4 sm:px-6">
+  <div class="max-w-5xl mx-auto">
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-10 mb-10">
+
+      <div>
+        <h4>Security</h4>
+        <p class="text-sm leading-relaxed mb-3">Per-user authentication via Google or Microsoft. Your AI tool connects directly to Staircase — no third parties. Content visibility follows your existing Staircase RBAC settings.</p>
+        <a href="#" class="text-sm">Security Documentation →</a>
+      </div>
+
+      <div>
+        <h4>For Admins</h4>
+        <p class="text-sm leading-relaxed mb-3">Enable MCP for your organization in Staircase settings:</p>
+        <div class="bg-gray-800 rounded-lg p-3 text-xs font-mono text-green-400 mb-3">
+          Admin Config → Privacy/Security<br/>→ Enable MCP Server Access
+        </div>
+        <a href="#" class="text-sm">Admin Setup Guide →</a>
+      </div>
+
+      <div>
+        <h4>Support</h4>
+        <p class="text-sm leading-relaxed mb-3">Questions, issues, or feedback on the MCP connector?</p>
+        <div class="space-y-2">
+          <div><a href="#" class="text-sm">Setup Guides →</a></div>
+          <div><a href="#" class="text-sm">Developer Reference →</a></div>
+          <div><a href="#" class="text-sm">Contact Support →</a></div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="border-t border-gray-700 pt-8 flex flex-col sm:flex-row justify-between items-center gap-4">
+      <p class="text-sm">
+        <span class="text-white font-semibold">Gainsight Staircase AI</span> — Account intelligence for B2B SaaS
+      </p>
+      <p class="text-xs text-gray-600">MCP Connector · Launched March 2026</p>
+    </div>
+  </div>
+</footer>
+
+<!-- Toast notification -->
+<div id="toast">Copied to clipboard</div>
+
+<!-- ═══════════════════════════════════════════════ TEMPLATES DATA -->
+<script>
+const TEMPLATES = {
+  'ci-claude': `You are a customer intelligence assistant with access to Staircase via MCP.
+
+## Your Capabilities
+- Query Staircase for account health, sentiment, and activity
+- Find stakeholder information and engagement patterns
+- Identify risks, concerns, and opportunities across accounts
+- Create meeting prep documents, executive summaries, and outreach drafts
+
+## How to Use Staircase
+When the user asks about customers, accounts, or stakeholders:
+1. Query Staircase for relevant data
+2. Synthesize the results into actionable insights
+3. Provide evidence-backed recommendations
+
+## Response Style
+- Be concise and actionable
+- Include specific evidence (account names, dates, quotes when available)
+- Prioritize by urgency or impact
+- Offer next steps, not just information
+
+## Default Behaviors
+- When asked "prep me for [meeting]": Create a structured meeting brief
+- When asked about "account health": Provide 90-day health summary
+- When asked about "risks": Focus on churn signals, budget concerns, competitors
+- When asked to "draft an email": Make it conversational and evidence-based`,
+
+  'mp-claude': `You are a meeting preparation specialist with access to Staircase via MCP.
+
+## Your Purpose
+Help users prepare for customer meetings by gathering relevant intelligence and creating actionable prep documents.
+
+## Meeting Prep Framework
+For every meeting prep request, gather:
+1. Account Health: Current sentiment, trends, overall health
+2. Recent Activity: Last 30-90 days of notable communications
+3. Risks & Concerns: Any flags, complaints, or warning signs
+4. Wins & Positives: Recent successes to reference
+5. Stakeholder Context: Who's in the meeting and their history
+
+## Output Format
+Structure every prep brief as:
+
+### Meeting Brief: [Account Name]
+**Health Snapshot** — 1-2 sentences on current state
+
+**Top 3 Things to Know**
+1. Most important context
+2. Second most important
+3. Third most important
+
+**Potential Landmines**
+- Risk or sensitive topic to handle carefully
+
+**Talking Points**
+- Suggested topics based on context
+
+**Questions to Ask**
+- Thoughtful questions based on Staircase data`,
+
+  'pr-claude': `You are a portfolio management assistant with access to Staircase via MCP.
+
+## Your Purpose
+Help customer success and account managers monitor their portfolio, identify priorities, and take proactive action.
+
+## Key Workflows
+
+### Weekly Portfolio Review
+1. Identify accounts with risk signals
+2. Highlight accounts with positive momentum
+3. Flag accounts needing immediate attention
+4. Suggest priority order for the week
+
+### Risk Detection
+- Check for churn/cancellation mentions
+- Look for budget or pricing concerns
+- Identify competitor discussions
+- Note declining sentiment trends
+
+## Output Preferences
+- Use tables for comparing multiple accounts
+- Bold the most critical items
+- Include recommended actions, not just observations
+- Keep it scannable for busy people`,
+
+  'rs-claude': `You are a renewal preparation specialist with access to Staircase via MCP.
+
+## Your Purpose
+Help users prepare for renewal conversations by assessing relationship health, identifying risks, and building compelling value narratives.
+
+## Renewal Prep Framework
+
+### Health Assessment
+- Overall sentiment trajectory
+- Engagement levels and trends
+- Champion/detractor identification
+
+### Risk Analysis
+- Churn signals or explicit concerns
+- Competitor mentions or evaluations
+- Budget or economic concerns
+- Stakeholder changes
+
+### Value Documentation
+- Wins and milestones achieved
+- Problems solved, outcomes delivered
+- Customer quotes and positive feedback
+
+## Output Format
+Structure renewal preps as:
+
+### Renewal Prep: [Account Name]
+**Relationship Health:** Good / Moderate / At Risk
+
+**Value Delivered** — Specific wins from Staircase data
+
+**Concerns to Address** — Each with suggested response
+
+**Recommended Approach** — Strategy for the renewal conversation`
+};
+</script>
+
+<!-- ═══════════════════════════════════════════════ JS -->
+<script>
+// ── Sticky nav ──
+let heroBottom = 0;
+function updateHeroBottom() {
+  const hero = document.getElementById('hero');
+  heroBottom = hero ? hero.getBoundingClientRect().bottom + window.scrollY : 0;
+}
+window.addEventListener('load', updateHeroBottom);
+window.addEventListener('resize', updateHeroBottom);
+window.addEventListener('scroll', () => {
+  const nav = document.getElementById('sticky-nav');
+  if (window.scrollY > heroBottom - 80) {
+    nav.classList.add('visible');
+  } else {
+    nav.classList.remove('visible');
+  }
+}, { passive: true });
+
+// ── Toast ──
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2000);
+}
+
+// ── Copy prompt (dark block) ──
+function copyPrompt(btn) {
+  const pre = btn.parentElement.querySelector('pre');
+  if (!pre) return;
+  navigator.clipboard.writeText(pre.textContent.trim()).then(() => {
+    btn.textContent = 'Copied!';
+    btn.classList.add('copied');
+    showToast('Copied to clipboard');
+    setTimeout(() => {
+      btn.textContent = 'Copy';
+      btn.classList.remove('copied');
+    }, 2000);
+  });
+}
+
+// ── Copy text (light button) ──
+function copyText(btn, text) {
+  navigator.clipboard.writeText(text).then(() => {
+    btn.textContent = 'Copied!';
+    btn.classList.add('copied');
+    showToast('Copied to clipboard');
+    setTimeout(() => {
+      btn.textContent = 'Copy';
+      btn.classList.remove('copied');
+    }, 2000);
+  });
+}
+
+// ── Copy template instructions ──
+function copyTemplateInstructions(btn, templateKey) {
+  const text = TEMPLATES[templateKey];
+  if (!text) return;
+  navigator.clipboard.writeText(text).then(() => {
+    btn.textContent = 'Copied!';
+    btn.classList.add('copied');
+    showToast('Project instructions copied');
+    setTimeout(() => {
+      btn.textContent = 'Copy';
+      btn.classList.remove('copied');
+    }, 2000);
+  });
+}
+
+// ── Toggle template preview ──
+function toggleTemplatePreview(id) {
+  const el = document.getElementById(id + '-preview');
+  if (!el) return;
+  const isHidden = el.classList.contains('hidden');
+  if (isHidden) {
+    el.classList.remove('hidden');
+    const pre = el.querySelector('pre');
+    if (pre && TEMPLATES[id]) pre.textContent = TEMPLATES[id];
+    const btn = el.nextElementSibling;
+    if (btn) btn.textContent = 'Hide instructions ↑';
+  } else {
+    el.classList.add('hidden');
+    const btn = el.nextElementSibling;
+    if (btn) btn.textContent = 'Preview instructions ↓';
+  }
+}
+
+// ── Use case card toggle + progress tracker ──
+let exploredCards = new Set();
+function toggleCard(header) {
+  const card = header.closest('.use-case-card');
+  const isExpanded = card.classList.contains('expanded');
+  // Collapse all
+  document.querySelectorAll('.use-case-card.expanded').forEach(c => c.classList.remove('expanded'));
+  // Expand clicked if was collapsed
+  if (!isExpanded) {
+    card.classList.add('expanded');
+    const id = card.dataset.id;
+    if (id) exploredCards.add(id);
+    updateProgress();
+  }
+}
+function updateProgress() {
+  const total = document.querySelectorAll('.use-case-card').length;
+  document.getElementById('use-case-progress').textContent =
+    `${exploredCards.size} of ${total} explored`;
+}
+
+// ── Category filter ──
+function filterCards(cat, pill) {
+  // Update pills
+  document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
+  pill.classList.add('active');
+
+  const allCards = document.querySelectorAll('.use-case-card');
+  allCards.forEach(card => {
+    if (cat === 'all' || card.dataset.category === cat) {
+      card.removeAttribute('data-hidden');
+      card.style.display = '';
+    } else {
+      card.setAttribute('data-hidden', 'true');
+      card.style.display = 'none';
+    }
+  });
+
+  // Show extra cards container if filtering to a category that has some
+  if (cat !== 'all') {
+    const extraCards = document.getElementById('extra-cards');
+    const hasVisible = Array.from(extraCards.querySelectorAll('.use-case-card')).some(c => !c.hasAttribute('data-hidden'));
+    if (hasVisible) {
+      extraCards.classList.remove('hidden');
+      document.getElementById('show-more-container').style.display = 'none';
+    }
+  } else {
+    // Reset to default: show top 6, hide extras
+    const extraCards = document.getElementById('extra-cards');
+    extraCards.classList.add('hidden');
+    document.getElementById('show-more-container').style.display = '';
+    allCards.forEach(c => {
+      c.removeAttribute('data-hidden');
+      c.style.display = '';
+    });
+  }
+}
+
+// ── Toggle more cards ──
+let moreVisible = false;
+function toggleMoreCards() {
+  const extra = document.getElementById('extra-cards');
+  const btn = document.getElementById('show-more-btn');
+  moreVisible = !moreVisible;
+  if (moreVisible) {
+    extra.classList.remove('hidden');
+    btn.querySelector('span').textContent = 'Show fewer use cases';
+    btn.querySelector('svg').style.transform = 'rotate(180deg)';
+  } else {
+    extra.classList.add('hidden');
+    btn.querySelector('span').textContent = 'See all 16 use cases';
+    btn.querySelector('svg').style.transform = '';
+    extra.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+}
+
+// ── Setup tabs ──
+function switchSetupTab(id, btn) {
+  // Deactivate all in same group
+  const parent = btn.parentElement;
+  parent.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  // Hide all content
+  const panel = parent.nextElementSibling;
+  panel.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+  const target = document.getElementById('setup-' + id);
+  if (target) target.classList.add('active');
+}
+
+// ── Project template tabs ──
+function switchProjectTab(id, btn) {
+  const parent = btn.parentElement;
+  parent.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const panel = parent.nextElementSibling;
+  panel.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+  const target = document.getElementById(id);
+  if (target) target.classList.add('active');
+}
+
+// ── Init progress count ──
+updateProgress();
+</script>
+
+</body>
+</html>
