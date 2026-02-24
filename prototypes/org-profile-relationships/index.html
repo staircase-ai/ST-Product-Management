@@ -34,1613 +34,1009 @@
   --st-space-3: 24px;
   --st-space-4: 32px;
   --st-space-5: 40px;
-  --st-space-6: 48px;
   --st-radius: 6px;
   --st-radius-lg: 16px;
   --st-radius-pill: 20px;
-  --st-shadow: 0 2px 4px 0 rgba(52, 56, 58, 0.06), 0 0 1px 0 rgba(52, 56, 58, 0.24);
-  --st-shadow-lg: 0 8px 24px rgba(52, 56, 58, 0.12), 0 0 1px rgba(52, 56, 58, 0.24);
+  --st-shadow: 0 2px 4px 0 rgba(52,56,58,0.06), 0 0 1px 0 rgba(52,56,58,0.24);
+  --st-shadow-lg: 0 8px 24px rgba(52,56,58,0.12), 0 0 1px rgba(52,56,58,0.24);
+  --sidebar-w: 244px;
 }
 
 /* ─── Reset & Base ─── */
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-body {
-  font-family: var(--st-font);
-  font-size: var(--st-text-base);
-  line-height: var(--st-line-height);
-  color: var(--st-text);
-  background: var(--st-bg);
-  -webkit-font-smoothing: antialiased;
-}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:var(--st-font);font-size:var(--st-text-base);line-height:var(--st-line-height);color:var(--st-text);background:var(--st-bg);-webkit-font-smoothing:antialiased;}
 
-/* ─── App Shell ─── */
-.app-shell { display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+/* ─── Demo Bar ─── */
+.demo-bar{background:#181F26;color:#fff;padding:10px 24px;display:flex;align-items:center;gap:12px;font-size:12px;position:sticky;top:0;z-index:100;}
+.demo-bar-label{font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--st-text-tertiary);margin-right:8px;font-size:11px;}
+.demo-step{padding:6px 14px;border-radius:var(--st-radius-pill);border:1px solid rgba(255,255,255,.12);cursor:pointer;transition:all .15s;background:transparent;color:rgba(255,255,255,.55);font-family:var(--st-font);font-size:12px;font-weight:500;}
+.demo-step:hover{background:rgba(255,255,255,.08);color:#fff;}
+.demo-step.active{background:var(--st-primary);border-color:var(--st-primary);color:#fff;}
+.demo-num{display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:50%;background:rgba(255,255,255,.1);font-size:10px;font-weight:700;margin-right:6px;}
+.demo-step.active .demo-num{background:rgba(255,255,255,.22);}
 
-/* ─── Screens ─── */
-.screen { display: none; flex: 1; overflow-y: auto; }
-.screen.active { display: flex; flex-direction: column; }
+/* ─── Top Nav ─── */
+.top-nav{background:var(--st-bg-card);border-bottom:1px solid var(--st-border);padding:0 24px;height:52px;display:flex;align-items:center;}
+.breadcrumb{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--st-text-secondary);}
+.breadcrumb a{color:var(--st-text-secondary);text-decoration:none;cursor:pointer;}
+.breadcrumb a:hover{color:var(--st-primary);}
+.breadcrumb .sep{color:var(--st-text-tertiary);}
+.breadcrumb .current{color:var(--st-text);font-weight:600;}
 
-/* ─── Company Identity Bar ─── */
-.company-bar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 12px var(--st-space-3);
-  background: var(--st-bg-card);
-  border-bottom: 1px solid var(--st-border);
-  min-height: 48px;
-}
-.company-bar-left {
-  display: flex;
-  align-items: center;
-  gap: var(--st-space-2);
-}
-.company-name {
-  font-size: 18px;
-  font-weight: 600;
-  color: var(--st-text);
-}
-.company-bar-right {
-  display: flex;
-  align-items: center;
-  gap: var(--st-space-1);
-}
+/* ─── Layout ─── */
+.app-body{display:flex;height:calc(100vh - 52px - 42px);}
+.app-body-full{height:calc(100vh - 52px - 42px);overflow-y:auto;}
 
-/* ─── Top Bar (Detail View) ─── */
-.top-bar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: var(--st-space-2) var(--st-space-3);
-  background: var(--st-bg-card);
-  border-bottom: 1px solid var(--st-border);
-  min-height: 56px;
-}
-.top-bar-left { display: flex; align-items: center; gap: var(--st-space-2); }
-.top-bar-right { display: flex; align-items: center; gap: var(--st-space-1); }
-.breadcrumb {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 13px;
-  color: var(--st-text-secondary);
-}
-.breadcrumb a { color: var(--st-text-secondary); text-decoration: none; cursor: pointer; }
-.breadcrumb a:hover { color: var(--st-primary); }
-.breadcrumb .sep { color: var(--st-text-tertiary); }
-.breadcrumb .current { color: var(--st-text); font-weight: 500; }
-.nav-arrows { display: flex; gap: 4px; }
-.nav-arrows button {
-  width: 28px; height: 28px;
-  border: 1px solid var(--st-border);
-  border-radius: var(--st-radius);
-  background: var(--st-bg-card);
-  color: var(--st-text-secondary);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 14px;
-  transition: all 0.15s;
-}
-.nav-arrows button:hover { border-color: var(--st-primary); color: var(--st-primary); }
-.nav-arrows button:disabled { opacity: 0.4; cursor: not-allowed; }
+/* ─── Sidebar ─── */
+.sidebar{width:var(--sidebar-w);background:var(--st-bg-card);border-right:1px solid var(--st-border);padding:var(--st-space-2) 0;flex-shrink:0;overflow-y:auto;}
+.sidebar-heading{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--st-text-tertiary);padding:14px 20px 6px;}
+.sidebar-item{display:flex;align-items:center;gap:10px;padding:9px 20px;font-size:13px;color:var(--st-text-secondary);cursor:pointer;transition:all .12s;border-left:3px solid transparent;font-weight:500;}
+.sidebar-item:hover{background:var(--st-bg);color:var(--st-text);}
+.sidebar-item.active{border-left-color:var(--st-primary);color:var(--st-primary);background:var(--st-primary-light);font-weight:600;}
+.sidebar-item svg{width:16px;height:16px;flex-shrink:0;}
+.sidebar-status{margin-left:auto;font-size:10px;padding:2px 8px;border-radius:var(--st-radius-pill);font-weight:600;white-space:nowrap;}
+.s-active{background:var(--st-positive-light);color:var(--st-positive);}
+.s-onboarding{background:var(--st-primary-light);color:var(--st-primary);}
+.s-prospect{background:var(--st-neutral-light);color:#9A7200;}
+.s-churned{background:var(--st-negative-light);color:var(--st-negative);}
+
+/* ─── Main Content ─── */
+.main{flex:1;padding:var(--st-space-4) var(--st-space-5);overflow-y:auto;max-width:calc(100% - var(--sidebar-w));}
+.main-wide{max-width:940px;}
 
 /* ─── Buttons ─── */
-.btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 6px var(--st-space-2);
-  border-radius: var(--st-radius-pill);
-  font-family: var(--st-font);
-  font-size: 13px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.15s;
-  border: 1px solid transparent;
-  white-space: nowrap;
-}
-.btn-primary { background: var(--st-primary); color: white; }
-.btn-primary:hover { background: var(--st-primary-hover); }
-.btn-secondary { background: transparent; color: var(--st-text); border-color: var(--st-border); }
-.btn-secondary:hover { background: var(--st-bg); border-color: var(--st-text-tertiary); }
-.btn-ghost { background: transparent; color: var(--st-text-secondary); border: none; }
-.btn-ghost:hover { color: var(--st-primary); background: var(--st-primary-light); }
-.btn-sm { padding: 4px 10px; font-size: 12px; }
-.btn-positive { background: var(--st-positive); color: white; border: none; }
-.btn-positive:hover { background: #0e9559; }
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 18px;border-radius:var(--st-radius);font-family:var(--st-font);font-size:13px;font-weight:500;cursor:pointer;transition:all .15s;border:1px solid transparent;white-space:nowrap;}
+.btn svg{width:14px;height:14px;}
+.btn-primary{background:var(--st-primary);color:#fff;font-weight:600;}
+.btn-primary:hover{background:var(--st-primary-hover);}
+.btn-primary-lg{padding:12px 28px;font-size:14px;font-weight:600;}
+.btn-save{background:var(--st-positive);color:#fff;font-weight:600;}
+.btn-save:hover{background:#0e9559;}
+.btn-secondary{background:var(--st-bg-card);color:var(--st-text);border-color:var(--st-border);}
+.btn-secondary:hover{background:var(--st-bg);border-color:var(--st-text-tertiary);}
+.btn-sm{padding:5px 12px;font-size:12px;}
 
 /* ─── Tags ─── */
-.tag {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  padding: 2px 10px;
-  border-radius: var(--st-radius-pill);
-  font-size: 12px;
-  font-weight: 500;
-  white-space: nowrap;
-}
-.tag-primary { background: var(--st-primary-light); color: var(--st-primary); }
-.tag-positive { background: var(--st-positive-light); color: var(--st-positive); }
-.tag-neutral { background: var(--st-neutral-light); color: #9A7200; }
-.tag-negative { background: var(--st-negative-light); color: var(--st-negative); }
-.tag-ghost { background: var(--st-bg); color: var(--st-text-secondary); border: 1px solid var(--st-border); }
-.tag-scope-rel { background: var(--st-primary-light); color: var(--st-primary); font-size: 11px; font-weight: 600; letter-spacing: 0.3px; }
-.tag-scope-enh { background: #F3E8FD; color: #7C3AED; font-size: 11px; font-weight: 600; letter-spacing: 0.3px; }
+.tag{display:inline-flex;align-items:center;gap:4px;padding:2px 10px;border-radius:var(--st-radius-pill);font-size:12px;font-weight:500;white-space:nowrap;}
+.tag-primary{background:var(--st-primary-light);color:var(--st-primary);}
+.tag-positive{background:var(--st-positive-light);color:var(--st-positive);}
+.tag-neutral{background:var(--st-neutral-light);color:#9A7200;}
+.tag-negative{background:var(--st-negative-light);color:var(--st-negative);}
+.tag-ghost{background:var(--st-bg);color:var(--st-text-secondary);border:1px solid var(--st-border);}
+.tag-scope{background:#F3E8FD;color:#7C3AED;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;}
 
-/* ─── Cards ─── */
-.card {
-  background: var(--st-bg-card);
-  border: 1px solid var(--st-border);
-  border-radius: var(--st-radius-lg);
-  box-shadow: var(--st-shadow);
-}
-
-/* ─── Product Grid ─── */
-.product-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: var(--st-space-2);
-  padding: var(--st-space-3);
-}
-.product-card {
-  background: var(--st-bg-card);
-  border: 1px solid var(--st-border);
-  border-radius: var(--st-radius-lg);
-  padding: var(--st-space-3);
-  cursor: pointer;
-  transition: all 0.2s;
-  box-shadow: var(--st-shadow);
-}
-.product-card:hover {
-  border-color: var(--st-primary);
-  box-shadow: var(--st-shadow-lg);
-  transform: translateY(-1px);
-}
-.product-card-header {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  margin-bottom: var(--st-space-1);
-}
-.product-card-name { font-size: 16px; font-weight: 600; color: var(--st-text); }
-.product-card-chevron { color: var(--st-text-tertiary); font-size: 16px; }
-.product-card-badges { display: flex; gap: 6px; margin-bottom: var(--st-space-1); flex-wrap: wrap; }
-.product-card-desc {
-  font-size: 13px;
-  color: var(--st-text-secondary);
-  line-height: 1.4;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  margin-bottom: var(--st-space-2);
-}
-.product-card-meta {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  font-size: 12px;
-  color: var(--st-text-tertiary);
-  padding-top: var(--st-space-1);
-  border-top: 1px solid var(--st-border);
-}
-.product-card-meta span { display: flex; align-items: center; gap: 4px; }
-.enrichment-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  padding: 2px 8px;
-  border-radius: var(--st-radius-pill);
-  font-size: 11px;
-  font-weight: 500;
-}
-.enrichment-complete { background: var(--st-positive-light); color: var(--st-positive); }
-.enrichment-review { background: var(--st-neutral-light); color: #9A7200; }
-.enrichment-empty { background: var(--st-bg); color: var(--st-text-tertiary); border: 1px solid var(--st-border); }
-
-/* ─── Detail View ─── */
-.detail-content {
-  flex: 1;
-  overflow-y: auto;
-  padding: var(--st-space-3);
-  max-width: 900px;
-  margin: 0 auto;
-  width: 100%;
-}
-
-/* ─── Synced Fields Zone ─── */
-.synced-zone {
-  background: var(--st-bg);
-  border: 1px solid var(--st-border);
-  border-radius: var(--st-radius-lg);
-  padding: var(--st-space-2) var(--st-space-3);
-  margin-bottom: var(--st-space-3);
-  position: relative;
-}
-.synced-zone-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: var(--st-space-2);
-}
-.synced-zone-label {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--st-text-tertiary);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-.synced-zone-label svg { width: 14px; height: 14px; }
-.synced-fields {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-  gap: var(--st-space-2);
-}
-.synced-field label {
-  display: block;
-  font-size: 12px;
-  font-weight: 500;
-  color: var(--st-text-tertiary);
-  margin-bottom: 2px;
-}
-.synced-field .value {
-  font-size: 13px;
-  color: var(--st-text-secondary);
-  padding: 6px 0;
-}
-.manage-link {
-  font-size: 12px;
-  color: var(--st-primary);
-  text-decoration: none;
-  cursor: pointer;
-}
-.manage-link:hover { text-decoration: underline; }
-
-/* ─── Scope Divider ─── */
-.scope-divider {
-  display: flex;
-  align-items: center;
-  gap: var(--st-space-2);
-  margin: var(--st-space-3) 0 var(--st-space-2);
-  position: relative;
-}
-.scope-divider::before, .scope-divider::after {
-  content: '';
-  flex: 1;
-  height: 1px;
-  background: var(--st-border);
-}
-.scope-divider-label {
-  display: flex;
-  align-items: center;
-  gap: var(--st-space-1);
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--st-text-secondary);
-  white-space: nowrap;
-}
-.scope-divider-hint {
-  font-size: 12px;
-  color: var(--st-text-tertiary);
-  font-weight: 400;
-  text-align: center;
-  margin-bottom: var(--st-space-2);
-}
-
-/* ─── Section Card ─── */
-.section-card {
-  background: var(--st-bg-card);
-  border: 1px solid var(--st-border);
-  border-radius: var(--st-radius);
-  margin-bottom: var(--st-space-2);
-  overflow: hidden;
-}
-.section-card-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 12px var(--st-space-2);
-  cursor: pointer;
-  transition: background 0.15s;
-  user-select: none;
-}
-.section-card-header:hover { background: var(--st-bg); }
-.section-card-title {
-  display: flex;
-  align-items: center;
-  gap: var(--st-space-1);
-  font-size: 14px;
-  font-weight: 600;
-}
-.section-card-right {
-  display: flex;
-  align-items: center;
-  gap: var(--st-space-1);
-}
-.section-card-arrow {
-  color: var(--st-text-tertiary);
-  font-size: 12px;
-  transition: transform 0.2s;
-}
-.section-card.open .section-card-arrow { transform: rotate(90deg); }
-.section-card-body {
-  display: none;
-  padding: var(--st-space-2);
-  border-top: 1px solid var(--st-border);
-}
-.section-card.open .section-card-body { display: block; }
-.counter-badge {
-  font-size: 11px;
-  font-weight: 600;
-  color: var(--st-text-tertiary);
-  background: var(--st-bg);
-  border: 1px solid var(--st-border);
-  padding: 1px 8px;
-  border-radius: var(--st-radius-pill);
-}
+/* ─── Section Cards ─── */
+.card{background:var(--st-bg-card);border:1px solid var(--st-border);border-radius:var(--st-radius-lg);box-shadow:var(--st-shadow);padding:var(--st-space-3) 28px;margin-bottom:var(--st-space-2);}
+.card-title{font-size:15px;font-weight:700;margin-bottom:4px;display:flex;align-items:center;gap:var(--st-space-1);}
+.card-desc{font-size:13px;color:var(--st-text-secondary);margin-bottom:var(--st-space-2);line-height:1.5;}
 
 /* ─── Form Elements ─── */
-.form-group { margin-bottom: var(--st-space-2); }
-.form-label {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 13px;
-  font-weight: 500;
-  margin-bottom: 4px;
-  color: var(--st-text);
-}
-.form-hint { font-size: 12px; color: var(--st-text-tertiary); margin-top: 2px; }
-.form-input, .form-textarea, .form-select {
-  width: 100%;
-  padding: var(--st-space-1) 12px;
-  border: 1px solid var(--st-border);
-  border-radius: var(--st-radius);
-  font-family: var(--st-font);
-  font-size: var(--st-text-base);
-  color: var(--st-text);
-  transition: border-color 0.15s;
-  background: var(--st-bg-card);
-}
-.form-input:focus, .form-textarea:focus, .form-select:focus {
-  outline: none;
-  border-color: var(--st-border-focus);
-  box-shadow: 0 0 0 3px rgba(3, 105, 233, 0.1);
-}
-.form-textarea { resize: vertical; min-height: 72px; }
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:var(--st-space-2);margin-bottom:var(--st-space-2);}
+.form-row-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:var(--st-space-2);margin-bottom:var(--st-space-2);}
+.form-full{grid-column:1 / -1;}
+.form-label{display:block;font-size:12px;font-weight:600;color:var(--st-text-secondary);margin-bottom:5px;}
+.form-hint{font-size:11px;color:var(--st-text-tertiary);margin-top:4px;line-height:1.4;}
+.form-input,.form-textarea,.form-select{width:100%;padding:var(--st-space-1) 12px;border:1px solid var(--st-border);border-radius:var(--st-radius);font-family:var(--st-font);font-size:var(--st-text-base);color:var(--st-text);transition:border-color .15s;background:var(--st-bg-card);}
+.form-input:focus,.form-textarea:focus,.form-select:focus{outline:none;border-color:var(--st-border-focus);box-shadow:0 0 0 3px rgba(3,105,233,.1);}
+.form-textarea{resize:vertical;min-height:72px;}
+.form-select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%235F6C7A' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;padding-right:28px;cursor:pointer;}
 
-/* AI-populated field indicator */
-.ai-field {
-  border-left: 3px solid var(--st-primary);
-  padding-left: 12px;
-  position: relative;
-}
-.ai-sparkle {
-  display: inline-flex;
-  align-items: center;
-  gap: 3px;
-  font-size: 11px;
-  color: var(--st-primary);
-  font-weight: 500;
-}
+/* ─── Synced Zone ─── */
+.synced-zone{background:var(--st-bg);border:1px solid var(--st-border);border-radius:var(--st-radius-lg);padding:var(--st-space-2) var(--st-space-3);margin-bottom:var(--st-space-3);}
+.synced-zone-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+.synced-zone-label{display:flex;align-items:center;gap:6px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--st-text-tertiary);}
+.synced-zone-label svg{width:14px;height:14px;}
+.synced-fields-grid{display:flex;flex-wrap:wrap;gap:20px;}
+.synced-field label{display:block;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:var(--st-text-tertiary);margin-bottom:2px;}
+.synced-field .val{font-size:13px;font-weight:600;color:var(--st-text);}
+.manage-link{font-size:12px;color:var(--st-primary);text-decoration:none;cursor:pointer;display:flex;align-items:center;gap:4px;font-weight:500;}
+.manage-link:hover{text-decoration:underline;}
+.manage-link svg{width:14px;height:14px;}
+.field-badge{font-size:10px;font-weight:600;padding:1px 6px;border-radius:var(--st-radius-pill);margin-left:4px;}
+.fb-synced{background:var(--st-primary-light);color:var(--st-primary);}
+.fb-mapped{background:var(--st-positive-light);color:var(--st-positive);}
+.fb-configure{background:var(--st-neutral-light);color:#9A7200;cursor:pointer;}
+
+/* ─── Synced Subsection ─── */
+.synced-sub{background:var(--st-bg);border:1px solid var(--st-border);border-radius:var(--st-radius);padding:var(--st-space-2) 20px;margin-top:20px;}
+.synced-sub-title{font-size:12px;font-weight:700;color:var(--st-text-secondary);margin-bottom:12px;display:flex;align-items:center;gap:var(--st-space-1);}
+
+/* ─── Collapsible Sections ─── */
+.collapse-header{display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none;}
+.collapse-header .chevron{width:20px;height:20px;color:var(--st-text-tertiary);transition:transform .2s;}
+.collapse-header.open .chevron{transform:rotate(180deg);}
+.collapse-body{max-height:0;overflow:hidden;transition:max-height .3s ease;}
+.collapse-body.open{max-height:2000px;}
 
 /* ─── Keyword Chips ─── */
-.keyword-zones {
-  display: flex;
-  flex-direction: column;
-  gap: var(--st-space-2);
-}
-.keyword-zone {
-  padding: var(--st-space-2);
-  border-radius: var(--st-radius);
-}
-.keyword-zone-admin {
-  background: var(--st-bg);
-  border: 1px solid var(--st-border);
-}
-.keyword-zone-ai {
-  background: var(--st-primary-light);
-  border: 1px dashed rgba(3, 105, 233, 0.3);
-}
-.keyword-zone-label {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 11px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.3px;
-  color: var(--st-text-tertiary);
-  margin-bottom: var(--st-space-1);
-}
-.keyword-zone-ai .keyword-zone-label { color: var(--st-primary); }
-.keyword-chips { display: flex; flex-wrap: wrap; gap: 6px; }
-.keyword-chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 4px 12px;
-  background: var(--st-bg-card);
-  border: 1px solid var(--st-border);
-  border-radius: var(--st-radius-pill);
-  font-size: 13px;
-  cursor: default;
-  transition: all 0.15s;
-}
-.keyword-chip .remove {
-  width: 16px; height: 16px;
-  display: flex; align-items: center; justify-content: center;
-  border-radius: 50%;
-  cursor: pointer;
-  color: var(--st-text-tertiary);
-  font-size: 14px;
-  line-height: 1;
-}
-.keyword-chip .remove:hover { background: var(--st-negative-light); color: var(--st-negative); }
-.keyword-chip.ai-rec {
-  border-color: var(--st-primary);
-  border-style: dashed;
-  background: white;
-}
-.keyword-chip.ai-rec .accept {
-  width: 18px; height: 18px;
-  display: flex; align-items: center; justify-content: center;
-  border-radius: 50%;
-  cursor: pointer;
-  color: var(--st-positive);
-  font-size: 14px;
-  font-weight: 700;
-}
-.keyword-chip.ai-rec .accept:hover { background: var(--st-positive-light); }
-.keyword-chip.ai-rec .reject {
-  width: 18px; height: 18px;
-  display: flex; align-items: center; justify-content: center;
-  border-radius: 50%;
-  cursor: pointer;
-  color: var(--st-negative);
-  font-size: 14px;
-}
-.keyword-chip.ai-rec .reject:hover { background: var(--st-negative-light); }
+.kw-zone{padding:var(--st-space-2);border-radius:var(--st-radius);margin-bottom:var(--st-space-1);}
+.kw-zone-admin{background:var(--st-bg);border:1px solid var(--st-border);}
+.kw-zone-ai{background:var(--st-primary-light);border:1px dashed rgba(3,105,233,.3);}
+.kw-zone-label{display:flex;align-items:center;gap:6px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.3px;color:var(--st-text-tertiary);margin-bottom:var(--st-space-1);}
+.kw-zone-ai .kw-zone-label{color:var(--st-primary);}
+.kw-chips{display:flex;flex-wrap:wrap;gap:6px;}
+.kw-chip{display:inline-flex;align-items:center;gap:6px;padding:4px 12px;background:var(--st-bg-card);border:1px solid var(--st-border);border-radius:var(--st-radius-pill);font-size:13px;cursor:default;transition:all .15s;}
+.kw-chip .rm{width:16px;height:16px;display:flex;align-items:center;justify-content:center;border-radius:50%;cursor:pointer;color:var(--st-text-tertiary);font-size:14px;line-height:1;}
+.kw-chip .rm:hover{background:var(--st-negative-light);color:var(--st-negative);}
+.kw-chip.ai-rec{border-color:var(--st-primary);border-style:dashed;background:#fff;}
+.kw-chip.ai-rec .accept{width:18px;height:18px;display:flex;align-items:center;justify-content:center;border-radius:50%;cursor:pointer;color:var(--st-positive);font-size:14px;font-weight:700;}
+.kw-chip.ai-rec .accept:hover{background:var(--st-positive-light);}
+.kw-chip.ai-rec .reject{width:18px;height:18px;display:flex;align-items:center;justify-content:center;border-radius:50%;cursor:pointer;color:var(--st-negative);font-size:14px;}
+.kw-chip.ai-rec .reject:hover{background:var(--st-negative-light);}
 
 /* ─── Feature Table ─── */
-.feature-table { width: 100%; border-collapse: separate; border-spacing: 0; }
-.feature-table th {
-  text-align: left;
-  padding: var(--st-space-1) var(--st-space-2);
-  font-size: 12px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.3px;
-  color: var(--st-text-tertiary);
-  border-bottom: 1px solid var(--st-border);
-  background: var(--st-bg);
-}
-.feature-table td {
-  padding: 10px var(--st-space-2);
-  border-bottom: 1px solid var(--st-border);
-  font-size: 13px;
-  vertical-align: middle;
-}
-.feature-table tr:last-child td { border-bottom: none; }
-.feature-table tr:hover td { background: var(--st-bg); }
+.ft{width:100%;border-collapse:separate;border-spacing:0;}
+.ft th{text-align:left;padding:var(--st-space-1) var(--st-space-2);font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.3px;color:var(--st-text-tertiary);border-bottom:1px solid var(--st-border);background:var(--st-bg);}
+.ft td{padding:10px var(--st-space-2);border-bottom:1px solid var(--st-border);font-size:13px;vertical-align:middle;}
+.ft tr:last-child td{border-bottom:none;}
+.ft tr:hover td{background:var(--st-bg);}
 
 /* ─── Toggle ─── */
-.toggle {
-  position: relative;
-  width: 36px; height: 20px;
-  background: var(--st-border);
-  border-radius: 10px;
-  cursor: pointer;
-  transition: background 0.2s;
-  flex-shrink: 0;
-}
-.toggle.active { background: var(--st-primary); }
-.toggle::after {
-  content: '';
-  position: absolute;
-  top: 2px; left: 2px;
-  width: 16px; height: 16px;
-  background: white;
-  border-radius: 50%;
-  transition: transform 0.2s;
-  box-shadow: 0 1px 2px rgba(0,0,0,0.15);
-}
-.toggle.active::after { transform: translateX(16px); }
-.toggle-label {
-  display: flex;
-  align-items: center;
-  gap: var(--st-space-1);
-  font-size: 12px;
-  color: var(--st-text-secondary);
-}
+.toggle{position:relative;width:36px;height:20px;background:var(--st-border);border-radius:10px;cursor:pointer;transition:background .2s;flex-shrink:0;}
+.toggle.active{background:var(--st-primary);}
+.toggle::after{content:'';position:absolute;top:2px;left:2px;width:16px;height:16px;background:#fff;border-radius:50%;transition:transform .2s;box-shadow:0 1px 2px rgba(0,0,0,.15);}
+.toggle.active::after{transform:translateX(16px);}
+.toggle-label{display:flex;align-items:center;gap:var(--st-space-1);font-size:12px;color:var(--st-text-secondary);}
 
-/* ─── Collapsible (Company Settings) ─── */
-.collapsible {
-  border: 1px solid var(--st-border);
-  border-radius: var(--st-radius);
-  margin-bottom: var(--st-space-1);
-  overflow: hidden;
-}
-.collapsible-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 12px var(--st-space-2);
-  cursor: pointer;
-  background: var(--st-bg-card);
-  transition: background 0.15s;
-}
-.collapsible-header:hover { background: var(--st-bg); }
-.collapsible-header .arrow {
-  transition: transform 0.2s;
-  color: var(--st-text-tertiary);
-  font-size: 12px;
-}
-.collapsible.open .collapsible-header .arrow { transform: rotate(90deg); }
-.collapsible-body {
-  display: none;
-  padding: var(--st-space-2);
-  border-top: 1px solid var(--st-border);
-  background: var(--st-bg-card);
-}
-.collapsible.open .collapsible-body { display: block; }
+/* ─── Multi-Select Chips ─── */
+.ms-area{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;}
+.ms-chip{display:flex;align-items:center;gap:6px;padding:6px 12px;border:1px solid var(--st-border);border-radius:var(--st-radius-pill);font-size:12px;font-weight:500;cursor:pointer;transition:all .12s;background:var(--st-bg-card);}
+.ms-chip:hover{border-color:var(--st-primary);}
+.ms-chip.sel{border-color:var(--st-primary);background:var(--st-primary-light);color:var(--st-primary);}
+.pricing-entry{display:flex;align-items:center;gap:12px;padding:8px 0;font-size:13px;}
+.pricing-toggle{display:flex;border-radius:var(--st-radius);overflow:hidden;border:1px solid var(--st-border);}
+.pricing-toggle-opt{padding:4px 12px;font-size:11px;font-weight:600;cursor:pointer;background:var(--st-bg-card);color:var(--st-text-tertiary);transition:all .12s;}
+.pricing-toggle-opt.active{background:var(--st-primary);color:#fff;}
 
-/* ─── Data Table ─── */
-.data-table { width: 100%; border-collapse: separate; border-spacing: 0; }
-.data-table th {
-  text-align: left;
-  padding: var(--st-space-1) var(--st-space-2);
-  font-size: 12px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.3px;
-  color: var(--st-text-tertiary);
-  border-bottom: 1px solid var(--st-border);
-  background: var(--st-bg);
-}
-.data-table td {
-  padding: 10px var(--st-space-2);
-  border-bottom: 1px solid var(--st-border);
-  font-size: 13px;
-  vertical-align: middle;
-}
-.data-table tr:last-child td { border-bottom: none; }
-.data-table tr:hover td { background: var(--st-bg); }
+/* ─── Mapping Row ─── */
+.mapping-row{display:flex;align-items:center;gap:12px;padding:10px 14px;background:var(--st-bg);border-radius:var(--st-radius);margin-bottom:8px;font-size:13px;}
+.mapping-field{font-weight:500;color:var(--st-text-secondary);}
+.mapping-value{font-weight:600;color:var(--st-primary);background:var(--st-primary-light);padding:2px 10px;border-radius:var(--st-radius-pill);}
+
+/* ─── Feature Pills ─── */
+.fp-list{display:flex;flex-wrap:wrap;gap:8px;}
+.fp{padding:6px 14px;background:var(--st-bg);border-radius:var(--st-radius-pill);font-size:12px;font-weight:500;color:var(--st-text);border:1px solid var(--st-border);}
+.fp-add{padding:6px 14px;background:transparent;border:1px dashed var(--st-border);border-radius:var(--st-radius-pill);font-size:12px;font-weight:500;color:var(--st-text-tertiary);cursor:pointer;}
+.fp-add:hover{border-color:var(--st-primary);color:var(--st-primary);}
+
+/* ─── AI Field Indicator ─── */
+.ai-field{border-left:3px solid var(--st-primary);padding-left:12px;}
+.ai-sparkle{display:inline-flex;align-items:center;gap:3px;font-size:11px;color:var(--st-primary);font-weight:500;}
+
+/* ─── Callout ─── */
+.callout{border-left:3px solid var(--st-primary);padding:12px 16px;border-radius:0 var(--st-radius) var(--st-radius) 0;font-size:13px;color:var(--st-text-secondary);line-height:1.5;margin-bottom:var(--st-space-3);}
+.callout-info{background:var(--st-primary-light);border-left-color:var(--st-primary);}
+.callout-tip{background:var(--st-positive-light);border-left-color:var(--st-positive);}
+.callout svg{width:14px;height:14px;vertical-align:-2px;margin-right:6px;}
 
 /* ─── Empty State ─── */
-.empty-state {
-  text-align: center;
-  padding: var(--st-space-6) var(--st-space-4);
-  max-width: 480px;
-  margin: 80px auto;
-}
-.empty-state-icon {
-  width: 80px; height: 80px;
-  background: var(--st-primary-light);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: 0 auto var(--st-space-3);
-}
-.empty-state-icon svg { width: 40px; height: 40px; color: var(--st-primary); }
-.empty-state-title { font-size: 20px; font-weight: 600; margin-bottom: var(--st-space-1); }
-.empty-state-subtitle {
-  color: var(--st-text-secondary);
-  margin-bottom: var(--st-space-3);
-  line-height: 1.6;
-}
-.setup-checklist {
-  text-align: left;
-  background: var(--st-bg);
-  border-radius: var(--st-radius-lg);
-  padding: var(--st-space-3);
-  margin-top: var(--st-space-3);
-}
-.checklist-item {
-  display: flex;
-  align-items: flex-start;
-  gap: var(--st-space-1);
-  padding: var(--st-space-1) 0;
-  font-size: 13px;
-  color: var(--st-text-secondary);
-}
-.checklist-item .step-num {
-  width: 20px; height: 20px;
-  background: var(--st-primary);
-  color: white;
-  border-radius: 50%;
-  font-size: 11px;
-  font-weight: 600;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
+.empty-center{max-width:640px;margin:var(--st-space-5) auto;text-align:center;padding:0 var(--st-space-3);}
+.empty-icon{width:80px;height:80px;border-radius:50%;background:var(--st-primary-light);display:flex;align-items:center;justify-content:center;margin:0 auto var(--st-space-3);}
+.empty-icon svg{width:36px;height:36px;color:var(--st-primary);}
+.empty-center h2{font-size:22px;font-weight:700;margin-bottom:var(--st-space-1);}
+.empty-center>p{color:var(--st-text-secondary);margin-bottom:var(--st-space-4);line-height:1.6;}
+.checklist{text-align:left;background:var(--st-bg-card);border-radius:var(--st-radius-lg);box-shadow:var(--st-shadow);padding:var(--st-space-3) 28px;margin-bottom:var(--st-space-3);}
+.checklist-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--st-text-tertiary);margin-bottom:var(--st-space-2);}
+.checklist-item{display:flex;gap:12px;padding:10px 0;border-bottom:1px solid var(--st-border);font-size:13px;color:var(--st-text);line-height:1.5;}
+.checklist-item:last-child{border-bottom:none;}
+.cl-num{width:22px;height:22px;border-radius:50%;background:var(--st-primary);color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;margin-top:1px;}
 
-/* ─── Info Banner ─── */
-.info-banner {
-  display: flex;
-  align-items: flex-start;
-  gap: var(--st-space-2);
-  padding: var(--st-space-2);
-  background: var(--st-primary-light);
-  border-radius: var(--st-radius);
-  font-size: 13px;
-  color: var(--st-text);
-  margin-bottom: var(--st-space-2);
-}
-.info-banner .banner-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+/* ─── Product Selection ─── */
+.ps-wrap{max-width:860px;margin:0 auto;padding:var(--st-space-4) var(--st-space-3);}
+.ps-wrap h2{font-size:20px;font-weight:700;margin-bottom:4px;}
+.ps-sub{color:var(--st-text-secondary);font-size:14px;margin-bottom:var(--st-space-2);}
+.ps-count{display:inline-flex;align-items:center;gap:6px;background:var(--st-primary-light);color:var(--st-primary);padding:4px 12px;border-radius:var(--st-radius-pill);font-size:12px;font-weight:600;margin-bottom:var(--st-space-2);}
+.ps-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px;margin-bottom:var(--st-space-3);}
+.ps-card{background:var(--st-bg-card);border:2px solid var(--st-border);border-radius:var(--st-radius-lg);padding:var(--st-space-2);cursor:pointer;transition:all .15s;position:relative;}
+.ps-card:hover{border-color:#C0C8D8;box-shadow:var(--st-shadow);}
+.ps-card.sel{border-color:var(--st-primary);background:var(--st-primary-light);}
+.ps-card-chk{position:absolute;top:12px;right:12px;width:22px;height:22px;border-radius:var(--st-radius);border:2px solid var(--st-border);display:flex;align-items:center;justify-content:center;transition:all .15s;}
+.ps-card.sel .ps-card-chk{background:var(--st-primary);border-color:var(--st-primary);}
+.ps-card-chk svg{width:14px;height:14px;color:#fff;opacity:0;transition:opacity .1s;}
+.ps-card.sel .ps-card-chk svg{opacity:1;}
+.ps-card-name{font-weight:600;font-size:14px;margin-bottom:6px;padding-right:30px;}
+.ps-card-type{display:inline-block;font-size:11px;font-weight:600;padding:2px 8px;border-radius:var(--st-radius-pill);background:var(--st-bg);color:var(--st-text-secondary);margin-bottom:8px;}
+.ps-card-desc{font-size:12px;color:var(--st-text-secondary);line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+
+/* ─── Button Stack ─── */
+.btn-stack{display:flex;flex-direction:column;gap:8px;align-items:flex-end;}
 
 /* ─── Scanning Animation ─── */
-.scanning-indicator {
-  display: none;
-  align-items: center;
-  gap: var(--st-space-1);
-  padding: var(--st-space-1) var(--st-space-2);
-  background: var(--st-primary-light);
-  border-radius: var(--st-radius);
-  font-size: 13px;
-  color: var(--st-primary);
-  margin-top: var(--st-space-1);
-}
-.scanning-indicator.active { display: flex; }
-.scanning-dot {
-  width: 8px; height: 8px;
-  background: var(--st-primary);
-  border-radius: 50%;
-  animation: pulse 1.5s infinite;
-}
-@keyframes pulse {
-  0%, 100% { opacity: 0.4; transform: scale(0.8); }
-  50% { opacity: 1; transform: scale(1); }
-}
+.scanning-indicator{display:none;align-items:center;gap:var(--st-space-1);padding:var(--st-space-1) var(--st-space-2);background:var(--st-primary-light);border-radius:var(--st-radius);font-size:13px;color:var(--st-primary);margin-top:var(--st-space-1);}
+.scanning-indicator.active{display:flex;}
+.scanning-dot{width:8px;height:8px;background:var(--st-primary);border-radius:50%;animation:pulse 1.5s infinite;}
+@keyframes pulse{0%,100%{opacity:.4;transform:scale(.8);}50%{opacity:1;transform:scale(1);}}
 
-/* ─── Shimmer Animation (Auto-fill) ─── */
-@keyframes shimmer {
-  0% { background-position: -200px 0; }
-  100% { background-position: calc(200px + 100%) 0; }
-}
-.shimmer-row {
-  background: linear-gradient(90deg, var(--st-bg) 0%, var(--st-primary-light) 40%, var(--st-bg) 80%);
-  background-size: 200px 100%;
-  animation: shimmer 1.5s infinite;
-  height: 40px;
-  border-radius: var(--st-radius);
-  margin-bottom: 4px;
-}
+/* ─── Screen Visibility ─── */
+.screen{display:none;}
+.screen.active{display:block;}
+.screen-flex{display:none;}
+.screen-flex.active{display:flex;}
 
-/* ─── Prototype Controls ─── */
-.proto-controls {
-  position: fixed;
-  bottom: var(--st-space-2);
-  right: var(--st-space-2);
-  display: flex;
-  gap: 4px;
-  padding: 6px;
-  background: var(--st-bg-card);
-  border: 1px solid var(--st-border);
-  border-radius: var(--st-radius-lg);
-  box-shadow: var(--st-shadow-lg);
-  z-index: 1000;
-}
-.proto-btn {
-  padding: 6px 12px;
-  border-radius: var(--st-radius-pill);
-  font-size: 12px;
-  font-weight: 500;
-  color: var(--st-text-secondary);
-  cursor: pointer;
-  white-space: nowrap;
-  border: 1px solid transparent;
-  background: transparent;
-  font-family: var(--st-font);
-  transition: all 0.15s;
-}
-.proto-btn:hover { background: var(--st-bg); color: var(--st-text); }
-.proto-btn.active {
-  background: var(--st-primary-light);
-  color: var(--st-primary);
-  border-color: rgba(3, 105, 233, 0.2);
-}
+/* ─── Data Table ─── */
+.dt{width:100%;border-collapse:separate;border-spacing:0;}
+.dt th{text-align:left;padding:var(--st-space-1) var(--st-space-2);font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.3px;color:var(--st-text-tertiary);border-bottom:1px solid var(--st-border);background:var(--st-bg);}
+.dt td{padding:10px var(--st-space-2);border-bottom:1px solid var(--st-border);font-size:13px;vertical-align:middle;}
+.dt tr:last-child td{border-bottom:none;}
+.dt tr:hover td{background:var(--st-bg);}
 
 /* ─── Utility ─── */
-.flex { display: flex; }
-.items-center { align-items: center; }
-.justify-between { justify-content: space-between; }
-.gap-1 { gap: var(--st-space-1); }
-.gap-2 { gap: var(--st-space-2); }
-.mt-1 { margin-top: var(--st-space-1); }
-.mt-2 { margin-top: var(--st-space-2); }
-.mb-2 { margin-bottom: var(--st-space-2); }
-.font-medium { font-weight: 500; }
-.text-sm { font-size: 13px; }
-.text-xs { font-size: 12px; }
-.text-secondary { color: var(--st-text-secondary); }
+.font-medium{font-weight:500;}
+.text-sm{font-size:13px;}
+.text-xs{font-size:12px;}
+.text-secondary{color:var(--st-text-secondary);}
 </style>
 </head>
 <body>
 
-<div class="app-shell">
-  <!-- ═══ SCREEN 1: Product Grid ═══ -->
-  <div class="screen active" id="screen-grid">
-    <div class="company-bar">
-      <div class="company-bar-left">
-        <span class="company-name">Gainsight</span>
-        <span class="tag tag-primary">5 Products Synced</span>
-      </div>
-      <div class="company-bar-right">
-        <a class="manage-link" onclick="showScreen('settings')">Edit Company Settings</a>
-        <button class="btn btn-primary btn-sm" onclick="demoAutoFillAll()">
-          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 8c0-3 2-6 5-6s5 3 5 6"/><path d="M1 8h14"/><path d="M3 8c0 3 2 6 5 6s5-3 5-6"/></svg>
-          Auto-fill All from Web
-        </button>
-      </div>
+<!-- ═══ DEMO BAR ═══ -->
+<div class="demo-bar">
+  <span class="demo-bar-label">Prototype</span>
+  <button class="demo-step active" onclick="goScreen('empty')"><span class="demo-num">1</span>Empty State</button>
+  <button class="demo-step" onclick="goScreen('selection')"><span class="demo-num">2</span>Product Selection</button>
+  <button class="demo-step" onclick="goScreen('settings')"><span class="demo-num">3</span>Company Settings</button>
+  <button class="demo-step" onclick="goScreen('detail')"><span class="demo-num">4</span>Product Detail</button>
+</div>
+
+<!-- ═══ TOP NAV ═══ -->
+<div class="top-nav">
+  <div class="breadcrumb" id="bc">
+    <a>Admin</a><span class="sep">/</span><span class="current">Organization Profile</span>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- SCREEN 1: EMPTY STATE                                   -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div class="app-body-full screen active" id="scr-empty">
+  <div class="empty-center">
+    <div class="empty-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M13 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V9z"/><polyline points="13 2 13 9 20 9"/><path d="M12 18v-6"/><path d="M9 15h6"/></svg>
     </div>
-    <div class="product-grid" id="product-grid">
-      <!-- Rendered by JS -->
+    <h2>Set Up Organization Profile</h2>
+    <p>Configure your organization's product relationships to enable multi-product intelligence. Before syncing, ensure the following is complete in Gainsight CS.</p>
+
+    <div class="checklist">
+      <div class="checklist-title">Pre-Sync Checklist</div>
+      <div class="checklist-item"><span class="cl-num">1</span><span>Ensure Relationship Types are configured in GS CS Admin</span></div>
+      <div class="checklist-item"><span class="cl-num">2</span><span>Ensure Product Relationship Type has a product identifier field (multi-picklist recommended)</span></div>
+      <div class="checklist-item"><span class="cl-num">3</span><span>Ensure contacts/users are mapped to relationships</span></div>
+      <div class="checklist-item"><span class="cl-num">4</span><span>Ensure relationship status field is populated (Active, Churned, Onboarding, Prospect)</span></div>
+      <div class="checklist-item"><span class="cl-num">5</span><span>Verify product identifier values match your actual product list</span></div>
+    </div>
+
+    <div class="callout callout-info" style="text-align:left;margin-bottom:28px;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+      This feature works with Product Relationship types. Ensure you're syncing only true Product relationships.
+    </div>
+
+    <button class="btn btn-primary btn-primary-lg" onclick="goScreen('selection')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:18px;height:18px"><path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+      Sync Relationships from CS
+    </button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- SCREEN 2: POST-SYNC PRODUCT SELECTION                   -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div class="app-body-full screen" id="scr-selection">
+  <div class="ps-wrap">
+    <h2>Select Products to Sync</h2>
+    <p class="ps-sub">Only Product Relationship types are shown. Select the products you want Staircase to track for intelligence.</p>
+    <div class="ps-count">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      12 products discovered
+    </div>
+    <div class="ps-grid" id="ps-grid"></div>
+    <div class="callout callout-info" style="margin-bottom:var(--st-space-3);">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+      Products not selected will still exist in Gainsight CS but won't receive Staircase intelligence processing.
+    </div>
+    <div style="text-align:right;">
+      <button class="btn btn-primary" onclick="goScreen('settings')">
+        Confirm Selection
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- SCREENS 3 & 4: SIDEBAR LAYOUT                           -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div class="app-body screen-flex" id="scr-sidebar">
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div class="sidebar-item active" onclick="goSub('settings')" id="nav-settings">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+      Company Settings
+    </div>
+    <div class="sidebar-heading">Products</div>
+    <div class="sidebar-item" onclick="goProduct(0)" id="nav-p0">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
+      Gainsight CS
+      <span class="sidebar-status s-active">Active</span>
+    </div>
+    <div class="sidebar-item" onclick="goProduct(1)" id="nav-p1">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+      Staircase AI
+      <span class="sidebar-status s-active">Active</span>
+    </div>
+    <div class="sidebar-item" onclick="goProduct(2)" id="nav-p2">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>
+      SkillJar
+      <span class="sidebar-status s-active">Active</span>
+    </div>
+    <div class="sidebar-item" onclick="goProduct(3)" id="nav-p3">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+      GS Communities
+      <span class="sidebar-status s-active">Active</span>
+    </div>
+    <div class="sidebar-item" onclick="goProduct(4)" id="nav-p4">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+      Gainsight PX
+      <span class="sidebar-status s-active">Active</span>
     </div>
   </div>
 
-  <!-- ═══ SCREEN 2: Product Detail ═══ -->
-  <div class="screen" id="screen-detail">
-    <div class="top-bar">
-      <div class="top-bar-left">
-        <div class="breadcrumb">
-          <a onclick="showScreen('grid')">Organization Profile</a>
-          <span class="sep">›</span>
-          <span class="current" id="detail-breadcrumb">Gainsight CS</span>
-        </div>
-        <div class="nav-arrows">
-          <button onclick="prevProduct()" id="prev-btn" title="Previous product">‹</button>
-          <button onclick="nextProduct()" id="next-btn" title="Next product">›</button>
-        </div>
-      </div>
-      <div class="top-bar-right">
-        <button class="btn btn-secondary btn-sm" onclick="demoAutoFill()">
-          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 8c0-3 2-6 5-6s5 3 5 6"/><path d="M1 8h14"/><path d="M3 8c0 3 2 6 5 6s5-3 5-6"/></svg>
-          Auto-fill from Web
-        </button>
-        <button class="btn btn-positive btn-sm">Save Changes</button>
-      </div>
-    </div>
-    <div class="detail-content" id="detail-content">
-      <!-- Rendered by JS -->
-    </div>
-  </div>
+  <!-- MAIN -->
+  <div class="main">
 
-  <!-- ═══ SCREEN 3: Company Settings ═══ -->
-  <div class="screen" id="screen-settings">
-    <div class="top-bar">
-      <div class="top-bar-left">
-        <div class="breadcrumb">
-          <a onclick="showScreen('grid')">Organization Profile</a>
-          <span class="sep">›</span>
-          <span class="current">Company Settings</span>
-        </div>
-      </div>
-      <div class="top-bar-right">
-        <button class="btn btn-positive btn-sm">Save Changes</button>
-      </div>
-    </div>
-    <div style="flex:1;overflow-y:auto;padding:var(--st-space-3);">
-      <div style="max-width:720px;margin:0 auto;">
-        <div class="info-banner" style="margin-bottom:var(--st-space-3);">
-          <span class="banner-icon">
-            <svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="12" height="12" rx="2"/><path d="M5 6h6M5 8h4M5 10h5"/></svg>
-          </span>
-          <div>Company-level settings provide baseline intelligence. All products inherit these unless they explicitly override them.</div>
+    <!-- ─── COMPANY SETTINGS ─── -->
+    <div class="screen active" id="sub-settings">
+      <div class="main-wide">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:28px;">
+          <div>
+            <h2 style="font-size:20px;font-weight:700;">Company Settings</h2>
+            <p style="font-size:13px;color:var(--st-text-secondary);margin-top:4px;">Global organization configuration shared across all products</p>
+          </div>
+          <button class="btn btn-save"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>Save Changes</button>
         </div>
 
         <!-- Company Identity -->
-        <div class="collapsible open">
-          <div class="collapsible-header" onclick="this.parentElement.classList.toggle('open')">
-            <div class="flex items-center gap-1">
-              <span class="font-medium">Company Identity</span>
-              <span class="tag tag-positive" style="font-size:11px;">Complete</span>
-            </div>
-            <span class="arrow">&#9654;</span>
+        <div class="card">
+          <div class="card-title">Company Identity</div>
+          <div class="card-desc">Core information about your organization.</div>
+          <div class="form-row">
+            <div><label class="form-label">Company Name</label><input class="form-input" type="text" value="Gainsight"></div>
+            <div><label class="form-label">Industry</label><input class="form-input" type="text" value="B2B SaaS (Customer Success Platform)"></div>
           </div>
-          <div class="collapsible-body">
-            <div class="form-group">
-              <label class="form-label">Company Name</label>
-              <input class="form-input" type="text" value="Gainsight">
+          <div class="form-row">
+            <div><label class="form-label">Website</label><input class="form-input" type="text" value="https://www.gainsight.com"></div>
+            <div><label class="form-label">Headquarters</label><input class="form-input" type="text" value="San Francisco, CA"></div>
+          </div>
+          <div style="margin-bottom:var(--st-space-2);">
+            <label class="form-label">Company Description</label>
+            <textarea class="form-textarea" rows="3">Gainsight is a comprehensive customer success platform that provides tools for customer health scoring, lifecycle management, product analytics, community engagement, and AI-powered communication intelligence. The platform helps B2B SaaS companies reduce churn, drive expansion, and deliver durable growth through data-driven customer success.</textarea>
+          </div>
+
+          <!-- Synced from Gainsight -->
+          <div class="synced-sub">
+            <div class="synced-sub-title">
+              <span class="tag tag-primary" style="font-size:11px;padding:1px 8px;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:10px;height:10px"><path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                Synced
+              </span>
+              Synced from Gainsight
             </div>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--st-space-2);">
-              <div class="form-group">
-                <label class="form-label">Industry</label>
-                <input class="form-input" type="text" value="B2B SaaS (Customer Success Platform)">
-              </div>
-              <div class="form-group">
-                <label class="form-label">Company Size</label>
-                <select class="form-select"><option>Startup</option><option>Mid-Market</option><option selected>Enterprise</option></select>
-              </div>
-            </div>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--st-space-2);">
-              <div class="form-group">
-                <label class="form-label">Primary Vertical</label>
-                <input class="form-input" type="text" value="Customer Intelligence">
-              </div>
-              <div class="form-group">
-                <label class="form-label">Geographic Focus</label>
-                <input class="form-input" type="text" value="North America, EMEA expanding">
-              </div>
+            <div>
+              <label class="form-label">Product Identifier Field(s)</label>
+              <select class="form-select" style="max-width:400px;">
+                <option selected>Product (Multi-Picklist)</option>
+                <option>Solution Area (Text)</option>
+                <option>Product Line (Picklist)</option>
+              </select>
+              <div class="form-hint">Select the Gainsight field that identifies which product a relationship belongs to. Multi-picklist recommended.</div>
             </div>
           </div>
         </div>
 
         <!-- Tone Baseline -->
-        <div class="collapsible open">
-          <div class="collapsible-header" onclick="this.parentElement.classList.toggle('open')">
-            <div class="flex items-center gap-1">
-              <span class="font-medium">Tone Baseline</span>
-              <span class="tag tag-positive" style="font-size:11px;">Complete</span>
-            </div>
-            <span class="arrow">&#9654;</span>
+        <div class="card">
+          <div class="card-title">Tone Baseline</div>
+          <div class="card-desc">How your industry communicates — helps Staircase calibrate sentiment analysis.</div>
+          <div style="margin-bottom:var(--st-space-2);">
+            <label class="form-label">Industry Communication Style</label>
+            <textarea class="form-textarea" rows="3">CS professionals are data-driven and outcome-focused. They speak in terms of NRR, churn, health scores, and playbooks. Frustration often relates to implementation complexity or data quality — these are enablement opportunities, not churn signals.</textarea>
           </div>
-          <div class="collapsible-body">
-            <div class="form-group">
-              <label class="form-label">Industry Communication Style</label>
-              <textarea class="form-textarea" rows="3">CS professionals are data-driven and outcome-focused. They speak in terms of NRR, churn, health scores, and playbooks. Frustration often relates to implementation complexity or data quality &mdash; these are enablement opportunities, not churn signals.</textarea>
-            </div>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--st-space-2);">
-              <div class="form-group">
-                <label class="form-label">Formality Level</label>
-                <select class="form-select"><option>Casual</option><option selected>Professional</option><option>Formal</option></select>
-              </div>
-              <div class="form-group">
-                <label class="form-label">Escalation Sensitivity</label>
-                <select class="form-select"><option>Low</option><option selected>Medium</option><option>High</option></select>
-              </div>
-            </div>
+          <div class="form-row">
+            <div><label class="form-label">Formality Level</label><select class="form-select"><option>Casual</option><option selected>Professional</option><option>Formal</option></select></div>
+            <div><label class="form-label">Escalation Sensitivity</label><select class="form-select"><option>Low</option><option selected>Medium</option><option>High</option></select></div>
           </div>
         </div>
 
         <!-- Persona Definitions -->
-        <div class="collapsible">
-          <div class="collapsible-header" onclick="this.parentElement.classList.toggle('open')">
-            <div class="flex items-center gap-1">
-              <span class="font-medium">Persona Definitions</span>
-              <span class="tag tag-positive" style="font-size:11px;">4 personas</span>
-            </div>
-            <span class="arrow">&#9654;</span>
-          </div>
-          <div class="collapsible-body">
-            <table class="data-table">
-              <thead><tr><th>Persona</th><th>Titles</th><th>Signal Weight</th></tr></thead>
-              <tbody>
-                <tr><td class="font-medium">Buyers</td><td>VP Customer Success, CCO, VP Revenue Ops</td><td><span class="tag tag-negative" style="font-size:11px;">High</span></td></tr>
-                <tr><td class="font-medium">Users</td><td>CSM, Account Manager, CS Ops Analyst</td><td><span class="tag tag-neutral" style="font-size:11px;">Medium</span></td></tr>
-                <tr><td class="font-medium">Champions</td><td>Director CS, CS Lead, Senior CSM</td><td><span class="tag tag-negative" style="font-size:11px;">High</span></td></tr>
-                <tr><td class="font-medium">Executives</td><td>CEO, CRO, COO, CFO</td><td><span class="tag tag-negative" style="font-size:11px;">Critical</span></td></tr>
-              </tbody>
-            </table>
-          </div>
+        <div class="card">
+          <div class="card-title">Persona Definitions <span class="tag tag-ghost" style="font-size:11px;">4 personas</span></div>
+          <div class="card-desc">Stakeholder personas and their signal weight — helps prioritize communication analysis.</div>
+          <table class="dt">
+            <thead><tr><th>Persona</th><th>Titles</th><th>Signal Weight</th></tr></thead>
+            <tbody>
+              <tr><td class="font-medium">Buyers</td><td>VP Customer Success, CCO, VP Revenue Ops</td><td><span class="tag tag-negative" style="font-size:11px;">High</span></td></tr>
+              <tr><td class="font-medium">Users</td><td>CSM, Account Manager, CS Ops Analyst</td><td><span class="tag tag-neutral" style="font-size:11px;">Medium</span></td></tr>
+              <tr><td class="font-medium">Champions</td><td>Director CS, CS Lead, Senior CSM</td><td><span class="tag tag-negative" style="font-size:11px;">High</span></td></tr>
+              <tr><td class="font-medium">Executives</td><td>CEO, CRO, COO, CFO</td><td><span class="tag tag-negative" style="font-size:11px;">Critical</span></td></tr>
+            </tbody>
+          </table>
         </div>
 
-        <!-- Strategic North Star -->
-        <div class="collapsible">
-          <div class="collapsible-header" onclick="this.parentElement.classList.toggle('open')">
-            <div class="flex items-center gap-1">
-              <span class="font-medium">Strategic North Star</span>
-              <span class="tag tag-positive" style="font-size:11px;">Configured</span>
-            </div>
-            <span class="arrow">&#9654;</span>
-          </div>
-          <div class="collapsible-body">
-            <div class="form-group">
-              <label class="form-label">Current Focus</label>
-              <input class="form-input" type="text" value="Net Revenue Retention through AI adoption">
-            </div>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--st-space-2);">
-              <div class="form-group">
-                <label class="form-label">Primary Metric</label>
-                <input class="form-input" type="text" value="Net Revenue Retention (target: 110%)">
-              </div>
-              <div class="form-group">
-                <label class="form-label">Priority Mode</label>
-                <select class="form-select"><option selected>Retention</option><option>Expansion</option><option>Adoption</option><option>Balanced</option></select>
-              </div>
-            </div>
-            <div class="form-group">
-              <label class="form-label">Focus Period</label>
-              <input class="form-input" type="text" value="FY27 Q1-Q2 (Feb - Jul 2026)">
-            </div>
-          </div>
-        </div>
-
-        <!-- Global Anti-Patterns -->
-        <div class="collapsible">
-          <div class="collapsible-header" onclick="this.parentElement.classList.toggle('open')">
-            <div class="flex items-center gap-1">
-              <span class="font-medium">Global Anti-Patterns</span>
-              <span class="tag tag-ghost" style="font-size:11px;">5 rules</span>
-            </div>
-            <span class="arrow">&#9654;</span>
-          </div>
-          <div class="collapsible-body">
-            <p class="text-sm text-secondary mb-2">Patterns to NEVER flag as signals, regardless of product</p>
-            <table class="data-table">
-              <thead><tr><th>Pattern</th><th>Reason</th><th>Routes To</th></tr></thead>
-              <tbody>
-                <tr><td>"Urgent data request"</td><td>Normal CS operations</td><td><span class="tag tag-ghost" style="font-size:11px;">Ignore</span></td></tr>
-                <tr><td>"Dashboard is slow"</td><td>Performance feedback, not churn</td><td><span class="tag tag-ghost" style="font-size:11px;">Operational</span></td></tr>
-                <tr><td>"Need this for board meeting"</td><td>Time-sensitive, positive engagement</td><td><span class="tag tag-ghost" style="font-size:11px;">Operational</span></td></tr>
-                <tr><td>January usage spike</td><td>Year-end reporting season</td><td><span class="tag tag-ghost" style="font-size:11px;">Ignore</span></td></tr>
-                <tr><td>"How does X work?"</td><td>Training need, not complaint</td><td><span class="tag tag-ghost" style="font-size:11px;">Adoption</span></td></tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        <!-- Jargon Dictionary -->
-        <div class="collapsible">
-          <div class="collapsible-header" onclick="this.parentElement.classList.toggle('open')">
-            <div class="flex items-center gap-1">
-              <span class="font-medium">Jargon Dictionary</span>
-              <span class="tag tag-ghost" style="font-size:11px;">6 terms</span>
-            </div>
-            <span class="arrow">&#9654;</span>
-          </div>
-          <div class="collapsible-body">
-            <table class="data-table">
-              <thead><tr><th>Term</th><th>Meaning</th><th>Signal Implication</th></tr></thead>
-              <tbody>
-                <tr><td class="font-medium">EBR</td><td>Executive Business Review</td><td>Strategic meeting &mdash; high importance</td></tr>
-                <tr><td class="font-medium">NRR</td><td>Net Revenue Retention</td><td>Primary success metric</td></tr>
-                <tr><td class="font-medium">JO</td><td>Journey Orchestrator</td><td>CS feature reference (Gainsight CS)</td></tr>
-                <tr><td class="font-medium">C360</td><td>Customer 360 view</td><td>Core GS CS feature</td></tr>
-                <tr><td class="font-medium">CTA</td><td>Call to Action</td><td>Task management in Cockpit</td></tr>
-                <tr><td class="font-medium">KC Bot</td><td>Knowledge Center Bot</td><td>In-app self-service (PX feature)</td></tr>
-              </tbody>
-            </table>
+        <!-- Key Definitions (renamed from Jargon Dictionary) -->
+        <div class="card">
+          <div class="card-title">Key Definitions</div>
+          <div class="card-desc">Your organization's jargon dictionary — terms that Staircase should understand when analyzing communications.</div>
+          <table class="dt">
+            <thead><tr><th>Term</th><th>Meaning</th><th>Signal Implication</th></tr></thead>
+            <tbody>
+              <tr><td class="font-medium">EBR</td><td>Executive Business Review</td><td class="text-xs text-secondary">Strategic meeting — high importance</td></tr>
+              <tr><td class="font-medium">NRR</td><td>Net Revenue Retention</td><td class="text-xs text-secondary">Primary success metric</td></tr>
+              <tr><td class="font-medium">JO</td><td>Journey Orchestrator</td><td class="text-xs text-secondary">CS feature reference (Gainsight CS)</td></tr>
+              <tr><td class="font-medium">C360</td><td>Customer 360 view</td><td class="text-xs text-secondary">Core GS CS feature</td></tr>
+              <tr><td class="font-medium">CTA</td><td>Call to Action</td><td class="text-xs text-secondary">Task management in Cockpit</td></tr>
+              <tr><td class="font-medium">KC Bot</td><td>Knowledge Center Bot</td><td class="text-xs text-secondary">In-app self-service (PX feature)</td></tr>
+            </tbody>
+          </table>
+          <div style="margin-top:12px;"><button class="btn btn-secondary btn-sm"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add Term</button></div>
+          <div class="callout callout-tip" style="margin-top:var(--st-space-2);margin-bottom:0;">
+            <strong>Tip:</strong> Sync these with Gainsight CS's Key Definitions for CS Copilot to maintain consistency.
           </div>
         </div>
       </div>
     </div>
+
+    <!-- ─── PRODUCT DETAIL (rendered by JS) ─── -->
+    <div class="screen" id="sub-detail">
+      <div class="main-wide" id="detail-out"></div>
+    </div>
+
   </div>
-
-  <!-- ═══ SCREEN 4: Empty State ═══ -->
-  <div class="screen" id="screen-empty">
-    <div class="top-bar">
-      <div class="top-bar-left">
-        <div class="breadcrumb">
-          <a>Settings</a>
-          <span class="sep">›</span>
-          <span class="current">Organization Profile</span>
-        </div>
-      </div>
-      <div class="top-bar-right">
-        <button class="btn btn-ghost btn-sm" onclick="showScreen('grid')">&#8592; Back to demo</button>
-      </div>
-    </div>
-    <div class="empty-state">
-      <div class="empty-state-icon">
-        <svg viewBox="0 0 56 56" fill="none" stroke="currentColor" stroke-width="2">
-          <rect x="8" y="12" width="40" height="32" rx="4"/>
-          <path d="M8 20h40"/>
-          <circle cx="14" cy="16" r="1.5" fill="currentColor" stroke="none"/>
-          <circle cx="19" cy="16" r="1.5" fill="currentColor" stroke="none"/>
-          <circle cx="24" cy="16" r="1.5" fill="currentColor" stroke="none"/>
-          <path d="M20 30h16M24 35h8"/>
-          <path d="M28 26v2" stroke-linecap="round"/>
-        </svg>
-      </div>
-      <div class="empty-state-title">Connect Gainsight CS to sync your products</div>
-      <div class="empty-state-subtitle">Your products will appear here automatically after syncing with your CRM. We'll use product context to power AI-driven relationship resolution and intelligence.</div>
-      <button class="btn btn-primary" style="padding:10px 24px;font-size:14px;">Configure CRM Integration &#8594;</button>
-      <div class="setup-checklist">
-        <h3 class="font-medium" style="font-size:14px;margin-bottom:var(--st-space-1);">Setup Checklist</h3>
-        <div class="checklist-item">
-          <span class="step-num">1</span>
-          <div>
-            <div class="font-medium" style="color:var(--st-text);">Connect Gainsight CS</div>
-            <div class="text-xs text-secondary">Products sync automatically from your CS instance</div>
-          </div>
-        </div>
-        <div class="checklist-item">
-          <span class="step-num">2</span>
-          <div>
-            <div class="font-medium" style="color:var(--st-text);">Enrich product context</div>
-            <div class="text-xs text-secondary">Add descriptions, keywords, and features — or auto-fill from web</div>
-          </div>
-        </div>
-        <div class="checklist-item">
-          <span class="step-num">3</span>
-          <div>
-            <div class="font-medium" style="color:var(--st-text);">Review AI keyword recommendations</div>
-            <div class="text-xs text-secondary">After 90-day backfill, AI will suggest high-frequency terms</div>
-          </div>
-        </div>
-        <div class="checklist-item">
-          <span class="step-num">4</span>
-          <div>
-            <div class="font-medium" style="color:var(--st-text);">Configure company settings</div>
-            <div class="text-xs text-secondary">Set tone baselines, personas, and jargon for your organization</div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- ─── Prototype Controls ─── -->
-<div class="proto-controls">
-  <button class="proto-btn active" onclick="showScreen('grid')">Product Grid</button>
-  <button class="proto-btn" onclick="showScreen('detail')">Product Detail</button>
-  <button class="proto-btn" onclick="showScreen('settings')">Company Settings</button>
-  <button class="proto-btn" onclick="showScreen('empty')">Empty State</button>
 </div>
 
 <script>
-// ─── Product Data (Real research data) ───
+// ═══════════════════════════════════════════
+// DATA — Preserved from v1 with v2 additions
+// ═══════════════════════════════════════════
 const products = [
   {
-    id: 'REL-GCS-001',
     name: 'Gainsight CS',
     type: 'Platform',
     status: 'Active',
-    statusClass: 'tag-positive',
-    lastSynced: 'Feb 23, 2026 — 10:14 AM',
+    statusClass: 's-active',
+    relId: 'REL-GCS-001',
+    arr: '$1,250,000',
+    renewalDate: 'Sep 15, 2026',
+    initialSale: 'Mar 1, 2022',
+    productId: 'CS',
+    idField: 'Product (Multi-Picklist)',
+    staircaseTag: 'gainsight-cs',
+    pricingModels: [{model:'Per-Account',path:'Base'},{model:'Platform Fee',path:'Base'}],
+    parentProduct: '',
     description: 'Gainsight CS is the market-leading customer success platform built for B2B SaaS and subscription businesses. It centralizes customer health data, product usage signals, engagement history, and CRM data into a unified Customer 360 view, enabling CSMs to proactively manage risk, drive adoption, and identify expansion opportunities at scale.',
-    acronyms: ['GS CS', 'GSNXT', 'C360', 'NXT'],
-    adminKeywords: ['customer health score', 'churn prevention', 'net revenue retention', 'NRR', 'customer success platform', 'playbooks', 'calls to action', 'CTA'],
-    aiKeywords: ['cockpit', 'adoption tracking', 'renewal center', 'journey orchestrator', 'CSQL'],
+    acronyms: ['GS CS','GSNXT','C360','NXT'],
+    adminKeywords: ['customer health score','churn prevention','net revenue retention','NRR','customer success platform','playbooks','calls to action','CTA'],
+    aiKeywords: ['cockpit','adoption tracking','renewal center','journey orchestrator','CSQL'],
     features: [
-      { name: 'Customer 360 (C360)', description: 'Unified account view synthesizing health scores, ARR, usage, CTAs, and stakeholder maps.', acronyms: 'C360, R360', addOn: false },
-      { name: 'Cockpit & Playbooks', description: 'CSM task hub with auto-triggered task sequences for onboarding, risk, renewal, and expansion.', acronyms: 'CTA', addOn: false },
-      { name: 'Scorecards', description: 'Multi-dimensional health scoring blending usage, support, adoption, NPS, and qualitative inputs.', acronyms: '', addOn: false },
-      { name: 'Timeline', description: 'Customer interaction log for calls, emails, EBRs, and AI-captured meeting notes.', acronyms: '', addOn: false },
-      { name: 'Journey Orchestrator', description: 'Automated customer communication engine triggered by health, lifecycle, or usage signals.', acronyms: 'JO', addOn: false },
-      { name: 'Success Plans', description: 'Collaborative goal-tracking with Objective > Milestone > Task hierarchies.', acronyms: '', addOn: false },
-      { name: 'Horizon Analytics', description: 'Portfolio-level reporting for health trends, CTA rates, renewal forecasts, and adoption.', acronyms: '', addOn: false },
-      { name: 'Renewal Center & CSQL', description: 'Renewal pipeline management with churn risk scoring and CS-sourced lead creation.', acronyms: 'CSQL', addOn: true },
-      { name: 'Copilot (AI Assistant)', description: 'AI assistant surfacing contextual answers and generating meeting follow-up summaries.', acronyms: 'Sally', addOn: false },
-      { name: 'Company Intelligence', description: 'External signal monitoring for leadership changes, funding rounds, and layoffs.', acronyms: '', addOn: true },
+      {name:'Customer 360 (C360)',description:'Unified account view synthesizing health scores, ARR, usage, CTAs, and stakeholder maps.',acronyms:'C360, R360',addOn:false},
+      {name:'Cockpit & Playbooks',description:'CSM task hub with auto-triggered task sequences for onboarding, risk, renewal, and expansion.',acronyms:'CTA',addOn:false},
+      {name:'Scorecards',description:'Multi-dimensional health scoring blending usage, support, adoption, NPS, and qualitative inputs.',acronyms:'',addOn:false},
+      {name:'Timeline',description:'Customer interaction log for calls, emails, EBRs, and AI-captured meeting notes.',acronyms:'',addOn:false},
+      {name:'Journey Orchestrator',description:'Automated customer communication engine triggered by health, lifecycle, or usage signals.',acronyms:'JO',addOn:false},
+      {name:'Success Plans',description:'Collaborative goal-tracking with Objective > Milestone > Task hierarchies.',acronyms:'',addOn:false},
+      {name:'Horizon Analytics',description:'Portfolio-level reporting for health trends, CTA rates, renewal forecasts, and adoption.',acronyms:'',addOn:false},
+      {name:'Renewal Center & CSQL',description:'Renewal pipeline management with churn risk scoring and CS-sourced lead creation.',acronyms:'CSQL',addOn:true},
+      {name:'Copilot (AI Assistant)',description:'AI assistant surfacing contextual answers and generating meeting follow-up summaries.',acronyms:'Sally',addOn:false},
+      {name:'Company Intelligence',description:'External signal monitoring for leadership changes, funding rounds, and layoffs.',acronyms:'',addOn:true}
     ],
     useCases: [
-      { name: 'Churn Prevention', description: 'Health score drops and automated risk playbooks identify at-risk accounts before renewal decisions.', leadingIndicator: 'Health score drop to Yellow/Red; declining login frequency', laggingIndicator: 'Gross Revenue Retention (GRR); logo churn rate' },
-      { name: 'Expansion & Upsell', description: 'CSQL signals and adoption thresholds identify customers ready for cross-sell with CS context.', leadingIndicator: 'CSQL creation rate; power user seat utilization', laggingIndicator: 'Net Revenue Retention (NRR); expansion ARR' },
-      { name: 'Onboarding & Time-to-Value', description: 'Automated playbooks guide new customers through milestones with Journey Orchestrator communications.', leadingIndicator: 'Onboarding milestone completion rate', laggingIndicator: 'Time-to-value (TTV); 90-day retention rate' },
-      { name: 'Executive Business Reviews', description: 'Success Snapshots auto-generates data-rich presentations from C360 data for QBRs.', leadingIndicator: 'EBR scheduled rate; Success Plan completion %', laggingIndicator: 'Renewal rate for EBR-engaged accounts' },
-      { name: 'Digital-Led CS (Scale)', description: 'Journey Orchestrator manages high-volume segments through automated, personalized programs.', leadingIndicator: 'Journey email open/click-through rates', laggingIndicator: 'NRR for digital-segment accounts' },
+      {name:'Churn Prevention',description:'Health score drops and automated risk playbooks identify at-risk accounts before renewal decisions.',leading:'Health score drop to Yellow/Red; declining login frequency',lagging:'Gross Revenue Retention (GRR); logo churn rate'},
+      {name:'Expansion & Upsell',description:'CSQL signals and adoption thresholds identify customers ready for cross-sell with CS context.',leading:'CSQL creation rate; power user seat utilization',lagging:'Net Revenue Retention (NRR); expansion ARR'},
+      {name:'Onboarding & Time-to-Value',description:'Automated playbooks guide new customers through milestones with Journey Orchestrator communications.',leading:'Onboarding milestone completion rate',lagging:'Time-to-value (TTV); 90-day retention rate'},
+      {name:'Executive Business Reviews',description:'Success Snapshots auto-generates data-rich presentations from C360 data for QBRs.',leading:'EBR scheduled rate; Success Plan completion %',lagging:'Renewal rate for EBR-engaged accounts'},
+      {name:'Digital-Led CS (Scale)',description:'Journey Orchestrator manages high-volume segments through automated, personalized programs.',leading:'Journey email open/click-through rates',lagging:'NRR for digital-segment accounts'}
     ],
-    commercialModel: { productType: 'Platform', pricingModel: 'Platform fee + user/record limits; Essentials & Enterprise tiers', parentProduct: null },
     competitors: [
-      { name: 'ChurnZero', overlapArea: 'Health scoring, CTA automation, renewal workflows', commonMentions: 'Easier to use, faster implementation, better for mid-market' },
-      { name: 'Totango', overlapArea: 'Lifecycle management, modular CS workflows', commonMentions: 'SuccessBLOCs vs Playbooks, composable CS' },
-      { name: 'Vitally', overlapArea: 'C360, playbooks, health scoring for mid-market', commonMentions: 'Faster time to value, simpler UI' },
-      { name: 'Planhat', overlapArea: 'Customer data modeling, CS + RevOps unification', commonMentions: 'More flexible data model, warehouse-native' },
-      { name: 'Salesforce Einstein for CS', overlapArea: 'CRM-native health scoring, renewal tracking', commonMentions: 'Already in Salesforce ecosystem' },
-    ],
-    enrichment: 'complete'
+      {name:'ChurnZero',overlap:'Health scoring, CTA automation, renewal workflows',mentions:'Easier to use, faster implementation, better for mid-market'},
+      {name:'Totango',overlap:'Lifecycle management, modular CS workflows',mentions:'SuccessBLOCs vs Playbooks, composable CS'},
+      {name:'Vitally',overlap:'C360, playbooks, health scoring for mid-market',mentions:'Faster time to value, simpler UI'},
+      {name:'Planhat',overlap:'Customer data modeling, CS + RevOps unification',mentions:'More flexible data model, warehouse-native'},
+      {name:'Salesforce Einstein for CS',overlap:'CRM-native health scoring, renewal tracking',mentions:'Already in Salesforce ecosystem'}
+    ]
   },
   {
-    id: 'REL-SAI-002',
     name: 'Staircase AI',
-    type: 'Platform',
+    type: 'Module',
     status: 'Active',
-    statusClass: 'tag-positive',
-    lastSynced: 'Feb 23, 2026 — 10:14 AM',
+    statusClass: 's-active',
+    relId: 'REL-SAI-002',
+    arr: '$380,000',
+    renewalDate: 'Sep 15, 2026',
+    initialSale: 'Jun 1, 2024',
+    productId: 'ST',
+    idField: 'Product (Multi-Picklist)',
+    staircaseTag: 'staircase-ai',
+    pricingModels: [{model:'Per-Account',path:'Add-On'}],
+    parentProduct: 'Gainsight CS',
     description: 'Staircase AI is an AI-powered customer intelligence platform that automatically analyzes all customer communications — emails, meetings, Slack, chat, and support tickets — to surface real-time signals around sentiment, relationship health, churn risk, and expansion opportunity, detecting risk up to six weeks earlier than usage data alone.',
-    acronyms: ['ST', 'Staircase', 'SAI'],
-    adminKeywords: ['customer intelligence', 'relationship health score', 'churn risk', 'sentiment analysis', 'expansion signals', 'stakeholder mapping', 'account health', 'communication analytics'],
-    aiKeywords: ['journey events', 'AI summaries', 'engagement score', 'Ask Staircase'],
+    acronyms: ['ST','Staircase','SAI'],
+    adminKeywords: ['customer intelligence','relationship health score','churn risk','sentiment analysis','expansion signals','stakeholder mapping','account health','communication analytics'],
+    aiKeywords: ['journey events','AI summaries','engagement score','Ask Staircase'],
     features: [
-      { name: 'Health Score', description: 'Composite 0-100 score from Sentiment, Engagement, Response Time, and Open Items.', acronyms: 'HS', addOn: false },
-      { name: 'Sentiment Analysis', description: 'AI analysis of all communications categorized into Green/Yellow/Red sentiment continuously.', acronyms: '', addOn: false },
-      { name: 'Stakeholder Network', description: 'Interactive visualization mapping relationship strength between internal and customer stakeholders.', acronyms: '', addOn: false },
-      { name: 'Churn Prediction', description: 'AI churn risk scores detecting competitor mentions, budget concerns, and consolidation language.', acronyms: '', addOn: false },
-      { name: 'Ask Staircase', description: 'Natural language AI interface powered by GPT-4.1 for querying communication data across accounts.', acronyms: '', addOn: false },
-      { name: 'AI Summaries', description: 'Auto-generated account, call, and meeting summaries with highlights, lowlights, and action items.', acronyms: '', addOn: false },
-      { name: 'Journey Events', description: 'Automatic detection of stakeholder departures, role changes, and escalation patterns.', acronyms: '', addOn: false },
-      { name: 'Topics & Sentiment Trends', description: 'Identifies frequently discussed topics and combines frequency with sentiment scoring at scale.', acronyms: '', addOn: false },
-      { name: 'Ask Staircase Slack Integration', description: 'Query customer intelligence directly in Slack via DMs and slash commands.', acronyms: '', addOn: false },
-      { name: 'Insight Agent (CS Integration)', description: 'Native integration embedding communication intelligence directly inside Gainsight CS.', acronyms: 'Insight Agent', addOn: false },
+      {name:'Health Score',description:'Composite 0-100 score from Sentiment, Engagement, Response Time, and Open Items.',acronyms:'HS',addOn:false},
+      {name:'Sentiment Analysis',description:'AI analysis of all communications categorized into Green/Yellow/Red sentiment continuously.',acronyms:'',addOn:false},
+      {name:'Stakeholder Network',description:'Interactive visualization mapping relationship strength between internal and customer stakeholders.',acronyms:'',addOn:false},
+      {name:'Churn Prediction',description:'AI churn risk scores detecting competitor mentions, budget concerns, and consolidation language.',acronyms:'',addOn:false},
+      {name:'Ask Staircase',description:'Natural language AI interface powered by GPT-4.1 for querying communication data across accounts.',acronyms:'',addOn:false},
+      {name:'AI Summaries',description:'Auto-generated account, call, and meeting summaries with highlights, lowlights, and action items.',acronyms:'',addOn:false},
+      {name:'Journey Events',description:'Automatic detection of stakeholder departures, role changes, and escalation patterns.',acronyms:'',addOn:false},
+      {name:'Topics & Sentiment Trends',description:'Identifies frequently discussed topics and combines frequency with sentiment scoring at scale.',acronyms:'',addOn:false},
+      {name:'Ask Staircase Slack Integration',description:'Query customer intelligence directly in Slack via DMs and slash commands.',acronyms:'',addOn:false},
+      {name:'Insight Agent (CS Integration)',description:'Native integration embedding communication intelligence directly inside Gainsight CS.',acronyms:'Insight Agent',addOn:false}
     ],
     useCases: [
-      { name: 'Early Churn Detection', description: 'Detect communication-based churn signals before usage metrics reflect risk.', leadingIndicator: 'Sentiment score decline; reduced responsiveness', laggingIndicator: 'Churn rate reduction; improved NRR' },
-      { name: 'Expansion Identification', description: 'Surface accounts with positive sentiment and growing engagement for expansion conversations.', leadingIndicator: 'Rising sentiment; increased stakeholder engagement', laggingIndicator: 'Expansion ARR growth; upsell conversion rate' },
-      { name: 'Stakeholder Risk Management', description: 'Alerts when champions go silent, change roles, or leave a customer organization.', leadingIndicator: 'Communication drop-off; job change signal', laggingIndicator: 'Retention rate for accounts with stakeholder transitions' },
-      { name: 'CS Team Efficiency', description: 'Health scores and AI summaries monitor entire book of business without manual CRM updates.', leadingIndicator: 'Automated health score coverage %', laggingIndicator: 'CSM capacity (accounts per CSM)' },
-      { name: 'Executive Account Intelligence', description: 'Ask Staircase and Executive Dashboard for cross-portfolio queries and trend identification.', leadingIndicator: 'Executive dashboard engagement frequency', laggingIndicator: 'Win rate on reviewed renewals' },
+      {name:'Early Churn Detection',description:'Detect communication-based churn signals before usage metrics reflect risk.',leading:'Sentiment score decline; reduced responsiveness',lagging:'Churn rate reduction; improved NRR'},
+      {name:'Expansion Identification',description:'Surface accounts with positive sentiment and growing engagement for expansion conversations.',leading:'Rising sentiment; increased stakeholder engagement',lagging:'Expansion ARR growth; upsell conversion rate'},
+      {name:'Stakeholder Risk Management',description:'Alerts when champions go silent, change roles, or leave a customer organization.',leading:'Communication drop-off; job change signal',lagging:'Retention rate for accounts with stakeholder transitions'},
+      {name:'CS Team Efficiency',description:'Health scores and AI summaries monitor entire book of business without manual CRM updates.',leading:'Automated health score coverage %',lagging:'CSM capacity (accounts per CSM)'},
+      {name:'Executive Account Intelligence',description:'Ask Staircase and Executive Dashboard for cross-portfolio queries and trend identification.',leading:'Executive dashboard engagement frequency',lagging:'Win rate on reviewed renewals'}
     ],
-    commercialModel: { productType: 'SaaS Platform (standalone + add-on)', pricingModel: 'Custom / quote-based; available on AWS Marketplace', parentProduct: 'Gainsight' },
     competitors: [
-      { name: 'People.ai', overlapArea: 'Communication capture and relationship intelligence', commonMentions: 'Automated activity capture for sales and CS orgs' },
-      { name: 'ChurnZero', overlapArea: 'Health scoring, churn risk detection, CS workflows', commonMentions: 'Top direct alternative for subscription businesses' },
-      { name: 'Gong', overlapArea: 'Conversation intelligence from calls and meetings', commonMentions: 'Sales call focus vs full CS communication layer' },
-      { name: 'Vitally', overlapArea: 'Health scores, AI capabilities, CS workflow management', commonMentions: 'Native CSP features Staircase does not include' },
-      { name: 'Planhat', overlapArea: 'Health scoring, automation, customer data unification', commonMentions: 'External AI vs native communication analysis' },
-    ],
-    enrichment: 'complete'
+      {name:'People.ai',overlap:'Communication capture and relationship intelligence',mentions:'Automated activity capture for sales and CS orgs'},
+      {name:'ChurnZero',overlap:'Health scoring, churn risk detection, CS workflows',mentions:'Top direct alternative for subscription businesses'},
+      {name:'Gong',overlap:'Conversation intelligence from calls and meetings',mentions:'Sales call focus vs full CS communication layer'},
+      {name:'Vitally',overlap:'Health scores, AI capabilities, CS workflow management',mentions:'Native CSP features Staircase does not include'},
+      {name:'Planhat',overlap:'Health scoring, automation, customer data unification',mentions:'External AI vs native communication analysis'}
+    ]
   },
   {
-    id: 'REL-SJ-003',
     name: 'SkillJar',
-    type: 'Platform',
+    type: 'Module',
     status: 'Active',
-    statusClass: 'tag-positive',
-    lastSynced: 'Feb 23, 2026 — 10:14 AM',
+    statusClass: 's-active',
+    relId: 'REL-SJ-003',
+    arr: '$175,000',
+    renewalDate: 'Nov 1, 2026',
+    initialSale: 'Jan 15, 2023',
+    productId: 'SJ',
+    idField: 'Product (Multi-Picklist)',
+    staircaseTag: 'skilljar',
+    pricingModels: [{model:'Per-User/Seat',path:'Base'},{model:'Usage-Based',path:'Add-On'}],
+    parentProduct: '',
     description: 'SkillJar (now SkillJar by Gainsight) is an external-facing Learning Management System purpose-built for customer and partner education. It trains people outside a company at scale — reducing time-to-value, accelerating adoption, decreasing support tickets, and improving retention.',
-    acronyms: ['SJ', 'SkillJar by Gainsight', 'Customer Ed'],
-    adminKeywords: ['customer education', 'external LMS', 'training academy', 'learning paths', 'certifications', 'product adoption', 'partner enablement', 'training monetization'],
-    aiKeywords: ['onboarding automation', 'eLearning', 'training completion', 'customer training'],
+    acronyms: ['SJ','SkillJar by Gainsight','Customer Ed'],
+    adminKeywords: ['customer education','external LMS','training academy','learning paths','certifications','product adoption','partner enablement','training monetization'],
+    aiKeywords: ['onboarding automation','eLearning','training completion','customer training'],
     features: [
-      { name: 'Learning Paths', description: 'Structured sequential course sequences tailored to role, product, or onboarding stage.', acronyms: '', addOn: false },
-      { name: 'Certifications & Badging', description: 'Issues certificates, proctored exams, and digital badges via Credly and LinkedIn.', acronyms: '', addOn: false },
-      { name: 'Training Monetization', description: 'Built-in ecommerce for selling courses, bundles, subscriptions, or training credits.', acronyms: '', addOn: false },
-      { name: 'Custom Branded Academy', description: 'Fully white-labeled training site with custom branding, domains, and SSO.', acronyms: '', addOn: false },
-      { name: 'Analytics & Reporting', description: 'Dashboards tracking enrollment, completion, engagement, and industry benchmarks.', acronyms: '', addOn: false },
-      { name: 'Salesforce Integration', description: 'Native bidirectional sync surfacing training data on contact and account records.', acronyms: '', addOn: false },
-      { name: 'Gainsight CS Integration', description: 'Training completion and certification data flows into customer health scores.', acronyms: '', addOn: false },
-      { name: 'Data Connector', description: 'PostgreSQL database replicating 35+ tables for data warehouses and BI tools.', acronyms: 'DC', addOn: true },
-      { name: 'AI Content Assist', description: 'AI tools generating course descriptions, learning objectives, and quiz questions.', acronyms: '', addOn: false },
-      { name: 'Language Packs', description: 'Multi-language course delivery for global training programs.', acronyms: '', addOn: true },
+      {name:'Learning Paths',description:'Structured sequential course sequences tailored to role, product, or onboarding stage.',acronyms:'',addOn:false},
+      {name:'Certifications & Badging',description:'Issues certificates, proctored exams, and digital badges via Credly and LinkedIn.',acronyms:'',addOn:false},
+      {name:'Training Monetization',description:'Built-in ecommerce for selling courses, bundles, subscriptions, or training credits.',acronyms:'',addOn:false},
+      {name:'Custom Branded Academy',description:'Fully white-labeled training site with custom branding, domains, and SSO.',acronyms:'',addOn:false},
+      {name:'Analytics & Reporting',description:'Dashboards tracking enrollment, completion, engagement, and industry benchmarks.',acronyms:'',addOn:false},
+      {name:'Salesforce Integration',description:'Native bidirectional sync surfacing training data on contact and account records.',acronyms:'',addOn:false},
+      {name:'Gainsight CS Integration',description:'Training completion and certification data flows into customer health scores.',acronyms:'',addOn:false},
+      {name:'Data Connector',description:'PostgreSQL database replicating 35+ tables for data warehouses and BI tools.',acronyms:'DC',addOn:true},
+      {name:'AI Content Assist',description:'AI tools generating course descriptions, learning objectives, and quiz questions.',acronyms:'',addOn:false},
+      {name:'Language Packs',description:'Multi-language course delivery for global training programs.',acronyms:'',addOn:true}
     ],
     useCases: [
-      { name: 'Customer Onboarding Automation', description: 'Replace manual CSM-led onboarding with structured self-serve learning paths.', leadingIndicator: 'Training enrollment rate among new customers', laggingIndicator: 'Time-to-value; onboarding completion rate' },
-      { name: 'Product Adoption & Engagement', description: 'Feature-specific training drives deeper usage and reduces abandonment.', leadingIndicator: 'Course completion for feature-specific modules', laggingIndicator: 'Feature activation rate; DAU/MAU' },
-      { name: 'Churn Reduction', description: 'Trained customers demonstrate higher retention rates across the board.', leadingIndicator: 'Certification attainment at at-risk accounts', laggingIndicator: 'Net Revenue Retention; renewal rate' },
-      { name: 'Training Monetization', description: 'Sell training as a revenue line through courses, subscriptions, and certifications.', leadingIndicator: 'Course purchase volume; paid subscriptions', laggingIndicator: 'Training revenue; revenue per learner' },
-      { name: 'Partner Enablement', description: 'Train partner networks through dedicated portals for consistent product knowledge.', leadingIndicator: 'Partner certification completion rate', laggingIndicator: 'Partner-sourced revenue; deal close rates' },
+      {name:'Customer Onboarding Automation',description:'Replace manual CSM-led onboarding with structured self-serve learning paths.',leading:'Training enrollment rate among new customers',lagging:'Time-to-value; onboarding completion rate'},
+      {name:'Product Adoption & Engagement',description:'Feature-specific training drives deeper usage and reduces abandonment.',leading:'Course completion for feature-specific modules',lagging:'Feature activation rate; DAU/MAU'},
+      {name:'Churn Reduction',description:'Trained customers demonstrate higher retention rates across the board.',leading:'Certification attainment at at-risk accounts',lagging:'Net Revenue Retention; renewal rate'},
+      {name:'Training Monetization',description:'Sell training as a revenue line through courses, subscriptions, and certifications.',leading:'Course purchase volume; paid subscriptions',lagging:'Training revenue; revenue per learner'},
+      {name:'Partner Enablement',description:'Train partner networks through dedicated portals for consistent product knowledge.',leading:'Partner certification completion rate',lagging:'Partner-sourced revenue; deal close rates'}
     ],
-    commercialModel: { productType: 'SaaS (External LMS)', pricingModel: 'Annual subscription, tiered by MAUs; Essential/Professional/Enterprise', parentProduct: 'Gainsight (acquired April 2025)' },
     competitors: [
-      { name: 'Docebo', overlapArea: 'External LMS, customer/partner training, AI learning', commonMentions: 'AI-driven personalization, broader internal + external' },
-      { name: 'Thought Industries', overlapArea: 'Customer education, certification, training monetization', commonMentions: 'Closest direct competitor for complex verticals' },
-      { name: 'Litmos', overlapArea: 'Cloud LMS, ecommerce, certifications, SCORM', commonMentions: 'Stronger compliance training, overlaps on paid training' },
-      { name: 'LearnUpon', overlapArea: 'Partner/customer training, multi-portal delivery', commonMentions: 'Strong customer service, multi-portal architecture' },
-      { name: 'Absorb LMS', overlapArea: 'External learner management, enterprise LMS', commonMentions: 'Learner experience design, enterprise scalability' },
-    ],
-    enrichment: 'complete'
+      {name:'Docebo',overlap:'External LMS, customer/partner training, AI learning',mentions:'AI-driven personalization, broader internal + external'},
+      {name:'Thought Industries',overlap:'Customer education, certification, training monetization',mentions:'Closest direct competitor for complex verticals'},
+      {name:'Litmos',overlap:'Cloud LMS, ecommerce, certifications, SCORM',mentions:'Stronger compliance training, overlaps on paid training'},
+      {name:'LearnUpon',overlap:'Partner/customer training, multi-portal delivery',mentions:'Strong customer service, multi-portal architecture'},
+      {name:'Absorb LMS',overlap:'External learner management, enterprise LMS',mentions:'Learner experience design, enterprise scalability'}
+    ]
   },
   {
-    id: 'REL-GCC-004',
     name: 'Gainsight Customer Communities',
-    type: 'Platform',
+    type: 'Module',
     status: 'Active',
-    statusClass: 'tag-positive',
-    lastSynced: 'Feb 23, 2026 — 10:14 AM',
+    statusClass: 's-active',
+    relId: 'REL-GCC-004',
+    arr: '$95,000',
+    renewalDate: 'Jul 1, 2026',
+    initialSale: 'Aug 1, 2023',
+    productId: 'Community',
+    idField: 'Product (Multi-Picklist)',
+    staircaseTag: 'insided',
+    pricingModels: [{model:'Platform Fee',path:'Add-On'}],
+    parentProduct: '',
     description: 'Gainsight Customer Communities (formerly inSided) is a purpose-built B2B SaaS community platform enabling companies to launch branded online communities for support, product feedback, peer-to-peer engagement, and knowledge sharing — connecting community signals directly to customer health scores.',
-    acronyms: ['GS CC', 'CC', 'inSided', 'Digital Hub'],
-    adminKeywords: ['customer community', 'community platform', 'inSided', 'Digital Hub', 'knowledge base', 'ideation', 'product feedback', 'community-led growth'],
-    aiKeywords: ['self-service support', 'deflection', 'peer-to-peer', 'community health'],
+    acronyms: ['GS CC','CC','inSided','Digital Hub'],
+    adminKeywords: ['customer community','community platform','inSided','Digital Hub','knowledge base','ideation','product feedback','community-led growth'],
+    aiKeywords: ['self-service support','deflection','peer-to-peer','community health'],
     features: [
-      { name: 'Community Forum', description: 'Structured discussion forum for peer-to-peer Q&A and knowledge sharing.', acronyms: '', addOn: false },
-      { name: 'Knowledge Base', description: 'Centralized searchable repository for documentation and community-contributed answers.', acronyms: 'KB', addOn: false },
-      { name: 'Ideation / Product Feedback', description: 'Structured feedback board for feature requests, voting, and status tracking.', acronyms: '', addOn: false },
-      { name: 'Federated Search', description: 'Unified search across forum, KB, academy, and connected external systems.', acronyms: '', addOn: false },
-      { name: 'Gamification', description: 'Leaderboards, badges, and ranks rewarding active community members.', acronyms: '', addOn: false },
-      { name: 'Groups', description: 'Segmented sub-communities by role, region, product tier, or use case.', acronyms: '', addOn: false },
-      { name: 'Events Module', description: 'Host AMAs, webinars, and virtual meetups within the community experience.', acronyms: '', addOn: false },
-      { name: 'AI Content Tools', description: 'AI Summary, AI Recap, and Write with AI for faster moderation and content.', acronyms: '', addOn: false },
-      { name: 'No-Code Page Builder', description: 'Drag-and-drop editor with widget library for custom layouts and branding.', acronyms: '', addOn: false },
-      { name: 'Gainsight CS Integration', description: 'Community activity data enriches health scores for 360-degree customer view.', acronyms: '', addOn: false },
+      {name:'Community Forum',description:'Structured discussion forum for peer-to-peer Q&A and knowledge sharing.',acronyms:'',addOn:false},
+      {name:'Knowledge Base',description:'Centralized searchable repository for documentation and community-contributed answers.',acronyms:'KB',addOn:false},
+      {name:'Ideation / Product Feedback',description:'Structured feedback board for feature requests, voting, and status tracking.',acronyms:'',addOn:false},
+      {name:'Federated Search',description:'Unified search across forum, KB, academy, and connected external systems.',acronyms:'',addOn:false},
+      {name:'Gamification',description:'Leaderboards, badges, and ranks rewarding active community members.',acronyms:'',addOn:false},
+      {name:'Groups',description:'Segmented sub-communities by role, region, product tier, or use case.',acronyms:'',addOn:false},
+      {name:'Events Module',description:'Host AMAs, webinars, and virtual meetups within the community experience.',acronyms:'',addOn:false},
+      {name:'AI Content Tools',description:'AI Summary, AI Recap, and Write with AI for faster moderation and content.',acronyms:'',addOn:false},
+      {name:'No-Code Page Builder',description:'Drag-and-drop editor with widget library for custom layouts and branding.',acronyms:'',addOn:false},
+      {name:'Gainsight CS Integration',description:'Community activity data enriches health scores for 360-degree customer view.',acronyms:'',addOn:false}
     ],
     useCases: [
-      { name: 'Support Deflection', description: 'Customers find answers via forum and KB before opening support tickets.', leadingIndicator: 'Community search volume; self-service resolution rate', laggingIndicator: 'Ticket deflection rate; cost per ticket reduction' },
-      { name: 'Product Adoption & Onboarding', description: 'New customers access peer tips and resources to accelerate time-to-value.', leadingIndicator: 'KB views per new user; community login frequency', laggingIndicator: 'Time-to-first-value; feature activation rate' },
-      { name: 'Customer Retention', description: 'Engaged community members show higher attachment and lower churn.', leadingIndicator: 'Monthly active community users; posts per user', laggingIndicator: 'Churn rate delta: community vs. non-community' },
-      { name: 'Product Feedback & Roadmap', description: 'Ideation board quantifies feature requests by vote count and account ARR.', leadingIndicator: 'Ideation submissions; votes per idea', laggingIndicator: 'Features shipped from community input' },
-      { name: 'Community-Led Growth', description: 'High-engagement members become advocates driving champions and referrals.', leadingIndicator: 'Advocate badge attainment; referral activity', laggingIndicator: 'NRR contribution from community-engaged accounts' },
+      {name:'Support Deflection',description:'Customers find answers via forum and KB before opening support tickets.',leading:'Community search volume; self-service resolution rate',lagging:'Ticket deflection rate; cost per ticket reduction'},
+      {name:'Product Adoption & Onboarding',description:'New customers access peer tips and resources to accelerate time-to-value.',leading:'KB views per new user; community login frequency',lagging:'Time-to-first-value; feature activation rate'},
+      {name:'Customer Retention',description:'Engaged community members show higher attachment and lower churn.',leading:'Monthly active community users; posts per user',lagging:'Churn rate delta: community vs. non-community'},
+      {name:'Product Feedback & Roadmap',description:'Ideation board quantifies feature requests by vote count and account ARR.',leading:'Ideation submissions; votes per idea',lagging:'Features shipped from community input'},
+      {name:'Community-Led Growth',description:'High-engagement members become advocates driving champions and referrals.',leading:'Advocate badge attainment; referral activity',lagging:'NRR contribution from community-engaged accounts'}
     ],
-    commercialModel: { productType: 'Add-on module (standalone or bundled)', pricingModel: 'Tiered subscription: Professional/Business/Enterprise; custom pricing', parentProduct: 'Gainsight Customer Success' },
     competitors: [
-      { name: 'Higher Logic Vanilla', overlapArea: 'B2B SaaS community for support and feedback', commonMentions: 'Stronger standalone community, no CS dependency' },
-      { name: 'Khoros Communities', overlapArea: 'Enterprise customer community and digital care', commonMentions: 'Larger enterprise, B2C focus, higher price point' },
-      { name: 'Bettermode', overlapArea: 'Modern modular community for B2B and digital brands', commonMentions: 'Favored by startups, design flexibility, lower cost' },
-      { name: 'Salesforce Experience Cloud', overlapArea: 'Customer portal for Salesforce CRM users', commonMentions: 'CRM integration depth, less community-focused' },
-      { name: 'Discourse', overlapArea: 'Open-source forum and discussion', commonMentions: 'Lower cost, developer-focused, no CS integrations' },
-    ],
-    enrichment: 'complete'
+      {name:'Higher Logic Vanilla',overlap:'B2B SaaS community for support and feedback',mentions:'Stronger standalone community, no CS dependency'},
+      {name:'Khoros Communities',overlap:'Enterprise customer community and digital care',mentions:'Larger enterprise, B2C focus, higher price point'},
+      {name:'Bettermode',overlap:'Modern modular community for B2B and digital brands',mentions:'Favored by startups, design flexibility, lower cost'},
+      {name:'Salesforce Experience Cloud',overlap:'Customer portal for Salesforce CRM users',mentions:'CRM integration depth, less community-focused'},
+      {name:'Discourse',overlap:'Open-source forum and discussion',mentions:'Lower cost, developer-focused, no CS integrations'}
+    ]
   },
   {
-    id: 'REL-GPX-005',
     name: 'Gainsight PX',
-    type: 'Platform',
+    type: 'Module',
     status: 'Active',
-    statusClass: 'tag-positive',
-    lastSynced: 'Feb 23, 2026 — 10:14 AM',
+    statusClass: 's-active',
+    relId: 'REL-GPX-005',
+    arr: '$220,000',
+    renewalDate: 'Mar 1, 2027',
+    initialSale: 'Oct 1, 2025',
+    productId: 'PX',
+    idField: 'Product (Multi-Picklist)',
+    staircaseTag: 'gainsight-px',
+    pricingModels: [{model:'Usage-Based',path:'Add-On'}],
+    parentProduct: 'Gainsight CS',
     description: 'Gainsight PX (Product Experience) combines deep SaaS product analytics with personalized in-app engagement tools — capturing every interaction without manual tagging and acting through targeted guides, walkthroughs, tooltips, surveys, and email campaigns.',
-    acronyms: ['PX', 'GS PX', 'GPX'],
-    adminKeywords: ['product analytics', 'in-app engagement', 'feature adoption', 'user onboarding', 'knowledge center bot', 'NPS survey', 'product adoption', 'in-app guides'],
-    aiKeywords: ['user segmentation', 'digital product experience', 'usage analytics', 'MAU tracking'],
+    acronyms: ['PX','GS PX','GPX'],
+    adminKeywords: ['product analytics','in-app engagement','feature adoption','user onboarding','knowledge center bot','NPS survey','product adoption','in-app guides'],
+    aiKeywords: ['user segmentation','digital product experience','usage analytics','MAU tracking'],
     features: [
-      { name: 'Product Analytics', description: 'Captures every user interaction across devices and channels without manual tagging.', acronyms: '', addOn: false },
-      { name: 'In-App Engagements', description: 'No-code builder for walkthroughs, announcements, banners, tooltips, and checklists.', acronyms: '', addOn: false },
-      { name: 'Knowledge Center Bot', description: 'Embeddable self-service widget surfacing guides, articles, and task lists.', acronyms: 'KC Bot', addOn: false },
-      { name: 'In-App Surveys', description: 'Triggered NPS, CSAT, and custom surveys for specific user segments.', acronyms: '', addOn: false },
-      { name: 'Email Engagements', description: 'Native email campaigns for feature announcements and re-engagement outside the product.', acronyms: '', addOn: false },
-      { name: 'Audience Segmentation', description: 'Dynamic segment builder using behavioral, contextual, and account attributes.', acronyms: '', addOn: false },
-      { name: 'Query Builder', description: 'Advanced analytics queries with grouping by up to five event-level attributes.', acronyms: '', addOn: false },
-      { name: 'PX-CS Connector', description: 'Bi-directional sync pushing usage and survey data into CS health scores and workflows.', acronyms: '', addOn: false },
-      { name: 'Cross-Tag Tracking', description: 'Track usage across multiple product tags under a single subscription.', acronyms: '', addOn: true },
-      { name: 'Multiple KC Bots', description: 'Distinct KC Bot instances for different product areas, roles, or segments.', acronyms: '', addOn: true },
+      {name:'Product Analytics',description:'Captures every user interaction across devices and channels without manual tagging.',acronyms:'',addOn:false},
+      {name:'In-App Engagements',description:'No-code builder for walkthroughs, announcements, banners, tooltips, and checklists.',acronyms:'',addOn:false},
+      {name:'Knowledge Center Bot',description:'Embeddable self-service widget surfacing guides, articles, and task lists.',acronyms:'KC Bot',addOn:false},
+      {name:'In-App Surveys',description:'Triggered NPS, CSAT, and custom surveys for specific user segments.',acronyms:'',addOn:false},
+      {name:'Email Engagements',description:'Native email campaigns for feature announcements and re-engagement outside the product.',acronyms:'',addOn:false},
+      {name:'Audience Segmentation',description:'Dynamic segment builder using behavioral, contextual, and account attributes.',acronyms:'',addOn:false},
+      {name:'Query Builder',description:'Advanced analytics queries with grouping by up to five event-level attributes.',acronyms:'',addOn:false},
+      {name:'PX-CS Connector',description:'Bi-directional sync pushing usage and survey data into CS health scores and workflows.',acronyms:'',addOn:false},
+      {name:'Cross-Tag Tracking',description:'Track usage across multiple product tags under a single subscription.',acronyms:'',addOn:true},
+      {name:'Multiple KC Bots',description:'Distinct KC Bot instances for different product areas, roles, or segments.',acronyms:'',addOn:true}
     ],
     useCases: [
-      { name: 'New User Onboarding', description: 'In-app walkthroughs and KC Bot task lists guide users through activation milestones.', leadingIndicator: 'Checklist completion rate; guide step completion', laggingIndicator: 'Time-to-activation; day-21 retention rate' },
-      { name: 'Feature Adoption Acceleration', description: 'Contextual engagements drive adoption of underutilized features.', leadingIndicator: 'Engagement click-through rate; feature page views', laggingIndicator: 'Feature adoption rate; weekly active feature users' },
-      { name: 'Churn Risk via Product Signal', description: 'Usage data synced to CS identifies disengaged accounts for proactive outreach.', leadingIndicator: 'Declining MAU; drop in engagement scores', laggingIndicator: 'Churn rate; logo retention; NRR' },
-      { name: 'In-Product Feedback', description: 'Targeted surveys at key product moments collect structured user sentiment.', leadingIndicator: 'Survey response rate; NPS volume by segment', laggingIndicator: 'NPS trend; satisfaction score improvement' },
-      { name: 'Self-Service Support Deflection', description: 'KC Bot surfaces contextual help so users resolve issues without support tickets.', leadingIndicator: 'KC Bot queries answered; guide views', laggingIndicator: 'Support ticket volume reduction; CSAT' },
+      {name:'New User Onboarding',description:'In-app walkthroughs and KC Bot task lists guide users through activation milestones.',leading:'Checklist completion rate; guide step completion',lagging:'Time-to-activation; day-21 retention rate'},
+      {name:'Feature Adoption Acceleration',description:'Contextual engagements drive adoption of underutilized features.',leading:'Engagement click-through rate; feature page views',lagging:'Feature adoption rate; weekly active feature users'},
+      {name:'Churn Risk via Product Signal',description:'Usage data synced to CS identifies disengaged accounts for proactive outreach.',leading:'Declining MAU; drop in engagement scores',lagging:'Churn rate; logo retention; NRR'},
+      {name:'In-Product Feedback',description:'Targeted surveys at key product moments collect structured user sentiment.',leading:'Survey response rate; NPS volume by segment',lagging:'NPS trend; satisfaction score improvement'},
+      {name:'Self-Service Support Deflection',description:'KC Bot surfaces contextual help so users resolve issues without support tickets.',leading:'KC Bot queries answered; guide views',lagging:'Support ticket volume reduction; CSAT'}
     ],
-    commercialModel: { productType: 'SaaS Platform', pricingModel: 'Custom quote; Essentials & Enterprise tiers; priced on MAU volume', parentProduct: 'Gainsight (standalone, integrates with CS)' },
     competitors: [
-      { name: 'Pendo', overlapArea: 'Product analytics + in-app guides + NPS', commonMentions: 'Most direct competitor; more intuitive analytics UI' },
-      { name: 'Amplitude', overlapArea: 'Product analytics and behavioral data', commonMentions: 'Data-heavy teams; lacks in-app engagement depth' },
-      { name: 'Appcues', overlapArea: 'In-app onboarding and engagement', commonMentions: 'Easier setup; less analytics; lower price point' },
-      { name: 'WalkMe', overlapArea: 'Digital adoption, in-app guidance', commonMentions: 'Enterprise-scale; includes employee tooling' },
-      { name: 'Mixpanel', overlapArea: 'Product analytics and behavior tracking', commonMentions: 'Strong event-level analytics; no in-app engagement' },
-    ],
-    enrichment: 'complete'
+      {name:'Pendo',overlap:'Product analytics + in-app guides + NPS',mentions:'Most direct competitor; more intuitive analytics UI'},
+      {name:'Amplitude',overlap:'Product analytics and behavioral data',mentions:'Data-heavy teams; lacks in-app engagement depth'},
+      {name:'Appcues',overlap:'In-app onboarding and engagement',mentions:'Easier setup; less analytics; lower price point'},
+      {name:'WalkMe',overlap:'Digital adoption, in-app guidance',mentions:'Enterprise-scale; includes employee tooling'},
+      {name:'Mixpanel',overlap:'Product analytics and behavior tracking',mentions:'Strong event-level analytics; no in-app engagement'}
+    ]
   }
 ];
 
-let currentProductIndex = 0;
+const productTypes = ['Platform','Module','Add-On','Service','Integration','API','Extension','Suite','Bundle'];
+const pricingModels = ['Per-User/Seat','Per-Account','Platform Fee','Usage-Based','Tiered','Flat Rate','Per-Feature','Revenue Share','Free/Freemium'];
 
-// ─── Render Product Grid ───
-function renderGrid() {
-  const grid = document.getElementById('product-grid');
-  grid.innerHTML = products.map((p, i) => `
-    <div class="product-card" onclick="openDetail(${i})">
-      <div class="product-card-header">
-        <div class="product-card-name">${p.name}</div>
-        <span class="product-card-chevron">&#8594;</span>
-      </div>
-      <div class="product-card-badges">
-        <span class="tag tag-primary">${p.type}</span>
-        <span class="tag ${p.statusClass}">${p.status}</span>
-        <span class="enrichment-badge ${p.enrichment === 'complete' ? 'enrichment-complete' : p.enrichment === 'review' ? 'enrichment-review' : 'enrichment-empty'}">
-          ${p.enrichment === 'complete' ? '&#10003; Complete' : p.enrichment === 'review' ? '&#9888; Review Needed' : 'Not Started'}
-        </span>
-      </div>
-      <div class="product-card-desc">${p.description}</div>
-      <div class="product-card-meta">
-        <span>
-          <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1 4h14M1 8h10M1 12h6"/></svg>
-          ${p.adminKeywords.length} keywords
-        </span>
-        <span>${p.features.length} features</span>
-      </div>
+// Additional discovered products for selection screen
+const discovered = [
+  ...products.map(p => ({name:p.name,type:p.type,desc:p.description,sel:true})),
+  {name:'Gainsight Digital Hub',type:'Module',desc:'Digital CS engagement center for tech-touch programs',sel:false},
+  {name:'Gainsight Revenue Optimization',type:'Module',desc:'Renewal forecasting and pipeline management',sel:false},
+  {name:'CS Qualified Leads',type:'Integration',desc:'CS-to-sales lead handoff automation',sel:false},
+  {name:'Gainsight for Salesforce',type:'Integration',desc:'Native Salesforce integration package',sel:false},
+  {name:'Gainsight Mobile',type:'Extension',desc:'Mobile companion app for CS managers on the go',sel:false},
+  {name:'Gainsight Sightline',type:'Module',desc:'AI-powered CS benchmarking and best practices',sel:false},
+  {name:'Customer Success University',type:'Service',desc:'Gainsight-operated training and certification program',sel:false}
+];
+
+// ═══════════════════════════════
+// NAVIGATION
+// ═══════════════════════════════
+let curProduct = 0;
+
+function goScreen(name) {
+  // Update demo bar
+  document.querySelectorAll('.demo-step').forEach(b => b.classList.remove('active'));
+  const idx = ['empty','selection','settings','detail'].indexOf(name);
+  if (idx >= 0) document.querySelectorAll('.demo-step')[idx].classList.add('active');
+
+  // Hide all screens
+  document.querySelectorAll('.screen, .screen-flex').forEach(s => s.classList.remove('active'));
+
+  if (name === 'empty') {
+    document.getElementById('scr-empty').classList.add('active');
+    setBc(['Admin','Organization Profile']);
+  } else if (name === 'selection') {
+    document.getElementById('scr-selection').classList.add('active');
+    renderSelection();
+    setBc(['Admin','Organization Profile','Product Selection']);
+  } else if (name === 'settings') {
+    document.getElementById('scr-sidebar').classList.add('active');
+    goSub('settings');
+    setBc(['Admin','Organization Profile','Company Settings']);
+  } else if (name === 'detail') {
+    document.getElementById('scr-sidebar').classList.add('active');
+    goProduct(0);
+  }
+}
+
+function goSub(sub) {
+  document.querySelectorAll('#scr-sidebar .screen').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
+  if (sub === 'settings') {
+    document.getElementById('sub-settings').classList.add('active');
+    document.getElementById('nav-settings').classList.add('active');
+    setBc(['Admin','Organization Profile','Company Settings']);
+    // Update demo bar
+    document.querySelectorAll('.demo-step').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.demo-step')[2].classList.add('active');
+  }
+}
+
+function goProduct(idx) {
+  curProduct = idx;
+  document.querySelectorAll('#scr-sidebar .screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('sub-detail').classList.add('active');
+  document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
+  document.getElementById('nav-p' + idx).classList.add('active');
+  document.querySelectorAll('.demo-step').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.demo-step')[3].classList.add('active');
+  renderDetail(idx);
+  setBc(['Admin','Organization Profile',products[idx].name]);
+  // Scroll main to top
+  document.querySelector('#scr-sidebar .main').scrollTop = 0;
+}
+
+function setBc(parts) {
+  document.getElementById('bc').innerHTML = parts.map((p,i) =>
+    i < parts.length-1 ? `<a>${p}</a><span class="sep">/</span>` : `<span class="current">${p}</span>`
+  ).join('');
+}
+
+// ═══════════════════════════════
+// PRODUCT SELECTION
+// ═══════════════════════════════
+function renderSelection() {
+  document.getElementById('ps-grid').innerHTML = discovered.map((p,i) => `
+    <div class="ps-card ${p.sel?'sel':''}" onclick="toggleSel(${i})">
+      <div class="ps-card-chk"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+      <div class="ps-card-name">${p.name}</div>
+      <div class="ps-card-type">${p.type}</div>
+      <div class="ps-card-desc">${p.desc}</div>
     </div>
   `).join('');
 }
+function toggleSel(i) { discovered[i].sel = !discovered[i].sel; renderSelection(); }
 
-// ─── Open Detail ───
-function openDetail(index) {
-  currentProductIndex = index;
-  renderDetail();
-  showScreen('detail');
-}
+// ═══════════════════════════════
+// PRODUCT DETAIL
+// ═══════════════════════════════
+function renderDetail(idx) {
+  const p = products[idx];
+  const out = document.getElementById('detail-out');
 
-// ─── Render Detail ───
-function renderDetail() {
-  const p = products[currentProductIndex];
-  document.getElementById('detail-breadcrumb').textContent = p.name;
-  document.getElementById('prev-btn').disabled = currentProductIndex === 0;
-  document.getElementById('next-btn').disabled = currentProductIndex === products.length - 1;
+  // Pricing chips
+  const pChips = pricingModels.map(m => {
+    const sel = p.pricingModels.some(pm => pm.model === m);
+    return `<div class="ms-chip ${sel?'sel':''}">${m}</div>`;
+  }).join('');
 
-  const content = document.getElementById('detail-content');
-  content.innerHTML = `
-    <!-- Synced Fields Zone -->
+  // Selected pricing entries
+  const pEntries = p.pricingModels.map(pm => `
+    <div class="pricing-entry">
+      <span class="font-medium">${pm.model}</span>
+      <div class="pricing-toggle">
+        <div class="pricing-toggle-opt ${pm.path==='Base'?'active':''}">Base</div>
+        <div class="pricing-toggle-opt ${pm.path==='Add-On'?'active':''}">Add-On</div>
+      </div>
+    </div>
+  `).join('');
+
+  // Feature pills
+  const fPills = p.features.map(f => `<span class="fp">${f.name}</span>`).join('') + `<span class="fp-add">+ Add Feature</span>`;
+
+  // Admin + AI keywords
+  const adminKw = p.adminKeywords.map(k => `<div class="kw-chip">${k}<span class="rm">&times;</span></div>`).join('');
+  const aiKw = p.aiKeywords.map(k => `<div class="kw-chip ai-rec">${k}<span class="accept">&#10003;</span><span class="reject">&times;</span></div>`).join('');
+
+  // Use case rows
+  const ucRows = p.useCases.map(uc => `<tr><td class="font-medium" style="white-space:nowrap;">${uc.name}</td><td class="text-secondary">${uc.description}</td><td class="text-xs text-secondary">${uc.leading}</td><td class="text-xs text-secondary">${uc.lagging}</td></tr>`).join('');
+
+  // Competitor rows
+  const compRows = p.competitors.map(c => `<tr><td class="font-medium" style="white-space:nowrap;">${c.name}</td><td class="text-secondary">${c.overlap}</td><td class="text-xs text-secondary">${c.mentions}</td></tr>`).join('');
+
+  out.innerHTML = `
+    <!-- Header + Button Stack -->
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:var(--st-space-3);">
+      <div>
+        <h2 style="font-size:20px;font-weight:700;">${p.name}</h2>
+        <p class="text-sm text-secondary" style="margin-top:2px;">Product relationship configuration and intelligence settings</p>
+      </div>
+      <div class="btn-stack">
+        <button class="btn btn-save"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>Save Changes</button>
+        <button class="btn btn-secondary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>Sync Relationships from CS</button>
+        <button class="btn btn-secondary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"/></svg>Auto-fill from Web</button>
+      </div>
+    </div>
+
+    <!-- Synced Fields Row -->
     <div class="synced-zone">
       <div class="synced-zone-header">
         <div class="synced-zone-label">
           <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="1" width="10" height="14" rx="2"/><path d="M6 5h4M6 8h4M6 11h2"/></svg>
           Synced from Gainsight CS
         </div>
-        <a class="manage-link" href="#">Manage in CS Admin &#8594;</a>
+        <a class="manage-link">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          Manage in CS Admin
+        </a>
       </div>
-      <div class="synced-fields">
-        <div class="synced-field"><label>Name</label><div class="value">${p.name}</div></div>
-        <div class="synced-field"><label>Type</label><div class="value"><span class="tag tag-primary">${p.type}</span></div></div>
-        <div class="synced-field"><label>Status</label><div class="value"><span class="tag ${p.statusClass}">${p.status}</span></div></div>
-        <div class="synced-field"><label>Relationship ID</label><div class="value" style="font-family:monospace;font-size:12px;">${p.id}</div></div>
-        <div class="synced-field"><label>Last Synced</label><div class="value">${p.lastSynced}</div></div>
+      <div class="synced-fields-grid">
+        <div class="synced-field"><label>Name <span class="field-badge fb-synced">Synced</span></label><div class="val">${p.name}</div></div>
+        <div class="synced-field"><label>Type <span class="field-badge fb-synced">Synced</span></label><div class="val"><span class="tag tag-primary">${p.type}</span></div></div>
+        <div class="synced-field"><label>Status <span class="field-badge fb-mapped">Mapped</span></label><div class="val"><span class="tag tag-positive">${p.status}</span></div></div>
+        <div class="synced-field"><label>Relationship ID <span class="field-badge fb-synced">Synced</span></label><div class="val" style="font-family:monospace;font-size:12px;">${p.relId}</div></div>
+        <div class="synced-field"><label>ARR <span class="field-badge fb-mapped">Mapped</span></label><div class="val">${p.arr}</div></div>
+        <div class="synced-field"><label>Renewal Date <span class="field-badge fb-mapped">Mapped</span></label><div class="val">${p.renewalDate}</div></div>
+        <div class="synced-field"><label>Initial Sale <span class="field-badge fb-mapped">Mapped</span></label><div class="val">${p.initialSale}</div></div>
+        <div class="synced-field"><label>Product ID <span class="field-badge fb-mapped">Mapped</span></label><div class="val" style="color:var(--st-primary);font-weight:700;">${p.productId}</div></div>
       </div>
     </div>
 
-    <!-- ─── RELATIONSHIPS INTELLIGENCE ─── -->
-    <div class="scope-divider">
-      <div class="scope-divider-label">
-        <span class="tag tag-scope-rel">Relationships</span>
-        Relationships Intelligence
+    <!-- Product Identity (merged with Commercial Model) -->
+    <div class="card">
+      <div class="card-title">Product Identity</div>
+      <div class="card-desc">Core product information and commercial classification.</div>
+
+      <div class="ai-field" style="margin-bottom:var(--st-space-2);">
+        <label class="form-label">Description <span class="ai-sparkle">&#10024; AI-populated</span></label>
+        <textarea class="form-textarea" rows="3">${p.description}</textarea>
+        <div class="form-hint">Editable — helps the AI understand what this product is and does.</div>
+      </div>
+
+      <div class="form-row-3">
+        <div>
+          <label class="form-label">Product Type</label>
+          <select class="form-select">${productTypes.map(t => `<option ${t===p.type?'selected':''}>${t}</option>`).join('')}</select>
+        </div>
+        <div>
+          <label class="form-label">Staircase Tag</label>
+          <input class="form-input" type="text" value="${p.staircaseTag}">
+          <div class="form-hint">This name will be used as the tag in Staircase intelligence and events.</div>
+        </div>
+        <div>
+          <label class="form-label">Parent Product (if any)</label>
+          <select class="form-select">
+            <option value="" ${!p.parentProduct?'selected':''}>None</option>
+            ${products.filter(pp=>pp.name!==p.name).map(pp=>`<option ${pp.name===p.parentProduct?'selected':''}>${pp.name}</option>`).join('')}
+          </select>
+        </div>
+      </div>
+
+      <div class="ai-field" style="margin-bottom:var(--st-space-2);">
+        <label class="form-label">Acronyms / Common Names <span class="ai-sparkle">&#10024; AI-populated</span></label>
+        <div class="kw-chips">${p.acronyms.map(a => `<div class="kw-chip">${a}<span class="rm">&times;</span></div>`).join('')}</div>
+      </div>
+
+      <div style="margin-top:var(--st-space-2);">
+        <label class="form-label">Pricing Model <span style="font-weight:400;color:var(--st-text-tertiary);">(select up to 3)</span></label>
+        <div class="ms-area">${pChips}</div>
+        ${pEntries ? `<div style="margin-top:12px;padding:12px 16px;background:var(--st-bg);border-radius:var(--st-radius);border:1px solid var(--st-border);">
+          <div style="font-size:11px;font-weight:700;color:var(--st-text-tertiary);margin-bottom:8px;text-transform:uppercase;letter-spacing:.5px;">Selected Models — Base vs Add-On</div>
+          ${pEntries}
+        </div>` : ''}
+      </div>
+
+      <!-- Product Identifier Mapping -->
+      <div style="margin-top:20px;padding-top:20px;border-top:1px solid var(--st-border);">
+        <label class="form-label" style="margin-bottom:10px;">
+          Product Identifier Mapping
+          <span class="tag tag-primary" style="font-size:10px;padding:1px 8px;margin-left:6px;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:10px;height:10px"><path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+            From Company Settings
+          </span>
+        </label>
+        <div class="mapping-row">
+          <span class="mapping-field">${p.idField}</span>
+          <span style="color:var(--st-text-tertiary);font-size:16px;">&rarr;</span>
+          <span class="mapping-value">${p.productId}</span>
+        </div>
       </div>
     </div>
-    <div class="scope-divider-hint">Feeds product classification (Gate 4)</div>
 
-    <!-- Product Identity -->
-    <div class="section-card open">
-      <div class="section-card-header" onclick="this.parentElement.classList.toggle('open')">
-        <div class="section-card-title">Product Identity</div>
-        <div class="section-card-right">
-          <span class="section-card-arrow">&#9654;</span>
+    <!-- Core Features (ABOVE Keywords) -->
+    <div class="card">
+      <div class="card-title">Core Features</div>
+      <div class="card-desc">Key features and capabilities of this product. These are used to help Staircase understand product-specific conversations.</div>
+      <div class="fp-list">${fPills}</div>
+      <div class="form-hint" style="margin-top:10px;font-style:italic;">Core feature names and acronyms are automatically included as keywords.</div>
+    </div>
+
+    <!-- Keywords -->
+    <div class="card">
+      <div class="card-title">Keywords</div>
+      <div class="card-desc">Keywords help attribute the right product to customer communications. Terms entered here are used during relationship resolution.</div>
+      <div style="display:flex;flex-direction:column;gap:var(--st-space-1);">
+        <div class="kw-zone kw-zone-admin">
+          <div class="kw-zone-label">
+            <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 1l2 4h4l-3 3 1 4-4-2-4 2 1-4-3-3h4z"/></svg>
+            Admin Keywords (high-trust)
+          </div>
+          <div class="kw-chips">${adminKw}</div>
+        </div>
+        <div class="kw-zone kw-zone-ai">
+          <div class="kw-zone-label">
+            <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 1v14M1 8h14"/><circle cx="8" cy="8" r="3"/></svg>
+            AI Recommendations — click &#10003; to accept
+          </div>
+          <div class="kw-chips">${aiKw}</div>
         </div>
       </div>
-      <div class="section-card-body">
-        <div class="form-group ai-field">
-          <label class="form-label">
-            Description
-            <span class="ai-sparkle">&#10024; AI-populated</span>
-          </label>
-          <textarea class="form-textarea" rows="4">${p.description}</textarea>
-          <div class="form-hint">Editable — helps the AI understand what this product is and does.</div>
+    </div>
+
+    <!-- Value Use Cases (collapsed, Enhancement badge) -->
+    <div class="card">
+      <div class="collapse-header" onclick="toggleCollapse(this)">
+        <div class="card-title" style="margin-bottom:0;">
+          Value Use Cases
+          <span class="tag tag-scope">Enhancement</span>
         </div>
-        <div class="form-group ai-field">
-          <label class="form-label">
-            Acronyms / Common Names
-            <span class="ai-sparkle">&#10024; AI-populated</span>
-          </label>
-          <div class="keyword-chips">
-            ${p.acronyms.map(a => `<div class="keyword-chip">${a}<span class="remove" onclick="event.stopPropagation()">&#215;</span></div>`).join('')}
+        <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+      </div>
+      <div class="collapse-body">
+        <div style="padding-top:var(--st-space-2);">
+          <div class="card-desc">How customers derive value from this product. Used for expansion signal detection and enriched summaries.</div>
+          <div style="overflow-x:auto;">
+            <table class="ft">
+              <thead><tr><th>Use Case</th><th>Description</th><th>Leading Indicator</th><th>Lagging Indicator</th></tr></thead>
+              <tbody>${ucRows}</tbody>
+            </table>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Keywords (Two-Zone) -->
-    <div class="section-card open">
-      <div class="section-card-header" onclick="this.parentElement.classList.toggle('open')">
-        <div class="section-card-title">Keywords</div>
-        <div class="section-card-right">
-          <span class="counter-badge">${p.adminKeywords.length + p.aiKeywords.length} total</span>
-          <button class="btn btn-secondary btn-sm" onclick="event.stopPropagation();runDiscovery()">
-            <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="7" cy="7" r="5"/><path d="M11 11l3 3"/></svg>
-            Run Keyword Discovery
-          </button>
-          <span class="section-card-arrow">&#9654;</span>
+    <!-- Competitors (collapsed, Enhancement badge) -->
+    <div class="card">
+      <div class="collapse-header" onclick="toggleCollapse(this)">
+        <div class="card-title" style="margin-bottom:0;">
+          Competitors
+          <span class="tag tag-scope">Enhancement</span>
         </div>
+        <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
       </div>
-      <div class="section-card-body">
-        <div class="keyword-zones">
-          <div class="keyword-zone keyword-zone-admin">
-            <div class="keyword-zone-label">
-              <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 1l2 4h4l-3 3 1 4-4-2-4 2 1-4-3-3h4z"/></svg>
-              Admin Keywords (high-trust)
-            </div>
-            <div class="keyword-chips" id="admin-keywords-${currentProductIndex}">
-              ${p.adminKeywords.map(kw => `<div class="keyword-chip">${kw}<span class="remove">&#215;</span></div>`).join('')}
-            </div>
-          </div>
-          <div class="keyword-zone keyword-zone-ai" id="ai-zone">
-            <div class="keyword-zone-label">
-              <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 1v14M1 8h14"/><circle cx="8" cy="8" r="3"/></svg>
-              AI Recommendations
-              <span style="font-weight:400;text-transform:none;letter-spacing:0;">— click &#10003; to accept</span>
-            </div>
-            <div class="keyword-chips" id="ai-keywords-${currentProductIndex}">
-              ${p.aiKeywords.map(kw => `<div class="keyword-chip ai-rec">${kw}<span class="accept" title="Accept">&#10003;</span><span class="reject" title="Reject">&#215;</span></div>`).join('')}
-            </div>
+      <div class="collapse-body">
+        <div style="padding-top:var(--st-space-2);">
+          <div class="card-desc">Known competitors for this product. Used to detect competitive mentions in communications.</div>
+          <div style="overflow-x:auto;">
+            <table class="ft">
+              <thead><tr><th>Competitor</th><th>Overlap Area</th><th>Common Mentions</th></tr></thead>
+              <tbody>${compRows}</tbody>
+            </table>
           </div>
         </div>
-        <div class="scanning-indicator" id="scanning">
-          <span class="scanning-dot"></span>
-          <span>Scanning 6 months of communications for product keywords...</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- Core Features -->
-    <div class="section-card open">
-      <div class="section-card-header" onclick="this.parentElement.classList.toggle('open')">
-        <div class="section-card-title">Core Features</div>
-        <div class="section-card-right">
-          <span class="counter-badge">${p.features.length} / 10</span>
-          <button class="btn btn-secondary btn-sm" onclick="event.stopPropagation()">
-            <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 8c0-3 2-6 5-6s5 3 5 6"/><path d="M1 8h14"/><path d="M3 8c0 3 2 6 5 6s5-3 5-6"/></svg>
-            Auto-fill from Web
-          </button>
-          <span class="section-card-arrow">&#9654;</span>
-        </div>
-      </div>
-      <div class="section-card-body" style="padding:0;">
-        <table class="feature-table">
-          <thead>
-            <tr>
-              <th>Feature</th>
-              <th>Description</th>
-              <th style="width:80px;">Acronyms</th>
-              <th style="width:100px;">Add-On</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${p.features.map(f => `
-              <tr>
-                <td class="font-medium" style="white-space:nowrap;">${f.name}</td>
-                <td style="color:var(--st-text-secondary);">${f.description}</td>
-                <td><span class="text-xs text-secondary">${f.acronyms || '—'}</span></td>
-                <td>
-                  <div class="toggle-label">
-                    <div class="toggle ${f.addOn ? 'active' : ''}" onclick="this.classList.toggle('active')"></div>
-                    <span>${f.addOn ? 'Add-On' : 'Included'}</span>
-                  </div>
-                </td>
-              </tr>
-            `).join('')}
-          </tbody>
-        </table>
-      </div>
-    </div>
-
-    <!-- ─── ENHANCEMENT INTELLIGENCE ─── -->
-    <div class="scope-divider" style="margin-top:var(--st-space-4);">
-      <div class="scope-divider-label">
-        <span class="tag tag-scope-enh">Enhancement</span>
-        Enhancement Intelligence
-      </div>
-    </div>
-    <div class="scope-divider-hint">Enriches summaries, risk analysis, competitive insights</div>
-
-    <!-- Value Use Cases -->
-    <div class="section-card">
-      <div class="section-card-header" onclick="this.parentElement.classList.toggle('open')">
-        <div class="section-card-title">Value Use Cases</div>
-        <div class="section-card-right">
-          <span class="counter-badge">${p.useCases.length} / 5</span>
-          <span class="section-card-arrow">&#9654;</span>
-        </div>
-      </div>
-      <div class="section-card-body" style="padding:0;">
-        <table class="feature-table">
-          <thead>
-            <tr>
-              <th>Use Case</th>
-              <th>Description</th>
-              <th>Leading Indicator</th>
-              <th>Lagging Indicator</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${p.useCases.map(uc => `
-              <tr>
-                <td class="font-medium" style="white-space:nowrap;">${uc.name}</td>
-                <td style="color:var(--st-text-secondary);">${uc.description}</td>
-                <td class="text-xs text-secondary">${uc.leadingIndicator}</td>
-                <td class="text-xs text-secondary">${uc.laggingIndicator}</td>
-              </tr>
-            `).join('')}
-          </tbody>
-        </table>
-      </div>
-    </div>
-
-    <!-- Commercial Model -->
-    <div class="section-card">
-      <div class="section-card-header" onclick="this.parentElement.classList.toggle('open')">
-        <div class="section-card-title">Commercial Model</div>
-        <div class="section-card-right">
-          <span class="section-card-arrow">&#9654;</span>
-        </div>
-      </div>
-      <div class="section-card-body">
-        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:var(--st-space-2);">
-          <div class="form-group ai-field">
-            <label class="form-label">Product Type <span class="ai-sparkle">&#10024;</span></label>
-            <input class="form-input" type="text" value="${p.commercialModel.productType}">
-          </div>
-          <div class="form-group ai-field">
-            <label class="form-label">Pricing Model <span class="ai-sparkle">&#10024;</span></label>
-            <input class="form-input" type="text" value="${p.commercialModel.pricingModel}">
-          </div>
-          <div class="form-group">
-            <label class="form-label">Parent Product</label>
-            <input class="form-input" type="text" value="${p.commercialModel.parentProduct || '—'}">
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Competitors -->
-    <div class="section-card">
-      <div class="section-card-header" onclick="this.parentElement.classList.toggle('open')">
-        <div class="section-card-title">Competitors</div>
-        <div class="section-card-right">
-          <span class="counter-badge">${p.competitors.length} / 5</span>
-          <span class="section-card-arrow">&#9654;</span>
-        </div>
-      </div>
-      <div class="section-card-body" style="padding:0;">
-        <table class="feature-table">
-          <thead>
-            <tr>
-              <th>Competitor</th>
-              <th>Overlap Area</th>
-              <th>Common Mentions</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${p.competitors.map(c => `
-              <tr>
-                <td class="font-medium" style="white-space:nowrap;">${c.name}</td>
-                <td style="color:var(--st-text-secondary);">${c.overlapArea}</td>
-                <td class="text-xs text-secondary">${c.commonMentions}</td>
-              </tr>
-            `).join('')}
-          </tbody>
-        </table>
       </div>
     </div>
   `;
 }
 
-// ─── Product Navigation ───
-function prevProduct() {
-  if (currentProductIndex > 0) {
-    currentProductIndex--;
-    renderDetail();
-    document.querySelector('#screen-detail .detail-content').scrollTop = 0;
-  }
-}
-function nextProduct() {
-  if (currentProductIndex < products.length - 1) {
-    currentProductIndex++;
-    renderDetail();
-    document.querySelector('#screen-detail .detail-content').scrollTop = 0;
-  }
+function toggleCollapse(header) {
+  header.classList.toggle('open');
+  header.nextElementSibling.classList.toggle('open');
 }
 
-// ─── Discovery Scan Demo ───
-function runDiscovery() {
-  const scan = document.getElementById('scanning');
-  scan.classList.add('active');
-  setTimeout(() => { scan.classList.remove('active'); }, 3500);
-}
-
-// ─── Auto-fill Demo ───
-function demoAutoFill() {
-  const content = document.getElementById('detail-content');
-  const btn = content.querySelector('.btn-secondary');
-  if (btn) {
-    btn.innerHTML = '<span class="scanning-dot" style="width:6px;height:6px;display:inline-block;"></span> Researching...';
-    btn.style.pointerEvents = 'none';
-    setTimeout(() => {
-      btn.innerHTML = '<svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 8c0-3 2-6 5-6s5 3 5 6"/><path d="M1 8h14"/><path d="M3 8c0 3 2 6 5 6s5-3 5-6"/></svg> Auto-fill from Web';
-      btn.style.pointerEvents = 'auto';
-    }, 3000);
-  }
-}
-
-function demoAutoFillAll() {
-  const btn = document.querySelector('.company-bar .btn-primary');
-  const origText = btn.innerHTML;
-  btn.innerHTML = '<span class="scanning-dot" style="width:6px;height:6px;display:inline-block;"></span> Researching all products...';
-  btn.style.pointerEvents = 'none';
-  setTimeout(() => {
-    btn.innerHTML = origText;
-    btn.style.pointerEvents = 'auto';
-  }, 4000);
-}
-
-// ─── Screen Navigation ───
-function showScreen(name) {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  const target = document.getElementById('screen-' + name);
-  if (target) target.classList.add('active');
-
-  // If navigating to detail without a prior selection, show first product
-  if (name === 'detail' && !document.getElementById('detail-content').innerHTML) {
-    currentProductIndex = 0;
-    renderDetail();
-  }
-
-  // Update prototype controls
-  document.querySelectorAll('.proto-btn').forEach(b => b.classList.remove('active'));
-  const screenNames = { grid: 'Product Grid', detail: 'Product Detail', settings: 'Company Settings', empty: 'Empty State' };
-  document.querySelectorAll('.proto-btn').forEach(b => {
-    if (b.textContent === screenNames[name]) b.classList.add('active');
-  });
-}
-
-// ─── Init ───
-renderGrid();
+// Init
+renderSelection();
 </script>
-
 </body>
 </html>
