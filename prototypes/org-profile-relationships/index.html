@@ -324,6 +324,10 @@ body{font-family:var(--st-font);font-size:var(--st-text-base);line-height:var(--
   <div class="ps-wrap">
     <h2>Select Products to Sync</h2>
     <p class="ps-sub">Only Product Relationship types are shown. Select the products you want Staircase to track for intelligence.</p>
+    <div class="callout callout-info" style="margin-bottom:var(--st-space-2);">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+      Once you confirm your selection, Staircase will initiate an <strong style="color:var(--st-text);">online deep research</strong> to automatically populate product descriptions, features, keywords, and competitive intelligence for each selected product. You will receive an <strong style="color:var(--st-text);">email and in-app notification</strong> when the process is complete. This can take up to <strong style="color:var(--st-text);">4 hours</strong> depending on the number of synced relationships.
+    </div>
     <div class="ps-count">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
       12 products discovered
@@ -391,7 +395,10 @@ body{font-family:var(--st-font);font-size:var(--st-text-base);line-height:var(--
             <h2 style="font-size:20px;font-weight:700;">Company Settings</h2>
             <p style="font-size:13px;color:var(--st-text-secondary);margin-top:4px;">Global organization configuration shared across all products</p>
           </div>
-          <button class="btn btn-save"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>Save Changes</button>
+          <div style="display:flex;gap:8px;align-items:center;">
+            <button class="btn btn-secondary btn-sm"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>Sync New Relationships from CS</button>
+            <button class="btn btn-save"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>Save Changes</button>
+          </div>
         </div>
 
         <!-- Company Identity -->
@@ -842,8 +849,15 @@ function renderDetail(idx) {
     </div>
   `).join('');
 
-  // Feature pills
-  const fPills = p.features.map(f => `<span class="fp">${f.name}</span>`).join('') + `<span class="fp-add">+ Add Feature</span>`;
+  // Feature table rows
+  const featureRows = p.features.map(f => `
+    <tr>
+      <td class="font-medium" style="white-space:nowrap;">${f.name}</td>
+      <td class="text-secondary">${f.description}</td>
+      <td class="text-xs text-secondary">${f.acronyms || '—'}</td>
+      <td><div class="toggle-label"><div class="toggle ${f.addOn ? 'active' : ''}" onclick="this.classList.toggle('active');this.nextElementSibling.textContent=this.classList.contains('active')?'Add-On':'Included'"></div><span>${f.addOn ? 'Add-On' : 'Included'}</span></div></td>
+    </tr>
+  `).join('');
 
   // Admin + AI keywords
   const adminKw = p.adminKeywords.map(k => `<div class="kw-chip">${k}<span class="rm">&times;</span></div>`).join('');
@@ -864,12 +878,11 @@ function renderDetail(idx) {
       </div>
       <div class="btn-stack">
         <button class="btn btn-save"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>Save Changes</button>
-        <button class="btn btn-secondary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>Sync Relationships from CS</button>
         <button class="btn btn-secondary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"/></svg>Auto-fill from Web</button>
       </div>
     </div>
 
-    <!-- Synced Fields Row -->
+    <!-- Synced Fields Zone -->
     <div class="synced-zone">
       <div class="synced-zone-header">
         <div class="synced-zone-label">
@@ -881,15 +894,22 @@ function renderDetail(idx) {
           Manage in CS Admin
         </a>
       </div>
-      <div class="synced-fields-grid">
+      <!-- Row 1: Core synced fields -->
+      <div class="synced-fields-grid" style="margin-bottom:14px;">
         <div class="synced-field"><label>Name <span class="field-badge fb-synced">Synced</span></label><div class="val">${p.name}</div></div>
         <div class="synced-field"><label>Type <span class="field-badge fb-synced">Synced</span></label><div class="val"><span class="tag tag-primary">${p.type}</span></div></div>
-        <div class="synced-field"><label>Status <span class="field-badge fb-mapped">Mapped</span></label><div class="val"><span class="tag tag-positive">${p.status}</span></div></div>
         <div class="synced-field"><label>Relationship ID <span class="field-badge fb-synced">Synced</span></label><div class="val" style="font-family:monospace;font-size:12px;">${p.relId}</div></div>
-        <div class="synced-field"><label>ARR <span class="field-badge fb-mapped">Mapped</span></label><div class="val">${p.arr}</div></div>
-        <div class="synced-field"><label>Renewal Date <span class="field-badge fb-mapped">Mapped</span></label><div class="val">${p.renewalDate}</div></div>
-        <div class="synced-field"><label>Initial Sale <span class="field-badge fb-mapped">Mapped</span></label><div class="val">${p.initialSale}</div></div>
-        <div class="synced-field"><label>Product ID <span class="field-badge fb-mapped">Mapped</span></label><div class="val" style="color:var(--st-primary);font-weight:700;">${p.productId}</div></div>
+      </div>
+      <!-- Row 2: Mapped fields from GS Account Object -->
+      <div style="padding-top:12px;border-top:1px solid var(--st-border);">
+        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--st-text-tertiary);margin-bottom:10px;">Mapped from Gainsight Account Object</div>
+        <div class="synced-fields-grid">
+          <div class="synced-field"><label>Product ID <span class="field-badge fb-mapped">Mapped</span></label><div class="val" style="color:var(--st-primary);font-weight:700;">${p.productId}</div></div>
+          <div class="synced-field"><label>${p.productId} ARR <span class="field-badge fb-mapped">Mapped</span></label><div class="val">${p.arr}</div></div>
+          <div class="synced-field"><label>${p.productId} Renewal <span class="field-badge fb-mapped">Mapped</span></label><div class="val">${p.renewalDate}</div></div>
+          <div class="synced-field"><label>${p.productId} Initial Sale <span class="field-badge fb-mapped">Mapped</span></label><div class="val">${p.initialSale}</div></div>
+          <div class="synced-field"><label>${p.productId} Status <span class="field-badge fb-mapped">Mapped</span></label><div class="val"><span class="tag tag-positive">${p.status}</span></div></div>
+        </div>
       </div>
     </div>
 
@@ -925,7 +945,10 @@ function renderDetail(idx) {
 
       <div class="ai-field" style="margin-bottom:var(--st-space-2);">
         <label class="form-label">Acronyms / Common Names <span class="ai-sparkle">&#10024; AI-populated</span></label>
-        <div class="kw-chips">${p.acronyms.map(a => `<div class="kw-chip">${a}<span class="rm">&times;</span></div>`).join('')}</div>
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+          <div class="kw-chips">${p.acronyms.map(a => `<div class="kw-chip">${a}<span class="rm">&times;</span></div>`).join('')}</div>
+          <button class="btn btn-secondary btn-sm" style="flex-shrink:0;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add</button>
+        </div>
       </div>
 
       <div style="margin-top:var(--st-space-2);">
@@ -954,18 +977,39 @@ function renderDetail(idx) {
       </div>
     </div>
 
-    <!-- Core Features (ABOVE Keywords) -->
-    <div class="card">
-      <div class="card-title">Core Features</div>
-      <div class="card-desc">Key features and capabilities of this product. These are used to help Staircase understand product-specific conversations.</div>
-      <div class="fp-list">${fPills}</div>
-      <div class="form-hint" style="margin-top:10px;font-style:italic;">Core feature names and acronyms are automatically included as keywords.</div>
+    <!-- Core Features (expandable table) -->
+    <div class="card" style="overflow:hidden;">
+      <div class="collapse-header open" onclick="toggleCollapse(this)">
+        <div class="card-title" style="margin-bottom:0;">
+          Core Features
+          <span class="tag tag-ghost" style="font-size:11px;">${p.features.length} / 10</span>
+        </div>
+        <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+      </div>
+      <div class="collapse-body open">
+        <div style="padding-top:var(--st-space-1);">
+          <div class="card-desc">Key features and capabilities of this product. These are used to help Staircase understand product-specific conversations.</div>
+          <div style="overflow-x:auto;">
+            <table class="ft">
+              <thead><tr><th>Feature</th><th>Description</th><th style="width:90px;">Acronyms</th><th style="width:110px;">Included / Add-On</th></tr></thead>
+              <tbody>${featureRows}</tbody>
+            </table>
+          </div>
+          <div class="form-hint" style="margin-top:10px;font-style:italic;">Core feature names and acronyms are automatically included as keywords.</div>
+        </div>
+      </div>
     </div>
 
     <!-- Keywords -->
     <div class="card">
-      <div class="card-title">Keywords</div>
-      <div class="card-desc">Keywords help attribute the right product to customer communications. Terms entered here are used during relationship resolution.</div>
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:4px;">
+        <div class="card-title">Keywords</div>
+        <button class="btn btn-secondary btn-sm" id="scan-kw-btn-${idx}" onclick="scanKeywords(${idx})">
+          <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="7" cy="7" r="5"/><path d="M11 11l3 3"/></svg>
+          Scan Prior Communications
+        </button>
+      </div>
+      <div class="card-desc">Keywords help attribute the right product to customer communications. Terms entered here are used during relationship resolution. The AI scan uses communications tagged via deterministic gates (contact-to-product mapping, team member association) to identify keywords that are likely indicators a conversation is about this product.</div>
       <div style="display:flex;flex-direction:column;gap:var(--st-space-1);">
         <div class="kw-zone kw-zone-admin">
           <div class="kw-zone-label">
@@ -974,7 +1018,7 @@ function renderDetail(idx) {
           </div>
           <div class="kw-chips">${adminKw}</div>
         </div>
-        <div class="kw-zone kw-zone-ai">
+        <div class="kw-zone kw-zone-ai" id="ai-kw-zone-${idx}" style="display:none;">
           <div class="kw-zone-label">
             <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 1v14M1 8h14"/><circle cx="8" cy="8" r="3"/></svg>
             AI Recommendations — click &#10003; to accept
@@ -984,12 +1028,38 @@ function renderDetail(idx) {
       </div>
     </div>
 
-    <!-- Value Use Cases (collapsed, Enhancement badge) -->
-    <div class="card">
+    <!-- Competitors (ABOVE Value Use Cases, no Enhancement tag, AI-populated) -->
+    <div class="card" style="overflow:hidden;">
+      <div class="collapse-header open" onclick="toggleCollapse(this)">
+        <div class="card-title" style="margin-bottom:0;">
+          Competitors
+          <span class="ai-sparkle">&#10024; AI-populated</span>
+        </div>
+        <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+      </div>
+      <div class="collapse-body open">
+        <div style="padding-top:var(--st-space-1);">
+          <div class="card-desc">Known competitors for this product. Used to detect competitive mentions in communications.</div>
+          <div style="overflow-x:auto;">
+            <table class="ft" id="comp-table-${idx}">
+              <thead><tr><th>Competitor</th><th>Overlap Area</th><th>Common Mentions</th></tr></thead>
+              <tbody>${compRows}</tbody>
+            </table>
+          </div>
+          <div style="margin-top:12px;">
+            <button class="btn btn-secondary btn-sm" id="add-comp-btn-${idx}" onclick="addCompetitorRow(${idx})"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add Competitor</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Value Use Cases (collapsed, Enhancement badge, AI-populated) -->
+    <div class="card" style="overflow:hidden;">
       <div class="collapse-header" onclick="toggleCollapse(this)">
         <div class="card-title" style="margin-bottom:0;">
           Value Use Cases
           <span class="tag tag-scope">Enhancement</span>
+          <span class="ai-sparkle">&#10024; AI-populated</span>
         </div>
         <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
       </div>
@@ -997,32 +1067,13 @@ function renderDetail(idx) {
         <div style="padding-top:var(--st-space-2);">
           <div class="card-desc">How customers derive value from this product. Used for expansion signal detection and enriched summaries.</div>
           <div style="overflow-x:auto;">
-            <table class="ft">
+            <table class="ft" id="uc-table-${idx}">
               <thead><tr><th>Use Case</th><th>Description</th><th>Leading Indicator</th><th>Lagging Indicator</th></tr></thead>
               <tbody>${ucRows}</tbody>
             </table>
           </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Competitors (collapsed, Enhancement badge) -->
-    <div class="card">
-      <div class="collapse-header" onclick="toggleCollapse(this)">
-        <div class="card-title" style="margin-bottom:0;">
-          Competitors
-          <span class="tag tag-scope">Enhancement</span>
-        </div>
-        <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
-      </div>
-      <div class="collapse-body">
-        <div style="padding-top:var(--st-space-2);">
-          <div class="card-desc">Known competitors for this product. Used to detect competitive mentions in communications.</div>
-          <div style="overflow-x:auto;">
-            <table class="ft">
-              <thead><tr><th>Competitor</th><th>Overlap Area</th><th>Common Mentions</th></tr></thead>
-              <tbody>${compRows}</tbody>
-            </table>
+          <div style="margin-top:12px;">
+            <button class="btn btn-secondary btn-sm" id="add-uc-btn-${idx}" onclick="addUseCaseRow(${idx})"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add Use Case</button>
           </div>
         </div>
       </div>
@@ -1033,6 +1084,52 @@ function renderDetail(idx) {
 function toggleCollapse(header) {
   header.classList.toggle('open');
   header.nextElementSibling.classList.toggle('open');
+}
+
+// Scan Keywords — loading animation then show AI zone
+function scanKeywords(idx) {
+  const btn = document.getElementById('scan-kw-btn-' + idx);
+  const zone = document.getElementById('ai-kw-zone-' + idx);
+  const origHTML = btn.innerHTML;
+  btn.innerHTML = '<span class="scanning-dot" style="width:6px;height:6px;display:inline-block;"></span> Scanning communications...';
+  btn.style.pointerEvents = 'none';
+  btn.style.opacity = '0.7';
+  setTimeout(() => {
+    zone.style.display = 'block';
+    btn.innerHTML = origHTML;
+    btn.style.pointerEvents = 'auto';
+    btn.style.opacity = '1';
+  }, 3000);
+}
+
+// Add Competitor Row
+function addCompetitorRow(idx) {
+  const table = document.getElementById('comp-table-' + idx);
+  const tbody = table.querySelector('tbody');
+  const btn = document.getElementById('add-comp-btn-' + idx);
+  const tr = document.createElement('tr');
+  tr.innerHTML = '<td><input class="form-input" type="text" placeholder="Competitor name" style="padding:4px 8px;font-size:13px;"></td><td><input class="form-input" type="text" placeholder="Overlap area" style="padding:4px 8px;font-size:13px;"></td><td><input class="form-input" type="text" placeholder="Common mentions" style="padding:4px 8px;font-size:13px;"></td>';
+  tbody.appendChild(tr);
+  btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>Save';
+  btn.onclick = function() {
+    btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add Competitor';
+    btn.onclick = function() { addCompetitorRow(idx); };
+  };
+}
+
+// Add Use Case Row
+function addUseCaseRow(idx) {
+  const table = document.getElementById('uc-table-' + idx);
+  const tbody = table.querySelector('tbody');
+  const btn = document.getElementById('add-uc-btn-' + idx);
+  const tr = document.createElement('tr');
+  tr.innerHTML = '<td><input class="form-input" type="text" placeholder="Use case name" style="padding:4px 8px;font-size:13px;"></td><td><input class="form-input" type="text" placeholder="Description" style="padding:4px 8px;font-size:13px;"></td><td><input class="form-input" type="text" placeholder="Leading indicator" style="padding:4px 8px;font-size:13px;"></td><td><input class="form-input" type="text" placeholder="Lagging indicator" style="padding:4px 8px;font-size:13px;"></td>';
+  tbody.appendChild(tr);
+  btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>Save';
+  btn.onclick = function() {
+    btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add Use Case';
+    btn.onclick = function() { addUseCaseRow(idx); };
+  };
 }
 
 // Init
