@@ -606,7 +606,7 @@ const products = [
     productId: 'SJ',
     idField: 'Product (Multi-Picklist)',
     staircaseTag: 'skilljar',
-    pricingModels: [{model:'Per-User/Seat',path:'Base'},{model:'Usage-Based',path:'Add-On'}],
+    pricingModels: [{model:'Per-User/Seat',path:'Base'},{model:'Consumption',path:'Add-On'}],
     parentProduct: '',
     description: 'SkillJar (now SkillJar by Gainsight) is an external-facing Learning Management System purpose-built for customer and partner education. It trains people outside a company at scale — reducing time-to-value, accelerating adoption, decreasing support tickets, and improving retention.',
     acronyms: ['SJ','SkillJar by Gainsight','Customer Ed'],
@@ -696,7 +696,7 @@ const products = [
     productId: 'PX',
     idField: 'Product (Multi-Picklist)',
     staircaseTag: 'gainsight-px',
-    pricingModels: [{model:'Usage-Based',path:'Add-On'}],
+    pricingModels: [{model:'Consumption',path:'Add-On'}],
     parentProduct: 'Gainsight CS',
     description: 'Gainsight PX (Product Experience) combines deep SaaS product analytics with personalized in-app engagement tools — capturing every interaction without manual tagging and acting through targeted guides, walkthroughs, tooltips, surveys, and email campaigns.',
     acronyms: ['PX','GS PX','GPX'],
@@ -732,7 +732,7 @@ const products = [
 ];
 
 const productTypes = ['Platform','Module','Add-On','Service','Integration','API','Extension','Suite','Bundle'];
-const pricingModels = ['Per-User/Seat','Per-Account','Platform Fee','Usage-Based','Tiered','Flat Rate','Per-Feature','Revenue Share','Free/Freemium'];
+const pricingModels = ['Per-User/Seat','Per-Account','Platform Fee','Consumption','Tiered','Flat Rate','Per-Feature','Free/Freemium'];
 
 // Additional discovered products for selection screen
 const discovered = [
@@ -832,22 +832,11 @@ function renderDetail(idx) {
   const p = products[idx];
   const out = document.getElementById('detail-out');
 
-  // Pricing chips
+  // Pricing chips — clickable to toggle selection
   const pChips = pricingModels.map(m => {
     const sel = p.pricingModels.some(pm => pm.model === m);
-    return `<div class="ms-chip ${sel?'sel':''}">${m}</div>`;
+    return `<div class="ms-chip ${sel?'sel':''}" onclick="this.classList.toggle('sel')">${m}</div>`;
   }).join('');
-
-  // Selected pricing entries
-  const pEntries = p.pricingModels.map(pm => `
-    <div class="pricing-entry">
-      <span class="font-medium">${pm.model}</span>
-      <div class="pricing-toggle">
-        <div class="pricing-toggle-opt ${pm.path==='Base'?'active':''}">Base</div>
-        <div class="pricing-toggle-opt ${pm.path==='Add-On'?'active':''}">Add-On</div>
-      </div>
-    </div>
-  `).join('');
 
   // Feature table rows
   const featureRows = p.features.map(f => `
@@ -870,15 +859,15 @@ function renderDetail(idx) {
   const compRows = p.competitors.map(c => `<tr><td class="font-medium" style="white-space:nowrap;">${c.name}</td><td class="text-secondary">${c.overlap}</td><td class="text-xs text-secondary">${c.mentions}</td></tr>`).join('');
 
   out.innerHTML = `
-    <!-- Header + Button Stack -->
+    <!-- Header + Buttons -->
     <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:var(--st-space-3);">
       <div>
         <h2 style="font-size:20px;font-weight:700;">${p.name}</h2>
         <p class="text-sm text-secondary" style="margin-top:2px;">Product relationship configuration and intelligence settings</p>
       </div>
-      <div class="btn-stack">
+      <div style="display:flex;gap:8px;align-items:center;">
+        <button class="btn btn-secondary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px"><path d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"/></svg>Auto-fill from Web</button>
         <button class="btn btn-save"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>Save Changes</button>
-        <button class="btn btn-secondary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"/></svg>Auto-fill from Web</button>
       </div>
     </div>
 
@@ -905,15 +894,15 @@ function renderDetail(idx) {
         <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--st-text-tertiary);margin-bottom:10px;">Mapped from Gainsight Account Object</div>
         <div class="synced-fields-grid">
           <div class="synced-field"><label>Product ID <span class="field-badge fb-mapped">Mapped</span></label><div class="val" style="color:var(--st-primary);font-weight:700;">${p.productId}</div></div>
-          <div class="synced-field"><label>${p.productId} ARR <span class="field-badge fb-mapped">Mapped</span></label><div class="val">${p.arr}</div></div>
-          <div class="synced-field"><label>${p.productId} Renewal <span class="field-badge fb-mapped">Mapped</span></label><div class="val">${p.renewalDate}</div></div>
-          <div class="synced-field"><label>${p.productId} Initial Sale <span class="field-badge fb-mapped">Mapped</span></label><div class="val">${p.initialSale}</div></div>
-          <div class="synced-field"><label>${p.productId} Status <span class="field-badge fb-mapped">Mapped</span></label><div class="val"><span class="tag tag-positive">${p.status}</span></div></div>
+          <div class="synced-field"><label>Revenue <span class="field-badge fb-mapped">Mapped</span></label><div class="val">${p.productId} ARR</div></div>
+          <div class="synced-field"><label>Renewal Date <span class="field-badge fb-mapped">Mapped</span></label><div class="val">${p.productId} Renewal</div></div>
+          <div class="synced-field"><label>Initial Sale <span class="field-badge fb-mapped">Mapped</span></label><div class="val">${p.productId} Sale Date</div></div>
+          <div class="synced-field"><label>Status <span class="field-badge fb-mapped">Mapped</span></label><div class="val">${p.productId} Status</div></div>
         </div>
       </div>
     </div>
 
-    <!-- Product Identity (merged with Commercial Model) -->
+    <!-- Product Identity -->
     <div class="card">
       <div class="card-title">Product Identity</div>
       <div class="card-desc">Core product information and commercial classification.</div>
@@ -954,26 +943,6 @@ function renderDetail(idx) {
       <div style="margin-top:var(--st-space-2);">
         <label class="form-label">Pricing Model <span style="font-weight:400;color:var(--st-text-tertiary);">(select up to 3)</span></label>
         <div class="ms-area">${pChips}</div>
-        ${pEntries ? `<div style="margin-top:12px;padding:12px 16px;background:var(--st-bg);border-radius:var(--st-radius);border:1px solid var(--st-border);">
-          <div style="font-size:11px;font-weight:700;color:var(--st-text-tertiary);margin-bottom:8px;text-transform:uppercase;letter-spacing:.5px;">Selected Models — Base vs Add-On</div>
-          ${pEntries}
-        </div>` : ''}
-      </div>
-
-      <!-- Product Identifier Mapping -->
-      <div style="margin-top:20px;padding-top:20px;border-top:1px solid var(--st-border);">
-        <label class="form-label" style="margin-bottom:10px;">
-          Product Identifier Mapping
-          <span class="tag tag-primary" style="font-size:10px;padding:1px 8px;margin-left:6px;">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:10px;height:10px"><path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
-            From Company Settings
-          </span>
-        </label>
-        <div class="mapping-row">
-          <span class="mapping-field">${p.idField}</span>
-          <span style="color:var(--st-text-tertiary);font-size:16px;">&rarr;</span>
-          <span class="mapping-value">${p.productId}</span>
-        </div>
       </div>
     </div>
 
@@ -984,7 +953,10 @@ function renderDetail(idx) {
           Core Features
           <span class="tag tag-ghost" style="font-size:11px;">${p.features.length} / 10</span>
         </div>
-        <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <button class="btn btn-secondary btn-sm" onclick="event.stopPropagation()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>Edit</button>
+          <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+        </div>
       </div>
       <div class="collapse-body open">
         <div style="padding-top:var(--st-space-1);">
@@ -1028,7 +1000,7 @@ function renderDetail(idx) {
       </div>
     </div>
 
-    <!-- Competitors (ABOVE Value Use Cases, no Enhancement tag, AI-populated) -->
+    <!-- Competitors -->
     <div class="card" style="overflow:hidden;">
       <div class="collapse-header open" onclick="toggleCollapse(this)">
         <div class="card-title" style="margin-bottom:0;">
@@ -1053,7 +1025,7 @@ function renderDetail(idx) {
       </div>
     </div>
 
-    <!-- Value Use Cases (collapsed, Enhancement badge, AI-populated) -->
+    <!-- Value Use Cases -->
     <div class="card" style="overflow:hidden;">
       <div class="collapse-header" onclick="toggleCollapse(this)">
         <div class="card-title" style="margin-bottom:0;">
@@ -1077,6 +1049,11 @@ function renderDetail(idx) {
           </div>
         </div>
       </div>
+    </div>
+
+    <!-- Bottom Save Changes -->
+    <div style="display:flex;justify-content:flex-end;padding:var(--st-space-3) 0 var(--st-space-2);">
+      <button class="btn btn-save"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>Save Changes</button>
     </div>
   `;
 }
