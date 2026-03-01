@@ -1,0 +1,1252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=1280">
+  <title>RKO Product Roadmap H1 2026 — Staircase AI</title>
+  <style>
+    /* ============================================================
+       STAIRCASE AI SLIDE DECK — RKO Product Roadmap H1 2026
+       1280×720px · Single-file · All CSS/JS inline
+    ============================================================ */
+
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;600;700;800&display=swap');
+
+    /* === BRAND TOKENS ========================================== */
+    :root {
+      --sl-bg-hero:             #1A3556;
+      --sl-bg-hero-dark:        #132841;
+      --sl-bg-content:          #FFFFFF;
+
+      --sl-accent-primary:      #2E7FE0;
+      --sl-accent-light:        #4DA3FF;
+
+      --sl-text-on-dark:        #FFFFFF;
+      --sl-text-on-dark-muted:  #8EAECB;
+
+      --sl-text-heading:        #16325C;
+      --sl-text-body:           #334155;
+      --sl-text-muted:          #64748B;
+      --sl-text-subtle:         #94A3B8;
+
+      --sl-card-bg:             #FFFFFF;
+      --sl-card-border:         #E2E8F0;
+      --sl-card-shadow:         0 2px 8px rgba(22,50,92,0.06), 0 0 1px rgba(22,50,92,0.16);
+      --sl-card-radius:         12px;
+
+      --sl-positive:            #13AD68;
+      --sl-warning:             #FA6B0B;
+      --sl-negative:            #DC3626;
+      --sl-neutral:             #FFBB00;
+    }
+
+    /* === RESET & BASE ========================================== */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Noto Sans', system-ui, -apple-system, sans-serif;
+      background: #0d1117;
+      display: flex; align-items: center; justify-content: center;
+      min-height: 100vh; overflow: hidden;
+    }
+
+    /* === TYPOGRAPHY SCALE ===================================== */
+    .sl-display    { font-size: 48px; font-weight: 800; line-height: 1.1; }
+    .sl-heading    { font-size: 32px; font-weight: 700; line-height: 1.2; }
+    .sl-subheading { font-size: 20px; font-weight: 600; line-height: 1.3; }
+    .sl-body       { font-size: 16px; font-weight: 400; line-height: 1.5; }
+    .sl-caption    { font-size: 13px; font-weight: 400; line-height: 1.4; }
+    .sl-label      { font-size: 11px; font-weight: 700; line-height: 1;
+                     text-transform: uppercase; letter-spacing: 0.08em; }
+
+    /* === DECK CONTAINER ======================================== */
+    .deck {
+      width: 1280px; height: 720px;
+      position: relative; overflow: hidden;
+      border-radius: 4px;
+      box-shadow: 0 24px 80px rgba(0,0,0,0.5);
+    }
+
+    /* === SLIDES ================================================ */
+    .slide {
+      width: 1280px; height: 720px;
+      position: absolute; top: 0; left: 0;
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.25s ease;
+      overflow: hidden;
+    }
+    .slide.active {
+      opacity: 1; pointer-events: all; z-index: 1;
+    }
+
+    /* === PROGRESS BAR ========================================= */
+    .deck-progress {
+      position: absolute; top: 0; left: 0; right: 0;
+      height: 3px; z-index: 100; background: rgba(255,255,255,0.1);
+    }
+    .deck-progress-fill {
+      height: 100%; background: var(--sl-accent-primary);
+      transition: width 0.25s ease;
+    }
+
+    /* === SLIDE COUNTER ======================================== */
+    .deck-counter {
+      position: absolute; bottom: 14px; right: 20px;
+      font-size: 11px; font-weight: 600; letter-spacing: 0.05em;
+      color: rgba(255,255,255,0.4); z-index: 100;
+      font-family: 'Noto Sans', system-ui, sans-serif;
+    }
+
+    /* === DOT NAVIGATION ======================================= */
+    .deck-dots {
+      position: absolute; bottom: 14px; left: 50%; transform: translateX(-50%);
+      display: flex; gap: 6px; z-index: 100;
+    }
+    .deck-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: rgba(255,255,255,0.25); cursor: pointer;
+      transition: background 0.2s, transform 0.2s;
+    }
+    .deck-dot.active {
+      background: var(--sl-accent-primary); transform: scale(1.3);
+    }
+
+    /* === CLICK NAVIGATION ZONES =============================== */
+    .deck-nav-prev, .deck-nav-next {
+      position: absolute; top: 40px; bottom: 40px;
+      width: 80px; z-index: 99; cursor: pointer; opacity: 0;
+    }
+    .deck-nav-prev { left: 0; }
+    .deck-nav-next { right: 0; }
+
+    /* === SPEAKER NOTES PANEL ================================== */
+    .deck-notes {
+      position: fixed; bottom: 0; left: 0; right: 0;
+      background: rgba(10,15,25,0.95); color: #e2e8f0;
+      font-family: 'Noto Sans', system-ui, sans-serif;
+      font-size: 15px; line-height: 1.6; padding: 20px 40px;
+      transform: translateY(100%); transition: transform 0.2s ease;
+      z-index: 200; border-top: 1px solid rgba(46,127,224,0.3);
+    }
+    .deck-notes.visible { transform: translateY(0); }
+    .deck-notes-label {
+      font-size: 10px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.1em; color: var(--sl-accent-primary); margin-bottom: 8px;
+    }
+
+    /* === LOGO ================================================= */
+    .sl-logo {
+      position: absolute; bottom: 24px; left: 32px; z-index: 10;
+      font-size: 12px; font-weight: 700; letter-spacing: 0.04em;
+      opacity: 0.5; pointer-events: none;
+    }
+    .slide--hero .sl-logo,
+    .slide--closing .sl-logo { color: var(--sl-text-on-dark-muted); }
+    .slide--narrative-screenshot .sl-logo,
+    .slide--2-panel .sl-logo,
+    .slide--4-col-cards .sl-logo,
+    .slide--journey-flow .sl-logo,
+    .slide--feature-strips .sl-logo { color: var(--sl-text-muted); }
+
+    /* === COMMON SLIDE ELEMENTS ================================ */
+    .sl-accent-curve {
+      position: absolute; bottom: 0; right: 0;
+      width: 420px; height: 320px; pointer-events: none; z-index: 0;
+    }
+    .sl-slide-header { position: relative; z-index: 2; }
+    .sl-slide-title { color: var(--sl-text-heading); }
+    .sl-slide-subtitle { color: var(--sl-text-muted); margin-top: 6px; }
+
+    .sl-badge {
+      width: 40px; height: 40px; border-radius: 50%;
+      background: var(--sl-accent-primary);
+      color: white; font-size: 16px; font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .sl-icon-badge {
+      width: 40px; height: 40px; border-radius: 50%;
+      background: var(--sl-accent-primary);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px; flex-shrink: 0;
+    }
+
+    .sl-card {
+      background: var(--sl-card-bg);
+      border: 1px solid var(--sl-card-border);
+      border-radius: var(--sl-card-radius);
+      box-shadow: var(--sl-card-shadow);
+      padding: 24px; display: flex; flex-direction: column; gap: 12px;
+    }
+    .sl-card-title { color: var(--sl-text-heading); }
+    .sl-card-bullets {
+      list-style: none; display: flex; flex-direction: column; gap: 6px;
+      color: var(--sl-text-body);
+    }
+    .sl-card-bullets li {
+      padding-left: 16px; position: relative;
+    }
+    .sl-card-bullets li::before {
+      content: '·'; position: absolute; left: 4px;
+      color: var(--sl-accent-primary); font-weight: 700;
+    }
+
+    .sl-pill {
+      display: inline-flex; align-items: center; padding: 3px 10px;
+      border-radius: 100px; font-size: 12px; font-weight: 600;
+    }
+    .sl-pill--positive { background: rgba(19,173,104,0.12); color: #0e8a52; }
+    .sl-pill--warning  { background: rgba(250,107,11,0.12);  color: #c4530a; }
+    .sl-pill--negative { background: rgba(220,54,38,0.12);   color: #b12a1f; }
+    .sl-pill--neutral  { background: rgba(255,187,0,0.12);   color: #9a7000; }
+
+    .sl-divider-line {
+      width: 48px; height: 3px;
+      background: var(--sl-accent-primary);
+      border-radius: 2px; margin: 12px 0;
+    }
+
+
+    /* ============================================================
+       V2: FIXED CONTENT HEADER (slides 2-5)
+    ============================================================ */
+    .sl-content-header {
+      position: absolute;
+      top: 48px; left: 56px; right: 56px;
+      z-index: 5;
+    }
+    .sl-content-header .sl-content-title {
+      font-size: 40px; font-weight: 700; line-height: 1.15;
+      color: var(--sl-text-heading);
+    }
+    .sl-content-header .sl-content-subtitle {
+      font-size: 20px; font-weight: 400; line-height: 1.4;
+      color: var(--sl-text-muted); margin-top: 6px;
+    }
+
+    /* ============================================================
+       V2: STATUS PILL (top-right badge)
+    ============================================================ */
+    .sl-status-pill {
+      position: absolute; top: 48px; right: 56px; z-index: 5;
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 6px 14px; border-radius: 100px;
+      font-size: 12px; font-weight: 600;
+      background: rgba(46,127,224,0.08);
+      color: var(--sl-accent-primary);
+      border: 1px solid rgba(46,127,224,0.2);
+    }
+    .sl-status-pill--green {
+      background: rgba(19,173,104,0.08);
+      color: #0e8a52;
+      border-color: rgba(19,173,104,0.2);
+    }
+
+    /* ============================================================
+       V2: PMM VALUE BULLET PATTERN
+    ============================================================ */
+    .sl-value-bullet {
+      margin-bottom: 14px; line-height: 1.5;
+    }
+    .sl-value-bullet strong {
+      font-weight: 700; color: var(--sl-text-heading); font-size: 15px;
+    }
+    .sl-value-bullet span {
+      font-weight: 400; color: var(--sl-text-body); font-size: 14px;
+    }
+
+    /* ============================================================
+       V2: VALUE PROPOSITION BLOCK
+    ============================================================ */
+    .sl-value-prop {
+      font-size: 16px; font-weight: 700; line-height: 1.5;
+      color: var(--sl-text-body); max-width: 540px;
+      margin-top: 20px;
+      margin-bottom: 20px;
+    }
+
+
+    /* ============================================================
+       SLIDE TYPES
+    ============================================================ */
+
+    /* 1. HERO ————————————————————————————————————————————————— */
+    .slide--hero {
+      background: var(--sl-bg-hero);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .slide--hero .sl-hero-inner {
+      text-align: center; max-width: 780px; position: relative; z-index: 2;
+    }
+    .slide--hero .sl-hero-eyebrow {
+      color: var(--sl-accent-primary); margin-bottom: 16px;
+      letter-spacing: 0.1em;
+    }
+    .slide--hero .sl-hero-title {
+      color: var(--sl-text-on-dark); margin-bottom: 20px;
+    }
+    .slide--hero .sl-hero-subtitle {
+      color: var(--sl-text-on-dark-muted); max-width: 520px; margin: 0 auto 32px;
+    }
+    .slide--hero .sl-hero-meta {
+      display: flex; gap: 24px; justify-content: center;
+      color: var(--sl-text-on-dark-muted); align-items: center;
+    }
+    .slide--hero .sl-hero-meta-divider {
+      width: 1px; height: 14px; background: rgba(255,255,255,0.2);
+    }
+
+    /* 6. NARRATIVE + SCREENSHOT ————————————————————————————————— */
+    .slide--narrative-screenshot {
+      background: var(--sl-bg-content);
+    }
+    .slide--narrative-screenshot .sl-narrative-col {
+      position: absolute;
+      top: 150px; left: 56px; right: 50%; bottom: 48px;
+      padding-right: 24px;
+      display: flex; flex-direction: column;
+    }
+    .slide--narrative-screenshot .sl-screenshot-col {
+      position: absolute;
+      top: 130px; left: 50%; right: 56px; bottom: 48px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .slide--narrative-screenshot .sl-screenshot-frame {
+      border-radius: 10px; overflow: hidden;
+      border: 1px solid var(--sl-card-border);
+      box-shadow: 0 8px 32px rgba(22,50,92,0.12);
+      background: #f1f5f9;
+      width: 100%; max-height: 100%;
+      display: flex; align-items: stretch; justify-content: center;
+    }
+
+    /* 7. 2-PANEL ————————————————————————————————————————————————— */
+    .slide--2-panel {
+      background: var(--sl-bg-content);
+      padding: 56px 64px;
+    }
+    .slide--2-panel .sl-slide-header { margin-bottom: 32px; }
+    .slide--2-panel .sl-panels-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 32px;
+    }
+    .slide--2-panel .sl-panel {
+      background: #f8fafc;
+      border: 1px solid var(--sl-card-border);
+      border-radius: var(--sl-card-radius);
+      padding: 24px;
+    }
+    .slide--2-panel .sl-panel-title {
+      color: var(--sl-text-heading); margin-bottom: 4px;
+    }
+    .slide--2-panel .sl-panel-subtitle {
+      color: var(--sl-text-muted); margin-bottom: 16px; font-size: 13px;
+    }
+    .slide--2-panel .sl-panel-items {
+      display: flex; flex-direction: column; gap: 10px;
+    }
+    .slide--2-panel .sl-panel-item {
+      display: flex; gap: 10px; align-items: flex-start;
+      color: var(--sl-text-body); font-size: 15px;
+    }
+    .slide--2-panel .sl-panel-item-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--sl-accent-primary); flex-shrink: 0; margin-top: 6px;
+    }
+
+    /* 4. 4-COL CARDS ———————————————————————————————————————————— */
+    .slide--4-col-cards {
+      background: radial-gradient(ellipse at 95% 5%, rgba(201,231,248,0.6) 0%, transparent 60%),
+                  var(--sl-bg-content);
+      padding: 48px 56px;
+    }
+    .slide--4-col-cards .sl-slide-header { margin-bottom: 32px; }
+    .slide--4-col-cards .sl-cards-grid {
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px;
+    }
+
+
+    /* ============================================================
+       CUSTOM: Slide 2 — Account Page Mock UI
+    ============================================================ */
+    .mock-account {
+      width: 100%; background: #FFFFFF; font-family: 'Noto Sans', system-ui, sans-serif;
+      display: flex; flex-direction: column; font-size: 12px;
+    }
+    .mock-account-header {
+      display: flex; align-items: center; gap: 12px;
+      padding: 14px 16px 10px; border-bottom: 1px solid #E2E8F0;
+      background: #FAFBFC;
+    }
+    .mock-score-ring {
+      width: 36px; height: 36px; border-radius: 50%;
+      border: 3px solid var(--sl-positive);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px; font-weight: 700; color: var(--sl-text-heading);
+      flex-shrink: 0;
+    }
+    .mock-account-name {
+      font-size: 15px; font-weight: 700; color: var(--sl-text-heading);
+    }
+    .mock-account-meta {
+      font-size: 11px; color: var(--sl-text-muted);
+    }
+    .mock-ask-bar {
+      margin: 10px 16px 6px;
+      padding: 8px 12px;
+      background: #F1F5F9; border: 1px solid #E2E8F0; border-radius: 8px;
+      color: var(--sl-text-subtle); font-size: 12px;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .mock-ask-icon {
+      width: 16px; height: 16px; border-radius: 50%;
+      background: linear-gradient(135deg, #2E7FE0, #4DA3FF);
+      flex-shrink: 0;
+    }
+    .mock-tabs {
+      display: flex; gap: 0; padding: 0 16px; border-bottom: 1px solid #E2E8F0;
+    }
+    .mock-tab {
+      padding: 8px 14px; font-size: 12px; font-weight: 500;
+      color: var(--sl-text-muted); border-bottom: 2px solid transparent;
+      cursor: default;
+    }
+    .mock-tab--active {
+      color: var(--sl-accent-primary); font-weight: 600;
+      border-bottom-color: var(--sl-accent-primary);
+    }
+    .mock-filter-row {
+      display: flex; align-items: center; gap: 8px; padding: 10px 16px;
+    }
+    .mock-filter-pill {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 600;
+      background: rgba(46,127,224,0.08); color: var(--sl-accent-primary);
+      border: 1px solid rgba(46,127,224,0.2);
+    }
+    .mock-filter-chevron {
+      font-size: 9px; opacity: 0.6;
+    }
+    .mock-filter-label {
+      font-size: 11px; color: var(--sl-text-muted); font-weight: 500;
+    }
+    .mock-summary-block {
+      padding: 0 16px 12px; font-size: 12px; line-height: 1.6;
+      color: var(--sl-text-body);
+    }
+    .mock-summary-block strong {
+      color: var(--sl-text-heading); font-weight: 600;
+    }
+    .mock-products-section {
+      padding: 0 16px 12px;
+    }
+    .mock-products-label {
+      font-size: 11px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.05em; color: var(--sl-text-muted); margin-bottom: 8px;
+    }
+    .mock-product-card {
+      background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 8px;
+      padding: 10px 12px; margin-bottom: 6px;
+    }
+    .mock-product-card-header {
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .mock-product-card-name {
+      font-size: 13px; font-weight: 600; color: var(--sl-text-heading);
+    }
+    .mock-product-card-summary {
+      font-size: 11px; color: var(--sl-text-muted); margin-top: 4px;
+      line-height: 1.4;
+    }
+    .mock-product-tags {
+      display: flex; gap: 4px; margin-top: 6px;
+    }
+    .mock-tag {
+      font-size: 9px; font-weight: 600; padding: 2px 6px; border-radius: 4px;
+    }
+    .mock-tag--blue { background: rgba(46,127,224,0.1); color: #2E7FE0; }
+    .mock-tag--green { background: rgba(19,173,104,0.1); color: #0e8a52; }
+    .mock-tag--gray { background: rgba(100,116,139,0.1); color: #64748B; }
+    .mock-expand-hint {
+      font-size: 10px; color: var(--sl-accent-primary); font-weight: 600;
+      cursor: default;
+    }
+    .mock-status-bar {
+      margin-top: auto;
+      display: flex; gap: 16px; padding: 10px 16px;
+      border-top: 1px solid #E2E8F0; background: #FAFBFC;
+      font-size: 11px; color: var(--sl-text-muted);
+    }
+    .mock-status-bar span strong {
+      color: var(--sl-text-heading); font-weight: 600;
+    }
+
+
+    /* ============================================================
+       CUSTOM: Slide 4 — Handoff Analyst Orbital Visual
+    ============================================================ */
+    .handoff-visual {
+      width: 100%; height: 100%;
+      position: relative; display: flex;
+      align-items: center; justify-content: center;
+      background: radial-gradient(ellipse at center, #1A3556 0%, #0F2240 100%);
+      overflow: hidden; min-height: 480px;
+      border-radius: 10px;
+    }
+
+    /* Orbital rings */
+    .orbital-rings {
+      position: absolute; inset: 0;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .orbital-rings svg {
+      width: 100%; height: 100%;
+    }
+
+    /* Particles */
+    .orbital-particle {
+      position: absolute; border-radius: 50%;
+    }
+    .orbital-particle--circle {
+      width: 6px; height: 6px; background: rgba(46,127,224,0.5);
+    }
+    .orbital-particle--diamond {
+      width: 7px; height: 7px; background: rgba(77,163,255,0.4);
+      transform: rotate(45deg);
+      border-radius: 1px;
+    }
+    .orbital-particle--sm {
+      width: 4px; height: 4px; background: rgba(46,127,224,0.3);
+    }
+
+    /* Animated subtle float */
+    @keyframes float-slow {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-6px); }
+    }
+    @keyframes float-med {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-4px); }
+    }
+    .float-slow { animation: float-slow 6s ease-in-out infinite; }
+    .float-med  { animation: float-med 4s ease-in-out infinite; }
+
+    /* Center artifact card — ENLARGED for V2 */
+    .handoff-card {
+      position: relative; z-index: 2;
+      width: 420px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 12px;
+      backdrop-filter: blur(12px);
+      overflow: hidden;
+    }
+    .handoff-card-header {
+      padding: 16px 20px 12px;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      display: flex; align-items: center; gap: 10px;
+    }
+    .handoff-card-header-icon {
+      width: 26px; height: 26px;
+      background: linear-gradient(135deg, #2E7FE0, #4DA3FF);
+      border-radius: 6px; display: flex; align-items: center; justify-content: center;
+    }
+    .handoff-card-header-icon svg {
+      width: 16px; height: 16px;
+    }
+    .handoff-card-title {
+      font-size: 16px; font-weight: 700; color: #FFFFFF;
+    }
+    .handoff-section {
+      padding: 10px 20px;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+    .handoff-section:last-child { border-bottom: none; padding-bottom: 16px; }
+    .handoff-section-label {
+      font-size: 10px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.08em; color: rgba(77,163,255,0.8);
+      margin-bottom: 4px;
+    }
+    .handoff-section-text {
+      font-size: 12px; color: rgba(255,255,255,0.65); line-height: 1.5;
+    }
+    .handoff-evidence {
+      display: inline-flex; align-items: center; gap: 4px;
+      margin-top: 6px; padding: 2px 8px; border-radius: 4px;
+      background: rgba(46,127,224,0.15); font-size: 10px;
+      font-weight: 600; color: rgba(77,163,255,0.9);
+    }
+
+
+    /* ============================================================
+       CUSTOM: Slide 3 — Journey Flow (2 phase cards + connector)
+    ============================================================ */
+    .slide--journey-flow {
+      background: var(--sl-bg-content);
+    }
+    .journey-grid {
+      position: absolute;
+      top: 140px; left: 56px; right: 56px; bottom: 48px;
+      display: grid;
+      grid-template-columns: 1fr 48px 1fr;
+      gap: 0;
+      align-items: stretch;
+    }
+    .journey-phase {
+      background: #f8fafc;
+      border: 1px solid var(--sl-card-border);
+      border-radius: var(--sl-card-radius);
+      padding: 28px 28px 24px;
+      display: flex; flex-direction: column;
+    }
+    .journey-phase--left {
+      border-left: 4px solid var(--sl-accent-primary);
+    }
+    .journey-phase--right {
+      border-left: 4px solid var(--sl-accent-light);
+    }
+    .journey-phase-label {
+      font-size: 14px; font-weight: 800; text-transform: uppercase;
+      letter-spacing: 0.06em; margin-bottom: 4px;
+    }
+    .journey-phase-label--blue { color: var(--sl-accent-primary); }
+    .journey-phase-label--light { color: var(--sl-accent-light); }
+    .journey-phase-title {
+      font-size: 22px; font-weight: 700; color: var(--sl-text-heading);
+      margin-bottom: 20px; line-height: 1.2;
+    }
+    .journey-phase-title-bar {
+      background: var(--sl-bg-hero);
+      color: white;
+      padding: 12px 20px;
+      margin: 0 -28px 20px -28px;
+      font-size: 20px; font-weight: 700; line-height: 1.3;
+    }
+    .journey-phase-bullets {
+      display: flex; flex-direction: column; gap: 12px; flex: 1;
+      padding-top: 8px;
+    }
+    .journey-phase-fast-follow {
+      margin-top: auto; padding-top: 8px;
+      font-size: 13px; font-style: italic;
+      color: var(--sl-text-muted); line-height: 1.4;
+    }
+    .journey-connector {
+      display: flex; align-items: center; justify-content: center;
+    }
+    .journey-connector svg {
+      width: 32px; height: 32px;
+    }
+
+
+    /* ============================================================
+       CUSTOM: Slide 5 — Feature Strips + Image Placeholder
+    ============================================================ */
+    .slide--feature-strips {
+      background: var(--sl-bg-content);
+    }
+    .feature-strips-layout {
+      position: absolute;
+      top: 150px; left: 56px; right: 56px; bottom: 48px;
+      display: grid;
+      grid-template-columns: 55% 45%;
+      gap: 32px;
+      align-items: start;
+    }
+    .feature-strips-col {
+      display: flex; flex-direction: column; gap: 12px;
+    }
+    .feature-strip {
+      display: flex; gap: 14px; align-items: flex-start;
+      padding: 14px 16px;
+      background: #f8fafc;
+      border: 1px solid var(--sl-card-border);
+      border-radius: 10px;
+    }
+    .feature-strip-icon {
+      width: 36px; height: 36px; border-radius: 8px;
+      background: var(--sl-accent-primary);
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .feature-strip-icon svg {
+      width: 20px; height: 20px;
+    }
+    .feature-strip-content {
+      flex: 1; min-width: 0;
+    }
+    .feature-strip-title {
+      font-size: 15px; font-weight: 700; color: var(--sl-text-heading);
+      margin-bottom: 3px;
+    }
+    .feature-strip-desc {
+      font-size: 13px; color: var(--sl-text-body); line-height: 1.45;
+    }
+    .feature-image-placeholder {
+      border-radius: 12px; overflow: hidden;
+      border: 2px dashed var(--sl-card-border);
+      background: repeating-linear-gradient(
+        -45deg,
+        #f8fafc 0px, #f8fafc 10px,
+        #f1f5f9 10px, #f1f5f9 20px
+      );
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      padding: 32px; text-align: center;
+      min-height: 400px;
+    }
+    .feature-image-placeholder-icon {
+      font-size: 48px; margin-bottom: 16px; opacity: 0.4;
+    }
+    .feature-image-placeholder-text {
+      font-size: 14px; font-weight: 600; color: var(--sl-text-muted);
+      margin-bottom: 8px;
+    }
+    .feature-image-placeholder-hint {
+      font-size: 12px; color: var(--sl-text-subtle); line-height: 1.5;
+      max-width: 280px;
+    }
+
+  </style>
+</head>
+<body>
+
+<div class="deck" id="deck">
+
+  <!-- Progress Bar -->
+  <div class="deck-progress">
+    <div class="deck-progress-fill" id="progressFill"></div>
+  </div>
+
+  <!-- Slide Counter -->
+  <div class="deck-counter" id="slideCounter">1 / 5</div>
+
+  <!-- Dot Navigation -->
+  <div class="deck-dots" id="dotNav"></div>
+
+  <!-- Click Navigation Zones -->
+  <div class="deck-nav-prev" id="navPrev" onclick="prev()"></div>
+  <div class="deck-nav-next" id="navNext" onclick="next()"></div>
+
+
+  <!-- ==========================================
+       SLIDE 1: HERO (NO CHANGES)
+       ========================================== -->
+  <section class="slide slide--hero active" id="slide-1"
+           data-notes="Open strong. This is the RKO — get Sales and CS excited about what Product is building for them in H1 2026. Two big bets at Pulse, plus a full pipeline of platform investment.">
+
+    <svg class="sl-accent-curve" viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
+      <path d="M 400 300 C 200 300, 100 150, 0 0 L 400 0 Z" fill="#2E7FE0" opacity="0.12"/>
+    </svg>
+
+    <div class="sl-hero-inner">
+      <p class="sl-hero-eyebrow sl-label">RKO 2026 &middot; Product Roadmap</p>
+      <h1 class="sl-hero-title sl-display">What's Coming in H1</h1>
+      <p class="sl-hero-subtitle sl-body">The features your customers will love &mdash; and how to talk about them.</p>
+      <div class="sl-hero-meta sl-caption">
+        <span>Staircase AI</span>
+        <span class="sl-hero-meta-divider"></span>
+        <span>H1 2026</span>
+      </div>
+    </div>
+
+    <div class="sl-logo">Staircase AI</div>
+  </section>
+
+
+  <!-- ==========================================
+       SLIDE 2: MULTI-PRODUCT INTELLIGENCE
+       ========================================== -->
+  <section class="slide slide--narrative-screenshot" id="slide-2"
+           data-notes="Relationships is our biggest H1 feature. Multi-product intelligence means customers can finally see each product's story separately. Walk through the value narrative, then point to the mock UI showing the new Product Analysis tab, product filter, and expandable product cards. This is a Beta target for Pulse (May 2026).">
+
+    <!-- Fixed Header -->
+    <div class="sl-content-header">
+      <h2 class="sl-content-title">Multi-Product Intelligence</h2>
+      <p class="sl-content-subtitle">See every product's story &mdash; separately</p>
+    </div>
+
+    <!-- Status Pill -->
+    <div class="sl-status-pill">Beta at Pulse</div>
+
+    <!-- Left: Narrative -->
+    <div class="sl-narrative-col">
+      <p class="sl-value-prop">Filter, summarize, and act by product &mdash; so multi-product accounts finally make sense.</p>
+
+      <div class="sl-value-bullet">
+        <strong>Relationship Timeline resolution.</strong>
+        <span>See communication history scoped to a single product across all channels.</span>
+      </div>
+      <div class="sl-value-bullet">
+        <strong>Automatic product tagging.</strong>
+        <span>Every communication is tagged with product association using both deterministic rules and AI-contextual understanding.</span>
+      </div>
+      <div class="sl-value-bullet">
+        <strong>Product-specific summaries.</strong>
+        <span>AI generates dedicated intelligence for each product line, surfacing risk signals, engagement patterns, and stakeholder activity.</span>
+      </div>
+      <div class="sl-value-bullet">
+        <strong>On-demand AI summaries.</strong>
+        <span>Ask about any product and get a synthesized answer grounded in real conversations.</span>
+      </div>
+      <div class="sl-value-bullet">
+        <strong>Stakeholder-level product association.</strong>
+        <span>Each team member's typical product scope becomes an indicator &mdash; improving signal accuracy across the board.</span>
+      </div>
+    </div>
+
+    <!-- Right: Mock UI -->
+    <div class="sl-screenshot-col">
+      <div class="sl-screenshot-frame" style="align-items: stretch;">
+        <div class="mock-account">
+          <!-- Account Header -->
+          <div class="mock-account-header">
+            <div class="mock-score-ring">82</div>
+            <div>
+              <div class="mock-account-name">SAP SE</div>
+              <div class="mock-account-meta">Enterprise &middot; $2.4M ARR &middot; Renews Aug 2026</div>
+            </div>
+          </div>
+
+          <!-- Ask Bar -->
+          <div class="mock-ask-bar">
+            <div class="mock-ask-icon"></div>
+            <span>Ask a question about this account...</span>
+          </div>
+
+          <!-- Tab Bar -->
+          <div class="mock-tabs">
+            <div class="mock-tab">AI summary</div>
+            <div class="mock-tab mock-tab--active">AI product analysis</div>
+          </div>
+
+          <!-- Product Filter -->
+          <div class="mock-filter-row">
+            <span class="mock-filter-label">Showing:</span>
+            <div class="mock-filter-pill">
+              SuccessFactors <span class="mock-filter-chevron">&#9662;</span>
+            </div>
+          </div>
+
+          <!-- Product Summary -->
+          <div class="mock-summary-block">
+            <strong>Stakeholders:</strong> 8 engaged across 14 conversations this quarter.
+            <strong>Risk:</strong> Delayed data migration raised in 3 recent calls &mdash; flagged for follow-up.
+            <strong>Sentiment:</strong> Champion activity steady, but exec sponsor quieter since January.
+            <strong>Focus:</strong> Implementation alignment and timeline concerns dominating recent threads.
+          </div>
+
+          <!-- Products Section -->
+          <div class="mock-products-section">
+            <div class="mock-products-label">Products</div>
+
+            <div class="mock-product-card">
+              <div class="mock-product-card-header">
+                <div class="mock-product-card-name">SuccessFactors</div>
+                <div class="mock-expand-hint">+ Expand</div>
+              </div>
+              <div class="mock-product-card-summary">8 stakeholders engaged. Implementation alignment active, champion-led conversations.</div>
+              <div class="mock-product-tags">
+                <span class="mock-tag mock-tag--blue">Product Relationship</span>
+                <span class="mock-tag mock-tag--negative" style="background: rgba(220,54,38,0.1); color: #b12a1f;">Risk: Active</span>
+                <span class="mock-tag mock-tag--gray">5 conversations/mo</span>
+              </div>
+            </div>
+
+            <div class="mock-product-card">
+              <div class="mock-product-card-header">
+                <div class="mock-product-card-name">S/4HANA</div>
+                <div class="mock-expand-hint">+ Expand</div>
+              </div>
+              <div class="mock-product-card-summary">3 stakeholders in early discussions. Onboarding scoping underway.</div>
+              <div class="mock-product-tags">
+                <span class="mock-tag mock-tag--blue">Product Relationship</span>
+                <span class="mock-tag mock-tag--gray">2 conversations/mo</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Status Bar -->
+          <div class="mock-status-bar">
+            <span><strong>Status:</strong> Active</span>
+            <span><strong>Owner:</strong> Sarah Chen</span>
+            <span><strong>Tier:</strong> Enterprise</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sl-logo">Staircase AI</div>
+  </section>
+
+
+  <!-- ==========================================
+       SLIDE 3: RELATIONSHIPS — Journey Flow
+       ========================================== -->
+  <section class="slide slide--journey-flow" id="slide-3"
+           data-notes="This is the talking-points slide. Left phase covers the Pulse MVP — what Sales and CS should know for live customer conversations. Right phase shows how Relationships grows through the year with Ask Staircase, Topics, Reports, and more. The fast-follow items at the bottom are H2 stretch goals.">
+
+    <!-- Fixed Header -->
+    <div class="sl-content-header">
+      <h2 class="sl-content-title">Relationships &mdash; What to Know</h2>
+      <p class="sl-content-subtitle">From launch to full platform integration</p>
+    </div>
+
+    <!-- Journey Flow Grid -->
+    <div class="journey-grid">
+
+      <!-- LEFT PHASE: MVP at Pulse -->
+      <div class="journey-phase journey-phase--left">
+        <div class="journey-phase-label journey-phase-label--blue">MVP at Pulse &middot; May 2026</div>
+        <div class="journey-phase-title-bar">What to Tell Customers</div>
+        <div class="journey-phase-bullets">
+          <div class="sl-value-bullet">
+            <strong>Built with CS, for CS.</strong>
+            <span>Relationships is a joint effort &mdash; designed alongside Customer Success to solve multi-product complexity.</span>
+          </div>
+          <div class="sl-value-bullet">
+            <strong>Product-level intelligence from day one.</strong>
+            <span>Filter any account by product to see dedicated summaries, timelines, and user associations.</span>
+          </div>
+          <div class="sl-value-bullet">
+            <strong>Better data in, better insights out.</strong>
+            <span>Person cleanup and user-product linking amplify what AI can surface per product line.</span>
+          </div>
+          <div class="sl-value-bullet">
+            <strong>Beta-ready for your best customers.</strong>
+            <span>Invite multi-product accounts to see their data come alive at Pulse.</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- CONNECTOR ARROW -->
+      <div class="journey-connector">
+        <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M8 16H24M24 16L18 10M24 16L18 22" stroke="#2E7FE0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+
+      <!-- RIGHT PHASE: Growing Through the Year -->
+      <div class="journey-phase journey-phase--right">
+        <div class="journey-phase-label journey-phase-label--light">H1 &mdash; H2 2026</div>
+        <div class="journey-phase-title-bar">Growing Through the Year</div>
+        <div class="journey-phase-bullets">
+          <div class="sl-value-bullet">
+            <strong>Product-level Health Scores.</strong>
+            <span>Dedicated health scoring per product line &mdash; see which products are thriving and which need attention.</span>
+          </div>
+          <div class="sl-value-bullet">
+            <strong>AI Sentiment per product.</strong>
+            <span>Conversation-level sentiment analysis scoped to each product, surfacing emerging risk or enthusiasm.</span>
+          </div>
+          <div class="sl-value-bullet">
+            <strong>Ask Staircase goes product-aware.</strong>
+            <span>Cross-account questions scoped to a single product &mdash; "What's happening with SuccessFactors?"</span>
+          </div>
+          <div class="sl-value-bullet">
+            <strong>Topics and Reports, sliced by product.</strong>
+            <span>Trending topics and every report gain a product dimension.</span>
+          </div>
+          <div class="sl-value-bullet">
+            <strong>Exec Dashboard goes multi-product native.</strong>
+            <span>Leadership views that segment health and engagement by product.</span>
+          </div>
+          <div class="sl-value-bullet">
+            <strong>Cheat Sheet with product context.</strong>
+            <span>Quick-reference cards enriched with per-product intelligence.</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="sl-logo">Staircase AI</div>
+  </section>
+
+
+  <!-- ==========================================
+       SLIDE 4: HAND-OFF ANALYST
+       ========================================== -->
+  <section class="slide slide--narrative-screenshot" id="slide-4"
+           data-notes="Hand-off Analyst is our second big Pulse bet — GA at Pulse. The key message: CS never has to start from scratch again. AI reads every sales conversation and builds a permanent artifact with pains, goals, stakeholders, commitments, and readiness. Point to the visual — this is what the AI-generated artifact looks like. Cockroach Labs POC data proves it works.">
+
+    <!-- Fixed Header -->
+    <div class="sl-content-header">
+      <h2 class="sl-content-title">Hand-off Analyst</h2>
+      <p class="sl-content-subtitle">Never repeat yourself</p>
+    </div>
+
+    <!-- Status Pill -->
+    <div class="sl-status-pill sl-status-pill--green">GA at Pulse</div>
+
+    <!-- Left: Narrative -->
+    <div class="sl-narrative-col">
+      <p class="sl-value-prop">AI reads every sales conversation and builds a complete handoff &mdash; so CS starts informed, not from scratch.</p>
+
+      <div class="sl-value-bullet">
+        <strong>A permanent, living artifact.</strong>
+        <span>Every account gets an AI-generated handoff document that captures the full story from sales.</span>
+      </div>
+      <div class="sl-value-bullet">
+        <strong>Pains, goals, and stakeholders mapped.</strong>
+        <span>AI reads across calls, emails, and notes to build a complete picture of what the customer bought and why.</span>
+      </div>
+      <div class="sl-value-bullet">
+        <strong>Commitments tracked with attribution.</strong>
+        <span>Every promise made during sales is captured with source &mdash; no more "I was told we'd get X."</span>
+      </div>
+      <div class="sl-value-bullet">
+        <strong>Onboarding readiness assessment.</strong>
+        <span>A structured checklist of what's in place and what gaps need closing before kickoff.</span>
+      </div>
+      <div class="sl-value-bullet">
+        <strong>Intake meeting prep, automated.</strong>
+        <span>CS walks into day one with context, not questions.</span>
+      </div>
+    </div>
+
+    <!-- Right: Handoff Analyst orbital visual -->
+    <div class="sl-screenshot-col">
+      <div class="sl-screenshot-frame" style="border: none; background: transparent; box-shadow: none;">
+        <div class="handoff-visual">
+
+          <!-- Orbital rings SVG -->
+          <div class="orbital-rings">
+            <svg viewBox="0 0 540 520" xmlns="http://www.w3.org/2000/svg" fill="none">
+              <ellipse cx="270" cy="260" rx="250" ry="230" stroke="#2E7FE0" stroke-opacity="0.12" stroke-width="1"/>
+              <ellipse cx="270" cy="260" rx="200" ry="185" stroke="#2E7FE0" stroke-opacity="0.18" stroke-width="1"/>
+              <ellipse cx="270" cy="260" rx="145" ry="135" stroke="#4DA3FF" stroke-opacity="0.15" stroke-width="1"/>
+              <ellipse cx="270" cy="260" rx="90" ry="82" stroke="#4DA3FF" stroke-opacity="0.1" stroke-width="0.5"/>
+            </svg>
+          </div>
+
+          <!-- Particles -->
+          <div class="orbital-particle orbital-particle--circle float-slow" style="top: 12%; left: 18%;"></div>
+          <div class="orbital-particle orbital-particle--diamond float-med" style="top: 8%; right: 25%;"></div>
+          <div class="orbital-particle orbital-particle--circle float-med" style="top: 38%; left: 6%;"></div>
+          <div class="orbital-particle orbital-particle--sm float-slow" style="top: 25%; right: 10%;"></div>
+          <div class="orbital-particle orbital-particle--diamond float-slow" style="bottom: 20%; left: 12%;"></div>
+          <div class="orbital-particle orbital-particle--circle float-med" style="bottom: 12%; right: 18%;"></div>
+          <div class="orbital-particle orbital-particle--sm float-slow" style="bottom: 30%; right: 8%;"></div>
+          <div class="orbital-particle orbital-particle--sm float-med" style="top: 55%; left: 10%;"></div>
+          <div class="orbital-particle orbital-particle--diamond float-slow" style="top: 70%; right: 12%;"></div>
+          <div class="orbital-particle orbital-particle--circle float-slow" style="bottom: 8%; left: 40%;"></div>
+
+          <!-- Center Artifact Card (ENLARGED) -->
+          <div class="handoff-card float-slow">
+            <div class="handoff-card-header">
+              <div class="handoff-card-header-icon">
+                <svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M7 1L8.5 5H13L9.5 7.5L10.5 12L7 9.5L3.5 12L4.5 7.5L1 5H5.5L7 1Z" fill="white" opacity="0.9"/>
+                </svg>
+              </div>
+              <span class="handoff-card-title">Sales Hand-Off</span>
+            </div>
+
+            <div class="handoff-section">
+              <div class="handoff-section-label">Pains</div>
+              <div class="handoff-section-text">Manual onboarding taking 6+ weeks. No visibility into which accounts need attention first.</div>
+            </div>
+
+            <div class="handoff-section">
+              <div class="handoff-section-label">Goals</div>
+              <div class="handoff-section-text">Reduce time-to-value to under 3 weeks. Automate health scoring for 200+ accounts.</div>
+            </div>
+
+            <div class="handoff-section">
+              <div class="handoff-section-label">Stakeholders</div>
+              <div class="handoff-section-text">VP CS (sponsor) &middot; Dir. Onboarding (champion) &middot; CRO (exec buyer)</div>
+            </div>
+
+            <div class="handoff-section">
+              <div class="handoff-section-label">Commitments</div>
+              <div class="handoff-section-text">Quarterly business reviews, dedicated CSM, API access by month 2.</div>
+            </div>
+
+            <div class="handoff-section">
+              <div class="handoff-section-label">Readiness</div>
+              <div class="handoff-section-text">Data integrations configured. SSO pending IT approval.</div>
+              <div class="handoff-evidence">
+                <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><circle cx="5" cy="5" r="4" stroke="currentColor" stroke-width="1"/><path d="M5 3V6" stroke="currentColor" stroke-width="1"/><circle cx="5" cy="7.5" r="0.5" fill="currentColor"/></svg>
+                14 sources analyzed
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <div class="sl-logo">Staircase AI</div>
+  </section>
+
+
+  <!-- ==========================================
+       SLIDE 5: MORE IN THE WORKS
+       ========================================== -->
+  <section class="slide slide--feature-strips" id="slide-5"
+           data-notes="Don't linger here — hit the highlights. Lifecycle Events is about accuracy across all signal types. Topics adds period-over-period comparison. Ask Staircase is getting more reliable for cross-account questions. Platform Upgrades include the Org Profile (which feeds into Relationships), Workers Council for EU customers, and Exec Dashboard 2.0. Right side is an image placeholder — Brady will create the image in Nano Banana.">
+
+    <!-- Fixed Header -->
+    <div class="sl-content-header">
+      <h2 class="sl-content-title">More in the Works</h2>
+      <p class="sl-content-subtitle">The full H1 pipeline powering what comes next</p>
+    </div>
+
+    <!-- Feature Strips + Image Layout -->
+    <div class="feature-strips-layout">
+
+      <!-- Left: 5 Feature Strips -->
+      <div class="feature-strips-col">
+
+        <div class="feature-strip">
+          <div class="feature-strip-icon">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M10 2L12 8H18L13 11.5L14.5 17.5L10 13.5L5.5 17.5L7 11.5L2 8H8L10 2Z" fill="white" opacity="0.9"/></svg>
+          </div>
+          <div class="feature-strip-content">
+            <div class="feature-strip-title">Lifecycle Events</div>
+            <div class="feature-strip-desc">Signal accuracy reimagined. A unified LLM pipeline analyzes email, chat, tickets, and video across 48 dimensions &mdash; classifying every lifecycle event correctly.</div>
+          </div>
+        </div>
+
+        <div class="feature-strip">
+          <div class="feature-strip-icon">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M3 14L7 6L11 10L15 4L17 7" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="7" cy="6" r="1.5" fill="white"/><circle cx="15" cy="4" r="1.5" fill="white"/></svg>
+          </div>
+          <div class="feature-strip-content">
+            <div class="feature-strip-title">Trending Topics</div>
+            <div class="feature-strip-desc">See what's changing. Period-over-period comparison with backward scanning reveals what customers are actually talking about &mdash; with noise filtered out.</div>
+          </div>
+        </div>
+
+        <div class="feature-strip">
+          <div class="feature-strip-icon">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="10" cy="10" r="6" stroke="white" stroke-width="2"/><path d="M10 7V10L12 12" stroke="white" stroke-width="2" stroke-linecap="round"/></svg>
+          </div>
+          <div class="feature-strip-content">
+            <div class="feature-strip-title">Ask Staircase</div>
+            <div class="feature-strip-desc">Your book of business, answered. Natural language queries across accounts that reliably answer "What's happening in my portfolio?"</div>
+          </div>
+        </div>
+
+        <div class="feature-strip">
+          <div class="feature-strip-icon">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="3" y="3" width="6" height="6" rx="1" stroke="white" stroke-width="1.5"/><rect x="11" y="3" width="6" height="6" rx="1" stroke="white" stroke-width="1.5"/><rect x="3" y="11" width="6" height="6" rx="1" stroke="white" stroke-width="1.5"/><rect x="11" y="11" width="6" height="6" rx="1" stroke="white" stroke-width="1.5"/></svg>
+          </div>
+          <div class="feature-strip-content">
+            <div class="feature-strip-title">Platform Upgrades</div>
+            <div class="feature-strip-desc">Enterprise-ready foundations. Enhanced Org Profile for AI context, Workers Council compliance for EU customers, and infrastructure powering everything above.</div>
+          </div>
+        </div>
+
+        <div class="feature-strip">
+          <div class="feature-strip-icon">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="2" y="4" width="16" height="12" rx="2" stroke="white" stroke-width="1.5"/><path d="M6 9H14M6 12H11" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg>
+          </div>
+          <div class="feature-strip-content">
+            <div class="feature-strip-title">Exec Dashboard 2.0</div>
+            <div class="feature-strip-desc">Personalized executive intelligence. User-aware content, cross-account summaries from analysts, and insights-to-actions cards that turn data into decisions.</div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Right: Image Placeholder -->
+      <div class="feature-image-placeholder">
+        <div class="feature-image-placeholder-icon">🎨</div>
+        <div class="feature-image-placeholder-text">AI-generated image goes here</div>
+        <div class="feature-image-placeholder-hint">
+          Create in Nano Banana: Painterly ascending staircase of data streams, deep navy tones (#1A3556, #2E7FE0), portrait 9:16, no text.
+        </div>
+      </div>
+
+    </div>
+
+    <div class="sl-logo">Staircase AI</div>
+  </section>
+
+
+  <!-- ==========================================
+       SLIDES END HERE
+       ========================================== -->
+
+  <!-- Speaker Notes Panel -->
+  <div class="deck-notes" id="notesPanel">
+    <div class="deck-notes-label">Speaker Notes</div>
+    <div id="notesContent"></div>
+  </div>
+
+</div><!-- /.deck -->
+
+<script>
+  // ============================================================
+  // SLIDE DECK NAVIGATION
+  // ============================================================
+
+  const slides = Array.from(document.querySelectorAll('.slide'));
+  const total = slides.length;
+  let current = 0;
+  let notesVisible = false;
+
+  // Build dot nav
+  const dotNav = document.getElementById('dotNav');
+  slides.forEach((_, i) => {
+    const dot = document.createElement('div');
+    dot.className = 'deck-dot' + (i === 0 ? ' active' : '');
+    dot.onclick = () => goTo(i);
+    dotNav.appendChild(dot);
+  });
+
+  function updateUI() {
+    slides.forEach((s, i) => {
+      s.classList.toggle('active', i === current);
+    });
+    const pct = total > 1 ? (current / (total - 1)) * 100 : 100;
+    document.getElementById('progressFill').style.width = pct + '%';
+    document.getElementById('slideCounter').textContent = (current + 1) + ' / ' + total;
+    document.querySelectorAll('.deck-dot').forEach((d, i) => {
+      d.classList.toggle('active', i === current);
+    });
+    const noteText = slides[current].dataset.notes || '';
+    document.getElementById('notesContent').textContent = noteText;
+    history.replaceState(null, '', '#slide-' + (current + 1));
+  }
+
+  function goTo(idx) {
+    if (idx < 0 || idx >= total) return;
+    current = idx;
+    updateUI();
+  }
+
+  function next() { goTo(current + 1); }
+  function prev() { goTo(current - 1); }
+
+  // Expose globally for Playwright
+  window.__goTo = goTo;
+  window.__slideCount = total;
+
+  // Keyboard navigation
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') {
+      e.preventDefault(); next();
+    } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+      e.preventDefault(); prev();
+    } else if (e.key === 's' || e.key === 'S') {
+      notesVisible = !notesVisible;
+      document.getElementById('notesPanel').classList.toggle('visible', notesVisible);
+    } else if (e.key === 'Escape') {
+      notesVisible = false;
+      document.getElementById('notesPanel').classList.remove('visible');
+    }
+  });
+
+  // URL hash on load
+  const hash = window.location.hash;
+  if (hash && hash.startsWith('#slide-')) {
+    const n = parseInt(hash.replace('#slide-', ''), 10);
+    if (!isNaN(n) && n >= 1 && n <= total) goTo(n - 1);
+  }
+
+  updateUI();
+</script>
+
+</body>
+</html>
