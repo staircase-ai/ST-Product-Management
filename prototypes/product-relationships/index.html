@@ -1,0 +1,1641 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gainsight — Product Intelligence</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ─── Staircase Design System Tokens ─── */
+:root {
+  --st-primary: #0369E9;
+  --st-primary-hover: #0255C4;
+  --st-primary-light: #E8F1FD;
+  --st-positive: #13AD68;
+  --st-positive-light: #E6F8F0;
+  --st-neutral: #FFBB00;
+  --st-neutral-light: #FFF8E1;
+  --st-negative: #DC3626;
+  --st-negative-light: #FDECEB;
+  --st-warning: #FA6B0B;
+  --st-warning-light: #FFF0E6;
+  --st-text: #181F26;
+  --st-text-secondary: #5F6C7A;
+  --st-text-tertiary: #8E99A4;
+  --st-bg: #F8F9FA;
+  --st-bg-card: #FFFFFF;
+  --st-border: #E3E4E4;
+  --st-border-focus: #0369E9;
+  --st-font: 'Noto Sans', system-ui, sans-serif;
+  --st-text-base: 14px;
+  --st-line-height: 1.5;
+  --st-space-1: 8px;
+  --st-space-2: 16px;
+  --st-space-3: 24px;
+  --st-space-4: 32px;
+  --st-space-5: 40px;
+  --st-radius: 6px;
+  --st-radius-lg: 12px;
+  --st-radius-pill: 20px;
+  --st-shadow: 0 2px 4px 0 rgba(52,56,58,0.06), 0 0 1px 0 rgba(52,56,58,0.24);
+  --st-shadow-lg: 0 8px 24px rgba(52,56,58,0.12), 0 0 1px rgba(52,56,58,0.24);
+  --sidebar-icon-w: 52px;
+}
+
+/* ─── Reset & Base ─── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:var(--st-font);font-size:var(--st-text-base);line-height:var(--st-line-height);color:var(--st-text);background:var(--st-bg);-webkit-font-smoothing:antialiased;}
+
+/* ─── Demo Bar ─── */
+.demo-bar{background:#181F26;color:#fff;padding:10px 24px;display:flex;align-items:center;gap:12px;font-size:12px;position:sticky;top:0;z-index:200;}
+.demo-bar-label{font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--st-text-tertiary);margin-right:8px;font-size:11px;}
+.demo-step{padding:6px 14px;border-radius:var(--st-radius-pill);border:1px solid rgba(255,255,255,.12);cursor:pointer;transition:all .15s;background:transparent;color:rgba(255,255,255,.55);font-family:var(--st-font);font-size:12px;font-weight:500;}
+.demo-step:hover{background:rgba(255,255,255,.08);color:#fff;}
+.demo-step.active{background:var(--st-primary);border-color:var(--st-primary);color:#fff;}
+
+/* ─── Tags / Pills ─── */
+.tag{display:inline-flex;align-items:center;gap:4px;padding:2px 10px;border-radius:var(--st-radius-pill);font-size:12px;font-weight:500;white-space:nowrap;}
+.tag-primary{background:var(--st-primary-light);color:var(--st-primary);}
+.tag-positive{background:var(--st-positive-light);color:var(--st-positive);}
+.tag-neutral{background:var(--st-neutral-light);color:#9A7200;}
+.tag-negative{background:var(--st-negative-light);color:var(--st-negative);}
+.tag-ghost{background:var(--st-bg);color:var(--st-text-secondary);border:1px solid var(--st-border);}
+.tag-scope{background:#F3E8FD;color:#7C3AED;}
+.tag-warning{background:var(--st-warning-light);color:var(--st-warning);}
+
+/* ─── Utility ─── */
+.text-sm{font-size:13px;}
+.text-xs{font-size:12px;}
+.text-secondary{color:var(--st-text-secondary);}
+
+/* ─── Icon Sidebar ─── */
+.icon-sidebar{
+  width:var(--sidebar-icon-w);
+  background:#1E2530;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  padding:0;
+  flex-shrink:0;
+  position:sticky;
+  top:42px;
+  height:calc(100vh - 42px);
+  z-index:100;
+}
+.sidebar-logo{
+  width:100%;
+  height:52px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border-bottom:1px solid rgba(255,255,255,0.08);
+  flex-shrink:0;
+}
+.sidebar-nav{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:2px;
+  padding:8px 0;
+  flex:1;
+  width:100%;
+}
+.sidebar-icon-btn{
+  width:40px;
+  height:40px;
+  border-radius:var(--st-radius);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+  color:rgba(255,255,255,0.4);
+  transition:all .15s;
+  position:relative;
+}
+.sidebar-icon-btn:hover{background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.8);}
+.sidebar-icon-btn.active{background:rgba(3,105,233,0.25);color:#5BA8FF;}
+.sidebar-icon-btn svg{width:18px;height:18px;}
+.sidebar-divider{width:28px;height:1px;background:rgba(255,255,255,0.08);margin:6px 0;}
+.sidebar-bottom{padding:8px 0;display:flex;flex-direction:column;align-items:center;gap:2px;}
+
+/* ─── App Layout ─── */
+.app-wrapper{
+  display:flex;
+  height:calc(100vh - 42px);
+  overflow:hidden;
+}
+.main-area{
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  overflow:hidden;
+  min-width:0;
+}
+
+/* ─── Top Nav ─── */
+.top-nav{
+  background:var(--st-bg-card);
+  border-bottom:1px solid var(--st-border);
+  padding:0 24px;
+  height:52px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  flex-shrink:0;
+}
+.top-nav-left{display:flex;align-items:center;gap:12px;}
+.back-btn{
+  width:32px;
+  height:32px;
+  border-radius:var(--st-radius);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+  color:var(--st-text-secondary);
+  transition:all .15s;
+  border:none;
+  background:transparent;
+}
+.back-btn:hover{background:var(--st-bg);color:var(--st-text);}
+.back-btn svg{width:18px;height:18px;}
+.breadcrumb{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--st-text-secondary);}
+.breadcrumb a{color:var(--st-text-secondary);text-decoration:none;cursor:pointer;}
+.breadcrumb a:hover{color:var(--st-primary);}
+.breadcrumb .sep{color:var(--st-text-tertiary);}
+.breadcrumb .current{color:var(--st-text);font-weight:600;}
+.top-nav-right{display:flex;align-items:center;gap:8px;}
+.nav-icon-btn{
+  width:32px;
+  height:32px;
+  border-radius:var(--st-radius);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+  color:var(--st-text-secondary);
+  transition:all .15s;
+  border:none;
+  background:transparent;
+}
+.nav-icon-btn:hover{background:var(--st-bg);color:var(--st-text);}
+.nav-icon-btn svg{width:18px;height:18px;}
+.nav-avatar{
+  width:32px;
+  height:32px;
+  border-radius:50%;
+  background:var(--st-primary);
+  color:#fff;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:12px;
+  font-weight:700;
+  cursor:pointer;
+}
+
+/* ─── Scrollable Content ─── */
+.content-scroll{
+  flex:1;
+  overflow-y:auto;
+  overflow-x:hidden;
+}
+
+/* ─── Account Header ─── */
+.account-header{
+  background:var(--st-bg-card);
+  border-bottom:1px solid var(--st-border);
+  padding:20px 24px 16px;
+}
+.account-header-row{display:flex;align-items:center;gap:16px;}
+.account-avatar{
+  width:48px;
+  height:48px;
+  border-radius:12px;
+  background:#F97316;
+  color:#fff;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:18px;
+  font-weight:700;
+  flex-shrink:0;
+}
+.account-info{flex:1;min-width:0;}
+.account-name{font-size:20px;font-weight:700;color:var(--st-text);line-height:1.2;margin-bottom:4px;}
+.account-meta{display:flex;align-items:center;gap:12px;font-size:13px;color:var(--st-text-secondary);}
+.account-meta-dot{width:3px;height:3px;border-radius:50%;background:var(--st-text-tertiary);}
+.account-header-right{display:flex;align-items:center;gap:12px;}
+.health-ring-wrapper{display:flex;flex-direction:column;align-items:center;gap:4px;}
+.health-ring-label{font-size:11px;font-weight:600;color:var(--st-text-tertiary);text-transform:uppercase;letter-spacing:.4px;}
+.health-ring svg{display:block;}
+
+/* ─── Ask Bar ─── */
+.ask-bar-wrapper{
+  background:var(--st-bg-card);
+  padding:12px 24px;
+  border-bottom:1px solid var(--st-border);
+}
+.ask-bar{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  background:var(--st-bg);
+  border:1px solid var(--st-border);
+  border-radius:var(--st-radius-lg);
+  padding:10px 16px;
+  cursor:text;
+  transition:border-color .15s, box-shadow .15s;
+}
+.ask-bar:hover{border-color:#C0C8D8;}
+.ask-bar:focus-within{border-color:var(--st-border-focus);box-shadow:0 0 0 3px rgba(3,105,233,0.1);}
+.ask-bar svg{color:var(--st-primary);flex-shrink:0;width:16px;height:16px;}
+.ask-bar input{
+  flex:1;
+  border:none;
+  background:transparent;
+  font-family:var(--st-font);
+  font-size:14px;
+  color:var(--st-text);
+  outline:none;
+}
+.ask-bar input::placeholder{color:var(--st-text-tertiary);}
+
+/* ─── Product Filter Bar ─── */
+.filter-bar{
+  background:var(--st-bg-card);
+  padding:10px 24px;
+  border-bottom:1px solid var(--st-border);
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+.filter-label{font-size:13px;font-weight:600;color:var(--st-text-secondary);white-space:nowrap;}
+.filter-select{
+  appearance:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%235F6C7A' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;
+  background-position:right 10px center;
+  padding:6px 30px 6px 12px;
+  border:1px solid var(--st-border);
+  border-radius:var(--st-radius);
+  font-family:var(--st-font);
+  font-size:13px;
+  color:var(--st-text);
+  background-color:var(--st-bg-card);
+  cursor:pointer;
+  transition:border-color .15s;
+  min-width:180px;
+}
+.filter-select:hover{border-color:#C0C8D8;}
+.filter-select:focus{outline:none;border-color:var(--st-border-focus);box-shadow:0 0 0 3px rgba(3,105,233,0.1);}
+.filter-pill{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  padding:4px 10px 4px 12px;
+  background:var(--st-primary-light);
+  color:var(--st-primary);
+  border-radius:var(--st-radius-pill);
+  font-size:12px;
+  font-weight:500;
+}
+.filter-pill-clear{
+  width:16px;
+  height:16px;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+  color:var(--st-primary);
+  transition:background .12s;
+}
+.filter-pill-clear:hover{background:rgba(3,105,233,0.15);}
+.filter-pill-clear svg{width:10px;height:10px;}
+.filter-pill-area{display:flex;align-items:center;gap:6px;flex:1;}
+
+/* ─── Tab Bar ─── */
+.tab-bar{
+  background:var(--st-bg-card);
+  border-bottom:1px solid var(--st-border);
+  padding:0 24px;
+  display:flex;
+  gap:0;
+}
+.tab-btn{
+  padding:12px 16px;
+  font-size:13px;
+  font-weight:500;
+  color:var(--st-text-secondary);
+  cursor:pointer;
+  border:none;
+  background:transparent;
+  font-family:var(--st-font);
+  border-bottom:2px solid transparent;
+  transition:color .15s, border-color .15s;
+  margin-bottom:-1px;
+  white-space:nowrap;
+}
+.tab-btn:hover{color:var(--st-text);}
+.tab-btn.active{color:var(--st-primary);font-weight:600;border-bottom-color:var(--st-primary);}
+
+/* ─── Tab Content ─── */
+.tab-content{padding:20px 24px;max-width:900px;}
+
+/* ─── Summary Card ─── */
+.summary-card{
+  background:var(--st-bg-card);
+  border:1px solid var(--st-border);
+  border-radius:var(--st-radius-lg);
+  box-shadow:var(--st-shadow);
+  padding:24px 28px;
+  margin-bottom:16px;
+}
+.summary-header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-bottom:14px;
+}
+.summary-header-left{display:flex;align-items:center;gap:10px;}
+.summary-ai-label{font-size:13px;font-weight:600;color:var(--st-text);}
+.summary-date{font-size:12px;color:var(--st-text-tertiary);}
+.summary-narrative{
+  font-size:14px;
+  line-height:1.65;
+  color:var(--st-text);
+  margin-bottom:16px;
+}
+.summary-bullets{
+  background:var(--st-bg);
+  border-radius:var(--st-radius);
+  padding:16px 20px;
+  margin-bottom:16px;
+}
+.summary-bullets-title{
+  font-size:11px;
+  font-weight:700;
+  text-transform:uppercase;
+  letter-spacing:.5px;
+  color:var(--st-text-tertiary);
+  margin-bottom:12px;
+}
+.summary-bullets ul{list-style:none;display:flex;flex-direction:column;gap:10px;}
+.summary-bullets li{
+  font-size:13px;
+  line-height:1.55;
+  color:var(--st-text);
+  padding-left:16px;
+  position:relative;
+}
+.summary-bullets li::before{
+  content:'';
+  position:absolute;
+  left:0;
+  top:8px;
+  width:6px;
+  height:6px;
+  border-radius:50%;
+  background:var(--st-primary);
+}
+.summary-bullets li strong{color:var(--st-text);font-weight:600;}
+.summary-conclusion{
+  font-size:13px;
+  line-height:1.55;
+  color:var(--st-text-secondary);
+  border-top:1px solid var(--st-border);
+  padding-top:14px;
+}
+
+/* ─── Product Cards ─── */
+.product-cards-wrapper{display:flex;flex-direction:column;gap:12px;}
+
+.product-card{
+  background:var(--st-bg-card);
+  border:1px solid var(--st-border);
+  border-radius:var(--st-radius-lg);
+  box-shadow:var(--st-shadow);
+  transition:opacity .2s, box-shadow .15s;
+  overflow:hidden;
+}
+.product-card:hover{box-shadow:var(--st-shadow-lg);}
+.product-card.dimmed{opacity:0.45;}
+.product-card.expanded{border-color:#C0C8D8;}
+
+.product-card-header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:16px 20px 0;
+  cursor:pointer;
+  user-select:none;
+}
+.header-left{display:flex;align-items:center;gap:10px;}
+.chevron{
+  color:var(--st-text-tertiary);
+  transition:transform .22s ease;
+  flex-shrink:0;
+}
+.chevron.rotated{transform:rotate(90deg);}
+.product-name{font-size:16px;font-weight:700;color:var(--st-text);}
+.header-right{display:flex;align-items:center;gap:10px;}
+.stakeholder-count{
+  display:flex;
+  align-items:center;
+  gap:4px;
+  font-size:12px;
+  font-weight:500;
+  color:var(--st-text-secondary);
+}
+.stakeholder-count svg{width:14px;height:14px;}
+
+.product-meta{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  padding:6px 20px 0 50px;
+  font-size:12px;
+  color:var(--st-text-secondary);
+}
+.meta-dot{
+  width:3px;
+  height:3px;
+  border-radius:50%;
+  background:var(--st-text-tertiary);
+  flex-shrink:0;
+}
+
+.signal-pills{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  padding:10px 20px 0 50px;
+  flex-wrap:wrap;
+}
+.signal-pill{
+  display:inline-flex;
+  align-items:center;
+  gap:5px;
+  padding:3px 10px;
+  border-radius:var(--st-radius-pill);
+  font-size:12px;
+  font-weight:500;
+}
+.signal-pill svg{flex-shrink:0;}
+.signal-pill-expansion{background:var(--st-positive-light);color:var(--st-positive);}
+.signal-pill-risk{background:var(--st-negative-light);color:var(--st-negative);}
+.signal-pill-ghost{background:var(--st-bg);color:var(--st-text-secondary);border:1px solid var(--st-border);}
+
+.product-summary{
+  padding:10px 20px 0 50px;
+  font-size:13px;
+  line-height:1.55;
+  color:var(--st-text);
+  display:-webkit-box;
+  -webkit-line-clamp:2;
+  -webkit-box-orient:vertical;
+  overflow:hidden;
+}
+.product-next-action{
+  padding:8px 20px 16px 50px;
+  font-size:12px;
+  color:var(--st-text-secondary);
+}
+.next-label{
+  font-weight:700;
+  color:var(--st-text-tertiary);
+  text-transform:uppercase;
+  font-size:11px;
+  letter-spacing:.3px;
+}
+
+/* ─── Card Expand Body ─── */
+.product-card-body{
+  max-height:0;
+  overflow:hidden;
+  transition:max-height .3s ease;
+  border-top:0px solid var(--st-border);
+}
+.product-card.expanded .product-card-body{
+  border-top:1px solid var(--st-border);
+}
+
+/* ─── Card Sections ─── */
+.card-section{
+  padding:18px 24px;
+  background:var(--st-bg-card);
+  border-bottom:1px solid var(--st-border);
+}
+.card-section:last-child{border-bottom:none;}
+.card-section-alt{background:#FAFBFC;}
+
+.card-section-title{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  font-size:12px;
+  font-weight:700;
+  text-transform:uppercase;
+  letter-spacing:.5px;
+  color:var(--st-text-tertiary);
+  margin-bottom:14px;
+}
+.card-section-title svg{width:14px;height:14px;flex-shrink:0;}
+
+.section-narrative{
+  font-size:13px;
+  line-height:1.65;
+  color:var(--st-text);
+}
+
+/* ─── Stakeholders ─── */
+.stakeholder-list{display:flex;flex-direction:column;gap:2px;}
+.stakeholder-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:10px 12px;
+  border-radius:var(--st-radius);
+  transition:background .12s;
+}
+.stakeholder-row:hover{background:rgba(0,0,0,0.03);}
+.stakeholder-info{display:flex;flex-direction:column;gap:2px;}
+.stakeholder-name{font-size:13px;font-weight:600;color:var(--st-text);}
+.stakeholder-role{font-size:12px;color:var(--st-text-secondary);}
+.stakeholder-tags{display:flex;align-items:center;gap:8px;}
+.engagement-indicator{display:flex;align-items:center;}
+.sentiment{
+  width:20px;
+  height:20px;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:12px;
+  font-weight:700;
+}
+.sentiment-positive{background:var(--st-positive-light);color:var(--st-positive);}
+.sentiment-neutral{background:var(--st-neutral-light);color:#9A7200;}
+.sentiment-negative{background:var(--st-negative-light);color:var(--st-negative);}
+
+/* ─── Signal Cards ─── */
+.signal-cards{display:flex;flex-direction:column;gap:10px;}
+.signal-card{
+  border:1px solid var(--st-border);
+  border-left:3px solid var(--st-border);
+  border-radius:var(--st-radius);
+  padding:12px 16px;
+  background:var(--st-bg-card);
+}
+.signal-card-header{
+  display:flex;
+  align-items:flex-start;
+  gap:8px;
+  margin-bottom:8px;
+}
+.signal-card-header svg{flex-shrink:0;margin-top:1px;}
+.signal-title{font-size:13px;font-weight:600;color:var(--st-text);flex:1;}
+.signal-description{font-size:12px;line-height:1.55;color:var(--st-text-secondary);margin-bottom:8px;}
+.signal-source{font-size:11px;color:var(--st-text-tertiary);font-style:italic;}
+
+/* ─── Engagement List ─── */
+.engagement-list{display:flex;flex-direction:column;gap:2px;}
+.engagement-row{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:8px 12px;
+  border-radius:var(--st-radius);
+  transition:background .12s;
+}
+.engagement-row:hover{background:rgba(0,0,0,0.03);}
+.engagement-type-icon{
+  width:30px;
+  height:30px;
+  border-radius:var(--st-radius);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex-shrink:0;
+}
+.engagement-type-icon svg{width:14px;height:14px;}
+.engagement-info{flex:1;min-width:0;}
+.engagement-title{font-size:13px;font-weight:500;color:var(--st-text);display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.engagement-participants{font-size:11px;color:var(--st-text-tertiary);display:block;}
+.engagement-time{font-size:12px;color:var(--st-text-tertiary);white-space:nowrap;flex-shrink:0;}
+
+/* ─── Reference Cards ─── */
+.reference-card{
+  border:1px solid var(--st-border);
+  border-left:3px solid var(--st-border);
+  border-radius:var(--st-radius);
+  padding:12px 16px;
+  margin-bottom:10px;
+  background:var(--st-bg-card);
+}
+.reference-card:last-child{margin-bottom:0;}
+.reference-context{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  margin-bottom:8px;
+  font-size:12px;
+  color:var(--st-text-secondary);
+}
+.reference-context svg{flex-shrink:0;}
+.reference-type{font-weight:600;color:var(--st-text-secondary);}
+.reference-context-text{color:var(--st-text-tertiary);}
+.reference-quote{
+  font-size:13px;
+  line-height:1.6;
+  color:var(--st-text);
+  font-style:italic;
+  margin-bottom:8px;
+  padding-left:12px;
+  border-left:2px solid var(--st-border);
+}
+.reference-attribution{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  font-size:12px;
+}
+.reference-author{font-weight:600;color:var(--st-text-secondary);}
+.reference-date{color:var(--st-text-tertiary);}
+
+/* ─── Health Ring (large — account header) ─── */
+.health-ring-lg{display:block;}
+
+/* ─── Bottom Status Bar ─── */
+.bottom-status-bar{
+  background:var(--st-bg-card);
+  border-top:1px solid var(--st-border);
+  padding:10px 24px;
+  display:flex;
+  align-items:center;
+  gap:20px;
+  font-size:12px;
+  color:var(--st-text-secondary);
+  flex-shrink:0;
+}
+.status-bar-item{display:flex;align-items:center;gap:6px;}
+.status-bar-label{font-weight:700;color:var(--st-text-tertiary);text-transform:uppercase;font-size:10px;letter-spacing:.4px;}
+.status-bar-value{font-weight:500;color:var(--st-text);}
+.status-bar-dot{width:8px;height:8px;border-radius:50%;background:var(--st-positive);flex-shrink:0;}
+.status-bar-sep{width:1px;height:14px;background:var(--st-border);}
+</style>
+</head>
+<body>
+
+<!-- ═══ DEMO BAR ═══ -->
+<div class="demo-bar">
+  <span class="demo-bar-label">Prototype</span>
+  <button class="demo-step active" data-scenario="default" onclick="goScenario('default')">All Products</button>
+  <button class="demo-step" data-scenario="focus" onclick="goScenario('focus')">Product Focus</button>
+  <button class="demo-step" data-scenario="risk" onclick="goScenario('risk')">Risk Detected</button>
+</div>
+
+<!-- ═══ APP WRAPPER ═══ -->
+<div class="app-wrapper">
+
+  <!-- Icon Sidebar -->
+  <div class="icon-sidebar">
+    <!-- Staircase Logo -->
+    <div class="sidebar-logo" title="Staircase AI">
+      <svg width="24" height="24" viewBox="0 0 32 32" fill="none">
+        <rect width="32" height="32" rx="6" fill="#F97316"/>
+        <path d="M8 22h6v-6h4v-4h4V8" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+
+    <!-- Nav Icons -->
+    <div class="sidebar-nav">
+      <!-- Home -->
+      <div class="sidebar-icon-btn" title="Home">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>
+        </svg>
+      </div>
+      <!-- Accounts (active) -->
+      <div class="sidebar-icon-btn active" title="Accounts">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/>
+          <line x1="12" y1="12" x2="12" y2="16"/><line x1="10" y1="14" x2="14" y2="14"/>
+        </svg>
+      </div>
+      <!-- Relationships -->
+      <div class="sidebar-icon-btn" title="Relationships">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/>
+          <path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/>
+        </svg>
+      </div>
+      <!-- Contacts -->
+      <div class="sidebar-icon-btn" title="Contacts">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/>
+        </svg>
+      </div>
+
+      <div class="sidebar-divider"></div>
+
+      <!-- Health -->
+      <div class="sidebar-icon-btn" title="Health">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+        </svg>
+      </div>
+      <!-- Topics -->
+      <div class="sidebar-icon-btn" title="Topics">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
+        </svg>
+      </div>
+      <!-- Dashboard -->
+      <div class="sidebar-icon-btn" title="Dashboard">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
+          <rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
+        </svg>
+      </div>
+    </div>
+
+    <!-- Bottom: Settings -->
+    <div class="sidebar-bottom">
+      <div class="sidebar-icon-btn" title="Settings">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="3"/>
+          <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/>
+        </svg>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Area -->
+  <div class="main-area">
+
+    <!-- Top Nav -->
+    <div class="top-nav">
+      <div class="top-nav-left">
+        <button class="back-btn" title="Back">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M19 12H5"/><polyline points="12 19 5 12 12 5"/>
+          </svg>
+        </button>
+        <nav class="breadcrumb">
+          <a>Accounts</a>
+          <span class="sep">/</span>
+          <span class="current">Gainsight</span>
+        </nav>
+      </div>
+      <div class="top-nav-right">
+        <button class="nav-icon-btn" title="Search">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+          </svg>
+        </button>
+        <button class="nav-icon-btn" title="Notifications">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/>
+          </svg>
+        </button>
+        <div class="nav-avatar" title="Sarah Kim">SK</div>
+      </div>
+    </div>
+
+    <!-- Scrollable Content -->
+    <div class="content-scroll">
+
+      <!-- Account Header -->
+      <div class="account-header">
+        <div class="account-header-row">
+          <div class="account-avatar">GS</div>
+          <div class="account-info">
+            <div class="account-name">Gainsight</div>
+            <div class="account-meta">
+              <span>$1.9M ARR</span>
+              <div class="account-meta-dot"></div>
+              <span>Strategic</span>
+              <div class="account-meta-dot"></div>
+              <span>Owner: Sarah Kim</span>
+            </div>
+          </div>
+          <div class="account-header-right">
+            <div class="health-ring-wrapper">
+              <span class="health-ring-label">Health</span>
+              <svg class="health-ring-lg" width="52" height="52" viewBox="0 0 52 52">
+                <circle cx="26" cy="26" r="20" fill="none" stroke="#E3E4E4" stroke-width="4"/>
+                <circle cx="26" cy="26" r="20" fill="none" stroke="#FFBB00" stroke-width="4"
+                  stroke-dasharray="95.6 125.7" stroke-dashoffset="31.4" stroke-linecap="round"/>
+                <text x="26" y="26" text-anchor="middle" dominant-baseline="central"
+                  font-family="'Noto Sans', sans-serif" font-size="14" font-weight="700" fill="#181F26">79</text>
+              </svg>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Ask Bar -->
+      <div class="ask-bar-wrapper">
+        <div class="ask-bar">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/>
+          </svg>
+          <input type="text" placeholder="Ask a question about this account...">
+        </div>
+      </div>
+
+      <!-- Product Filter Bar -->
+      <div class="filter-bar">
+        <span class="filter-label">Product:</span>
+        <select class="filter-select" id="product-filter">
+          <option value="all">All Products</option>
+          <option value="gainsight-cs">Gainsight CS</option>
+          <option value="staircase-ai">Staircase AI</option>
+          <option value="skilljar">Skilljar</option>
+          <option value="customer-community">Customer Community</option>
+        </select>
+        <div class="filter-pill-area" id="filter-pill-area"></div>
+      </div>
+
+      <!-- Tab Bar -->
+      <div class="tab-bar">
+        <button class="tab-btn active" data-tab="summary">AI summary</button>
+        <button class="tab-btn" data-tab="product-analysis">AI product analysis</button>
+      </div>
+
+      <!-- Tab: AI Summary -->
+      <div id="tab-summary" class="tab-content">
+        <div id="summary-content"></div>
+      </div>
+
+      <!-- Tab: AI Product Analysis -->
+      <div id="tab-product-analysis" class="tab-content" style="display:none;">
+        <div id="product-cards" class="product-cards-wrapper"></div>
+      </div>
+
+    </div><!-- /content-scroll -->
+
+    <!-- Bottom Status Bar -->
+    <div class="bottom-status-bar">
+      <div class="status-bar-item">
+        <div class="status-bar-dot"></div>
+        <span class="status-bar-label">Status</span>
+        <span class="status-bar-value">Active</span>
+      </div>
+      <div class="status-bar-sep"></div>
+      <div class="status-bar-item">
+        <span class="status-bar-label">Owner</span>
+        <span class="status-bar-value">Sarah Kim</span>
+      </div>
+      <div class="status-bar-sep"></div>
+      <div class="status-bar-item">
+        <span class="status-bar-label">Tier</span>
+        <span class="status-bar-value">Strategic</span>
+      </div>
+    </div>
+
+  </div><!-- /main-area -->
+</div><!-- /app-wrapper -->
+
+<script>
+/* ═══════════════════════════════════════════════════════════
+   DEMO DATA
+   ═══════════════════════════════════════════════════════════ */
+const DEMO_DATA = {
+  account: {
+    name: "Gainsight",
+    initials: "GS",
+    avatarColor: "#F97316",
+    healthScore: 79,
+    status: "Active",
+    owner: "Sarah Kim",
+    tier: "Strategic",
+    totalARR: "$1.9M"
+  },
+
+  summaries: {
+    "all": {
+      status: "Heating",
+      generatedAt: "Feb 28, 2026 2:15 PM",
+      narrative: "Gainsight is a strategic account showing strong overall momentum with a clear expansion path on the core CS platform. Executive engagement has intensified over the past quarter, with VP Customer Success Sarah Chen driving adoption conversations across multiple products. However, the account carries a mixed risk profile — the Skilljar training platform is under competitive evaluation, and Staircase AI adoption in the APAC region has stalled.",
+      bullets: [
+        { label: "Expansion Momentum", text: "<strong>Expansion Momentum:</strong> Gainsight CS Copilot pilot exceeded expectations with CSMs saving 3 hours/week on account prep. VP CS formally requested 50-seat rollout, and CFO David Park has approved the expansion budget. Revenue impact estimated at $180K incremental ARR." },
+        { label: "Executive Engagement", text: "<strong>Executive Engagement:</strong> Sarah Chen (VP CS) has participated in 4 meetings in the past 30 days — up from 1/month average. She's driving strategic conversations across CS, Community, and is personally sponsoring the Copilot expansion. Sentiment is strongly positive." },
+        { label: "Competitive Threat — Skilljar", text: "<strong>Competitive Threat — Skilljar:</strong> Director of Enablement Jennifer Adams mentioned evaluating Docebo during a recent QBR follow-up. Training completion rates dropped 15% last quarter, and a key team transition adds uncertainty. Renewal is Jun 2026." },
+        { label: "APAC Adoption Gap", text: "<strong>APAC Adoption Gap — Staircase AI:</strong> Lisa Wang (CS Lead APAC) hasn't engaged with the Staircase platform in 3 weeks and has requested additional training. While the NA team shows strong usage, the APAC gap risks undermining the overall deployment story." },
+        { label: "Community-Led Growth", text: "<strong>Community-Led Growth:</strong> Customer Community is a quiet success — 500+ active members, NPS at 72, and 30% tier-1 support deflection. Community Manager Rachel Kim is requesting enterprise tier features (SSO, advanced moderation) to scale further." },
+        { label: "Cross-Product Dependencies", text: "<strong>Cross-Product Dependencies:</strong> The Staircase AI adoption gap is limiting the quality of account intelligence feeding back into Gainsight CS. Resolving APAC onboarding would strengthen insights for the broader CS team and improve expansion signal coverage." }
+      ],
+      conclusion: "Net account trajectory is positive, driven by the Gainsight CS expansion opportunity and strong executive engagement. Priority actions: close the Copilot expansion, address the Skilljar competitive threat before the June renewal, and unblock APAC adoption for Staircase AI."
+    },
+    "gainsight-cs": {
+      status: "Heating",
+      generatedAt: "Feb 28, 2026 2:15 PM",
+      narrative: "Gainsight CS is the anchor product in this account, and the relationship is in its strongest position in over a year. The recent Executive Business Review surfaced a clear expansion opportunity around Copilot AI, with VP CS Sarah Chen personally championing the rollout. CS Ops Lead Mark Liu ran a successful 30-day pilot that showed measurable productivity gains, and CFO David Park has approved the incremental budget.",
+      bullets: [
+        { label: "Copilot Expansion Pipeline", text: "<strong>Copilot Expansion Pipeline:</strong> 50-seat expansion formally requested after pilot showed CSMs saving 3 hours/week. Budget approved by CFO. Target rollout by Q3 2026. Estimated $180K incremental ARR." },
+        { label: "Executive Sponsor Activation", text: "<strong>Executive Sponsor Activation:</strong> Sarah Chen has shifted from passive sponsor to active champion — 4 meetings in 30 days, directly emailing about pilot results, and connecting Gainsight CS outcomes to her board-level CS strategy." },
+        { label: "Integration Depth", text: "<strong>Integration Depth:</strong> Mark Liu's team is building custom dashboards via the API, signaling deep technical investment. They've submitted integration support tickets and are extending beyond standard usage patterns." },
+        { label: "Renewal Position", text: "<strong>Renewal Position:</strong> Sep 2026 renewal is well-positioned. No active risk signals. Expansion conversation will likely fold into renewal negotiation, creating a natural upsell moment." }
+      ],
+      conclusion: "Gainsight CS is on a strong trajectory. The primary action is to close the Copilot expansion before the September renewal window, using the pilot results as evidence."
+    },
+    "staircase-ai": {
+      status: "Monitoring",
+      generatedAt: "Feb 28, 2026 2:15 PM",
+      narrative: "Staircase AI is 6 months into deployment and showing divergent adoption patterns by region. The North America team, led by champion David Park, is actively using Risk Analyst and seeing tangible results — including catching a churn signal 6 weeks early. However, the APAC region under Lisa Wang has effectively stalled, with no meaningful engagement in the past 3 weeks.",
+      bullets: [
+        { label: "NA Success Story", text: "<strong>NA Success Story:</strong> Risk Analyst caught the Acme Corp churn signal 6 weeks before renewal — David Park called this out as justifying the entire investment. Data Analyst James Foster is building automated workflows." },
+        { label: "APAC Adoption Risk", text: "<strong>APAC Adoption Risk:</strong> Lisa Wang's team hasn't logged meaningful activity in 3 weeks. She's requested additional training, suggesting the initial onboarding didn't land. This gap affects 40% of the intended user base." },
+        { label: "Champion Bandwidth", text: "<strong>Champion Bandwidth:</strong> David Park is enthusiastic but stretched across multiple strategic initiatives. Risk of attention drift from Staircase AI advocacy." },
+        { label: "Slack Integration Interest", text: "<strong>Slack Integration Interest:</strong> RevOps team wants real-time alerts in Slack via Ask Staircase. This would embed Staircase AI into daily workflows and improve the adoption story." }
+      ],
+      conclusion: "The deployment is at an inflection point — NA success needs to be replicated in APAC before the Mar 2027 renewal conversation begins. Schedule APAC-focused training and explore the Slack integration as an adoption accelerator."
+    },
+    "skilljar": {
+      status: "At Risk",
+      generatedAt: "Feb 28, 2026 2:15 PM",
+      narrative: "Skilljar is the most at-risk product in the Gainsight account. Training completion rates have dropped 15% quarter-over-quarter, the previous Training Manager departed, and Director of Enablement Jennifer Adams explicitly mentioned evaluating Docebo as an alternative. The June 2026 renewal is the nearest-term renewal in the account.",
+      bullets: [
+        { label: "Competitive Evaluation", text: "<strong>Competitive Evaluation:</strong> Jennifer Adams named Docebo specifically in a QBR follow-up email, citing their analytics capabilities. This is an active evaluation — she framed it as needing to 'see improvement this quarter.'" },
+        { label: "Completion Rate Decline", text: "<strong>Completion Rate Decline:</strong> 15% drop in training completion rates last quarter. Likely a combination of stale content, team transition, and reduced enablement focus during the manager changeover." },
+        { label: "Team Transition", text: "<strong>Team Transition:</strong> Tom Garcia (new Training Manager) is ramping and has described the inherited documentation as 'sparse.' He needs support to refresh the content library before the renewal conversation." },
+        { label: "Renewal Timeline", text: "<strong>Renewal Timeline:</strong> June 2026 renewal is the nearest in the account. Current signals suggest a contested renewal unless completion rates recover." }
+      ],
+      conclusion: "This is a save situation. Priority actions: schedule a content audit workshop with Tom Garcia, prepare a competitive differentiation deck against Docebo, and get Jennifer Adams a clear improvement plan before the June renewal."
+    },
+    "customer-community": {
+      status: "Thriving",
+      generatedAt: "Feb 28, 2026 2:15 PM",
+      narrative: "Customer Community is a bright spot — high engagement, organic growth, and clear business value through support deflection. Community Manager Rachel Kim has built a thriving ecosystem of 500+ active members, and the community NPS hit 72 this month. VP CS Sarah Chen views the community as strategically important for reducing support load.",
+      bullets: [
+        { label: "Organic Growth", text: "<strong>Organic Growth:</strong> 500+ active members with feature request volume up 40% quarter-over-quarter. All organic growth — no incentive programs driving it." },
+        { label: "Support Deflection Impact", text: "<strong>Support Deflection Impact:</strong> Sarah Chen cited 30% tier-1 support ticket deflection attributable to community content. She's using this in her board-level CS efficiency narrative." },
+        { label: "Enterprise Tier Request", text: "<strong>Enterprise Tier Request:</strong> Rachel Kim has formally requested SSO and advanced moderation tools. This is an expansion opportunity — enterprise tier upgrade would increase ARR and align with Gainsight's security requirements." },
+        { label: "Cross-Product Value", text: "<strong>Cross-Product Value:</strong> Community discussions surface product feedback that feeds into Gainsight CS account intelligence. Rachel Kim also manages Skilljar community content, creating a natural bridge." }
+      ],
+      conclusion: "The community is operating well above expectations. The enterprise tier expansion is a natural next step — position it as enabling scale for the support deflection ROI that Sarah Chen is already evangelizing internally."
+    }
+  },
+
+  products: [
+    {
+      id: "gainsight-cs",
+      name: "Gainsight CS",
+      type: "Platform",
+      healthScore: 82,
+      healthLevel: "healthy",
+      status: "active",
+      arr: "$1,250,000",
+      renewalDate: "Sep 2026",
+      stakeholderCount: 12,
+      conversationCount: 87,
+      hasExpansion: true,
+      hasRisk: false,
+      expansionCount: 1,
+      riskCount: 0,
+      summary: "Strong adoption with growing executive engagement. Recent EBR signals strategic expansion interest in Copilot AI capabilities.",
+      nextAction: "Schedule follow-up with VP CS on Copilot team rollout (CSM)",
+      fullNarrative: "Gainsight CS is the anchor product in this account and the relationship is in its strongest position in over a year. VP Customer Success Sarah Chen has shifted from a quarterly check-in cadence to active weekly engagement — she participated in 4 meetings in the past 30 days alone. The recent Executive Business Review surfaced a formal expansion request: Sarah wants to roll out Copilot AI to the full 50-person CS team after CS Ops Lead Mark Liu ran a successful 30-day pilot. CFO David Park has already approved the incremental budget. Meanwhile, Mark Liu's team is building custom API integrations, signaling deep technical investment that strengthens the overall platform stickiness.",
+      stakeholders: [
+        { name: "Sarah Chen", role: "VP Customer Success", persona: "Executive Sponsor", engagement: "high", sentiment: "positive", lastContact: "3 days ago" },
+        { name: "Mark Liu", role: "CS Ops Lead", persona: "Champion", engagement: "high", sentiment: "positive", lastContact: "3 days ago" },
+        { name: "David Park", role: "CFO", persona: "Decision Maker", engagement: "medium", sentiment: "positive", lastContact: "1 week ago" },
+        { name: "Amy Rodriguez", role: "CSM Lead", persona: "Power User", engagement: "high", sentiment: "positive", lastContact: "2 days ago" }
+      ],
+      signals: [
+        { type: "expansion", title: "Copilot AI expansion — 50 seats requested", description: "VP CS formally requested Copilot rollout to full CS team after successful 30-day pilot. Budget approved by CFO. CSMs reported saving 3 hours per week on account preparation during the pilot period.", confidence: "high", source: "Email from Sarah Chen, Feb 25" }
+      ],
+      recentEngagements: [
+        { type: "meeting", title: "Executive Business Review — Q1 planning", timeAgo: "1 week ago", participants: ["Sarah Chen", "David Park", "Mark Liu", "Sarah Kim"] },
+        { type: "email", title: "Copilot pilot results and rollout request", timeAgo: "3 days ago", participants: ["Sarah Chen", "Sarah Kim"] },
+        { type: "ticket", title: "API integration support — custom dashboard build", timeAgo: "5 days ago", participants: ["Mark Liu", "Support Team"] },
+        { type: "meeting", title: "Copilot pilot kickoff — CS Ops team", timeAgo: "4 weeks ago", participants: ["Mark Liu", "Amy Rodriguez", "Sarah Kim"] }
+      ],
+      references: [
+        { type: "email", context: "VP CS shared Copilot pilot results and expansion request", quote: "The Copilot pilot results exceeded expectations — our CSMs are saving 3 hours per week on account prep. We want to roll this out to the full team by Q3.", attribution: "Sarah Chen, VP Customer Success", date: "Feb 25, 2026" },
+        { type: "meeting", context: "EBR discussion on platform investment and expansion budget", quote: "I've reviewed the business case for the Copilot expansion. The productivity gains Mark's team demonstrated make this a straightforward budget approval on my end.", attribution: "David Park, CFO", date: "Feb 21, 2026" },
+        { type: "chat", context: "CS Ops Lead asking about API capabilities for custom builds", quote: "Can we get API access for the custom dashboard we're building? We want to pull health scores directly into our internal reporting tool.", attribution: "Mark Liu, CS Ops Lead", date: "Feb 23, 2026" }
+      ]
+    },
+    {
+      id: "staircase-ai",
+      name: "Staircase AI",
+      type: "Add-on",
+      healthScore: 74,
+      healthLevel: "monitor",
+      status: "active",
+      arr: "$380,000",
+      renewalDate: "Mar 2027",
+      stakeholderCount: 8,
+      conversationCount: 34,
+      hasExpansion: true,
+      hasRisk: true,
+      expansionCount: 1,
+      riskCount: 2,
+      summary: "Strong NA adoption with Risk Analyst delivering early wins. APAC region adoption has stalled — training request outstanding.",
+      nextAction: "Schedule APAC-focused training session with Lisa Wang's team (CSM)",
+      fullNarrative: "Staircase AI is 6 months into its deployment and telling two very different stories by region. In North America, champion David Park and Data Analyst James Foster are actively using Risk Analyst and building automated workflows — they caught the Acme Corp churn signal 6 weeks before renewal, which David called out as justifying the entire investment. However, the APAC region under CS Lead Lisa Wang has effectively gone dark, with no meaningful platform engagement in 3 weeks. Lisa has requested additional training, suggesting the initial onboarding didn't adequately address her team's workflow. Meanwhile, the RevOps team is interested in the Ask Staircase Slack integration to embed alerts into their daily workflow, which could serve as an adoption accelerant across both regions.",
+      stakeholders: [
+        { name: "David Park", role: "Director of RevOps", persona: "Champion", engagement: "high", sentiment: "positive", lastContact: "4 days ago" },
+        { name: "Lisa Wang", role: "CS Lead, APAC", persona: "Power User", engagement: "low", sentiment: "neutral", lastContact: "3 weeks ago" },
+        { name: "James Foster", role: "Data Analyst", persona: "Power User", engagement: "high", sentiment: "positive", lastContact: "1 week ago" }
+      ],
+      signals: [
+        { type: "expansion", title: "Ask Staircase Slack integration — RevOps team request", description: "RevOps team wants real-time risk and expansion alerts delivered directly to Slack channels. David Park sees this as the path to embedding Staircase into daily workflows beyond the dashboard.", confidence: "medium", source: "Meeting with David Park, Feb 24" },
+        { type: "risk", title: "APAC region adoption gap — no engagement in 3 weeks", description: "Lisa Wang's APAC CS team has not logged meaningful activity since early February. She's requested additional training, indicating the initial onboarding didn't land with her team. This affects 40% of the intended user base.", confidence: "high", source: "Email from Lisa Wang, Feb 21" },
+        { type: "risk", title: "Champion bandwidth constraint — David Park stretched thin", description: "David Park is the primary internal champion but is also the CFO-side decision maker for the Gainsight CS Copilot expansion. Multiple competing priorities risk attention drift from Staircase AI advocacy.", confidence: "medium", source: "Observation from recent meeting cadence" }
+      ],
+      recentEngagements: [
+        { type: "meeting", title: "Risk Analyst quarterly review — NA team results", timeAgo: "4 days ago", participants: ["David Park", "James Foster", "Sarah Kim"] },
+        { type: "email", title: "APAC training request — additional onboarding sessions", timeAgo: "1 week ago", participants: ["Lisa Wang", "Sarah Kim"] },
+        { type: "ticket", title: "Data source connection — Salesforce APAC instance", timeAgo: "2 weeks ago", participants: ["Lisa Wang", "Support Team"] },
+        { type: "meeting", title: "Ask Staircase Slack integration discovery call", timeAgo: "4 days ago", participants: ["David Park", "James Foster", "Sarah Kim"] }
+      ],
+      references: [
+        { type: "meeting", context: "Risk Analyst review — David Park on early wins and ROI", quote: "Risk Analyst caught the Acme churn signal 6 weeks before renewal — that alone justified the investment. We need the rest of the org to see this value.", attribution: "David Park, Director of RevOps", date: "Feb 24, 2026" },
+        { type: "email", context: "APAC CS Lead requesting follow-up training for her team", quote: "We're still getting the APAC team comfortable with the platform — can we schedule another training session? The initial walkthrough was too high-level for our workflow.", attribution: "Lisa Wang, CS Lead APAC", date: "Feb 21, 2026" },
+        { type: "meeting", context: "Data Analyst describing automated risk monitoring setup", quote: "I've set up automated alerts for any account dropping below 70 health score. We're catching signals the CSMs were missing in their manual reviews.", attribution: "James Foster, Data Analyst", date: "Feb 24, 2026" }
+      ]
+    },
+    {
+      id: "skilljar",
+      name: "Skilljar",
+      type: "Add-on",
+      healthScore: 68,
+      healthLevel: "at-risk",
+      status: "active",
+      arr: "$175,000",
+      renewalDate: "Jun 2026",
+      stakeholderCount: 5,
+      conversationCount: 23,
+      hasExpansion: false,
+      hasRisk: true,
+      expansionCount: 0,
+      riskCount: 3,
+      summary: "Training completion rates dropped 15% last quarter. Director of Enablement evaluating Docebo. Team transition adding uncertainty.",
+      nextAction: "Schedule content audit workshop with new Training Manager (CSM)",
+      fullNarrative: "Skilljar is the most at-risk product in the Gainsight account and requires immediate attention. Training completion rates have declined 15% quarter-over-quarter, and the previous Training Manager left the company two months ago. Director of Enablement Jennifer Adams has explicitly mentioned Docebo as an alternative she's evaluating — she framed this as needing to see 'improvement this quarter' in a recent QBR follow-up email. New Training Manager Tom Garcia is ramping but struggling with sparse documentation left by his predecessor. The June 2026 renewal is the nearest renewal in the account, giving the team limited runway to demonstrate improvement before the decision window opens.",
+      stakeholders: [
+        { name: "Jennifer Adams", role: "Director of Enablement", persona: "Decision Maker", engagement: "medium", sentiment: "neutral", lastContact: "2 days ago" },
+        { name: "Tom Garcia", role: "Training Manager", persona: "Power User", engagement: "medium", sentiment: "neutral", lastContact: "1 week ago" },
+        { name: "Rachel Kim", role: "Community Manager", persona: "Champion", engagement: "medium", sentiment: "positive", lastContact: "2 days ago" }
+      ],
+      signals: [
+        { type: "risk", title: "Docebo competitive evaluation — active comparison", description: "Director of Enablement Jennifer Adams explicitly named Docebo in a QBR follow-up email, citing their analytics capabilities as a differentiator. She framed this as a conditional: improvement must be visible this quarter.", confidence: "high", source: "Email from Jennifer Adams, Feb 26" },
+        { type: "risk", title: "Training completion rate decline — 15% drop QoQ", description: "Completion rates have fallen from 78% to 63% over the past quarter. No single root cause identified — likely a combination of stale content, reduced enablement focus during the manager changeover, and shifting team priorities.", confidence: "high", source: "QBR data review, Feb 19" },
+        { type: "risk", title: "Team transition — new Training Manager still ramping", description: "Tom Garcia joined 6 weeks ago and is still getting up to speed on the content library. He's described the inherited documentation as 'sparse' and needs support to refresh the training catalog before the renewal conversation.", confidence: "medium", source: "Meeting with Tom Garcia, Feb 19" }
+      ],
+      recentEngagements: [
+        { type: "email", title: "QBR follow-up — completion rates and competitive evaluation", timeAgo: "2 days ago", participants: ["Jennifer Adams", "Sarah Kim"] },
+        { type: "meeting", title: "Content audit planning — training catalog review", timeAgo: "1 week ago", participants: ["Tom Garcia", "Rachel Kim", "Sarah Kim"] },
+        { type: "ticket", title: "LMS analytics comparison — feature gap analysis request", timeAgo: "10 days ago", participants: ["Jennifer Adams", "Support Team"] }
+      ],
+      references: [
+        { type: "email", context: "Director of Enablement expressing urgency and naming competitor", quote: "We need to see improvement in completion rates this quarter. The team is looking at alternatives including Docebo for the analytics tier — their reporting capabilities are ahead of what we're getting today.", attribution: "Jennifer Adams, Director of Enablement", date: "Feb 26, 2026" },
+        { type: "meeting", context: "New Training Manager describing onboarding challenge and documentation gaps", quote: "I'm still getting up to speed on the content library — the previous manager's documentation was sparse. I need at least another month before I can give you a confident content refresh plan.", attribution: "Tom Garcia, Training Manager", date: "Feb 19, 2026" },
+        { type: "meeting", context: "Community Manager connecting training content to community engagement patterns", quote: "The community members are asking for updated training paths — the current content doesn't reflect the features we shipped in Q4. That's probably contributing to the completion drop-off.", attribution: "Rachel Kim, Community Manager", date: "Feb 19, 2026" }
+      ]
+    },
+    {
+      id: "customer-community",
+      name: "Customer Community",
+      type: "Service",
+      healthScore: 91,
+      healthLevel: "healthy",
+      status: "active",
+      arr: "$95,000",
+      renewalDate: "Dec 2026",
+      stakeholderCount: 6,
+      conversationCount: 41,
+      hasExpansion: true,
+      hasRisk: false,
+      expansionCount: 1,
+      riskCount: 0,
+      summary: "Thriving community with 500+ active members and NPS at 72. Requesting enterprise tier upgrade for SSO and moderation tools.",
+      nextAction: "Prepare enterprise tier proposal with SSO and moderation scope (AE)",
+      fullNarrative: "Customer Community is the highest-health product in the account and a genuine success story. Community Manager Rachel Kim has built an engaged ecosystem of 500+ active members, with feature request volume up 40% quarter-over-quarter — all organic growth with no incentive programs driving it. VP CS Sarah Chen views the community as strategically important, citing 30% tier-1 support ticket deflection in her board-level CS efficiency narrative. Rachel has formally requested an upgrade to the enterprise tier to unlock SSO integration and advanced moderation tools, which would deepen the platform's integration with Gainsight's security and compliance requirements. The community also serves as a cross-product bridge — members discuss training content (Skilljar), product feedback (Gainsight CS), and adoption best practices.",
+      stakeholders: [
+        { name: "Rachel Kim", role: "Community Manager", persona: "Champion", engagement: "high", sentiment: "positive", lastContact: "2 days ago" },
+        { name: "Sarah Chen", role: "VP Customer Success", persona: "Executive Sponsor", engagement: "medium", sentiment: "positive", lastContact: "1 week ago" },
+        { name: "Mike Torres", role: "Support Lead", persona: "Power User", engagement: "high", sentiment: "positive", lastContact: "3 days ago" }
+      ],
+      signals: [
+        { type: "expansion", title: "Enterprise tier upgrade — SSO and advanced moderation", description: "Community Manager Rachel Kim formally requested SSO and advanced moderation tools. Enterprise tier upgrade would increase ARR and align with Gainsight's security requirements. VP CS supports this as strategic for scaling the support deflection model.", confidence: "high", source: "Email from Rachel Kim, Feb 23" }
+      ],
+      recentEngagements: [
+        { type: "meeting", title: "Community metrics review — Q1 engagement and NPS", timeAgo: "2 days ago", participants: ["Rachel Kim", "Sarah Kim"] },
+        { type: "email", title: "Enterprise tier features request — SSO and moderation", timeAgo: "5 days ago", participants: ["Rachel Kim", "Sarah Kim"] },
+        { type: "meeting", title: "Community event planning — Spring user conference", timeAgo: "1 week ago", participants: ["Rachel Kim", "Mike Torres", "Sarah Chen"] },
+        { type: "chat", title: "Support deflection metrics — monthly review", timeAgo: "3 days ago", participants: ["Mike Torres", "Rachel Kim"] }
+      ],
+      references: [
+        { type: "email", context: "Community Manager sharing NPS milestone and enterprise tier request", quote: "Our community NPS hit 72 this month — highest ever. We're ready for the enterprise tier to support SSO and the advanced moderation tools. The current plan is limiting our ability to scale.", attribution: "Rachel Kim, Community Manager", date: "Feb 23, 2026" },
+        { type: "meeting", context: "VP CS citing community's strategic value for support efficiency", quote: "The community is deflecting 30% of tier-1 support tickets. This is strategic — I'm including it in our board update as a key driver of CS efficiency gains.", attribution: "Sarah Chen, VP Customer Success", date: "Feb 21, 2026" },
+        { type: "chat", context: "Support Lead describing how community content reduces ticket volume", quote: "We're seeing community answers resolve issues before they even become tickets. The knowledge base articles members write are sometimes better than our official docs.", attribution: "Mike Torres, Support Lead", date: "Feb 25, 2026" }
+      ]
+    }
+  ]
+};
+
+/* ═══════════════════════════════════════════════════════════
+   RENDER FUNCTIONS & INTERACTIONS
+   ═══════════════════════════════════════════════════════════ */
+
+// ─── State ───
+let currentProduct = 'all';
+let expandedCard = null;
+let activeTab = 'summary';
+
+function renderHealthRing(score) {
+  let color;
+  if (score >= 80) color = 'var(--st-positive)';
+  else if (score >= 60) color = 'var(--st-neutral)';
+  else if (score >= 40) color = 'var(--st-warning)';
+  else color = 'var(--st-negative)';
+
+  const r = 12;
+  const circumference = 2 * Math.PI * r; // ~75.4
+  const filled = (score / 100) * circumference;
+  const gap = circumference - filled;
+
+  return `<svg class="health-ring" width="32" height="32" viewBox="0 0 32 32">
+    <circle cx="16" cy="16" r="${r}" fill="none" stroke="var(--st-border)" stroke-width="3"/>
+    <circle cx="16" cy="16" r="${r}" fill="none" stroke="${color}" stroke-width="3"
+      stroke-dasharray="${filled.toFixed(1)} ${gap.toFixed(1)}" stroke-dashoffset="18.85" stroke-linecap="round"/>
+    <text x="16" y="16" text-anchor="middle" dominant-baseline="central"
+      font-family="'Noto Sans', sans-serif" font-size="9" font-weight="700" fill="var(--st-text)">${score}</text>
+  </svg>`;
+}
+
+function renderSignalPills(product) {
+  let html = '<div class="signal-pills">';
+  if (product.hasExpansion) {
+    html += `<span class="signal-pill signal-pill-expansion">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M7 17l9.2-9.2M17 17V7H7"/></svg>
+      ${product.expansionCount > 1 ? product.expansionCount + ' Expansion signals' : 'Expansion signal'}
+    </span>`;
+  }
+  if (product.hasRisk) {
+    html += `<span class="signal-pill signal-pill-risk">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      ${product.riskCount > 1 ? product.riskCount + ' Risk signals' : 'Risk signal'}
+    </span>`;
+  }
+  html += `<span class="signal-pill signal-pill-ghost">
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+    ${product.conversationCount} conversations
+  </span>`;
+  html += '</div>';
+  return html;
+}
+
+function renderStatusTag(status) {
+  const map = {
+    'active': { cls: 'tag-positive', label: 'Active' },
+    'onboarding': { cls: 'tag-primary', label: 'Onboarding' },
+    'at-risk': { cls: 'tag-negative', label: 'At Risk' },
+    'monitor': { cls: 'tag-neutral', label: 'Monitor' }
+  };
+  const s = map[status] || map['active'];
+  return `<span class="tag ${s.cls}">${s.label}</span>`;
+}
+
+function renderCollapsedCard(product) {
+  const isDimmed = currentProduct !== 'all' && currentProduct !== product.id;
+  const isExpanded = expandedCard === product.id;
+  return `
+    <div class="product-card${isExpanded ? ' expanded' : ''}${isDimmed ? ' dimmed' : ''}"
+         id="card-${product.id}" data-product-id="${product.id}">
+      <div class="product-card-header" onclick="toggleCard('${product.id}')">
+        <div class="header-left">
+          <svg class="chevron${isExpanded ? ' rotated' : ''}" width="16" height="16" viewBox="0 0 24 24"
+               fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="9 18 15 12 9 6"/>
+          </svg>
+          <span class="product-name">${product.name}</span>
+        </div>
+        <div class="header-right">
+          ${renderHealthRing(product.healthScore)}
+          ${renderStatusTag(product.status)}
+          <span class="stakeholder-count">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/>
+              <path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/>
+            </svg>
+            ${product.stakeholderCount}
+          </span>
+        </div>
+      </div>
+      <div class="product-meta">
+        <span>${product.type}</span>
+        <span class="meta-dot"></span>
+        <span>${product.arr} ARR</span>
+        <span class="meta-dot"></span>
+        <span>Renews ${product.renewalDate}</span>
+      </div>
+      ${renderSignalPills(product)}
+      <p class="product-summary">${product.summary}</p>
+      <div class="product-next-action">
+        <span class="next-label">Next:</span> ${product.nextAction}
+      </div>
+      <div class="product-card-body" id="body-${product.id}" style="max-height:${isExpanded ? 'none' : '0'}">
+        ${renderExpandedSections(product)}
+      </div>
+    </div>`;
+}
+
+function renderExpandedSections(product) {
+  return `
+    <div class="card-section">
+      <div class="card-section-title">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+          <polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/>
+          <line x1="16" y1="17" x2="8" y2="17"/>
+        </svg>
+        Summary
+      </div>
+      <p class="section-narrative">${product.fullNarrative}</p>
+    </div>
+    <div class="card-section card-section-alt">
+      <div class="card-section-title">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/>
+          <path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/>
+        </svg>
+        Key Stakeholders
+      </div>
+      ${renderStakeholders(product.stakeholders)}
+    </div>
+    <div class="card-section">
+      <div class="card-section-title">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+        </svg>
+        Signals
+      </div>
+      ${renderSignalCards(product.signals)}
+    </div>
+    <div class="card-section card-section-alt">
+      <div class="card-section-title">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/>
+          <line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+        </svg>
+        Recent Engagements
+      </div>
+      ${renderEngagements(product.recentEngagements)}
+    </div>
+    <div class="card-section">
+      <div class="card-section-title">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M3 21c3 0 7-1 7-8V5c0-1.25-.756-2.017-2-2H4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2 1 0 1 0 1 1v1c0 1-1 2-2 2s-1 .008-1 1.031V20c0 1 0 1 1 1z"/>
+          <path d="M15 21c3 0 7-1 7-8V5c0-1.25-.757-2.017-2-2h-4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2h.75c0 2.25.25 4-2.75 4v3c0 1 0 1 1 1z"/>
+        </svg>
+        References
+      </div>
+      ${renderReferences(product.references)}
+    </div>`;
+}
+
+function renderProductCards(products) {
+  const container = document.getElementById('product-cards');
+  if (!container) return;
+  container.innerHTML = products.map(p => renderCollapsedCard(p)).join('');
+}
+
+function renderSummary(summaryData) {
+  if (!summaryData) return '<p class="text-secondary">No summary available.</p>';
+  const statusMap = {
+    'Heating': 'tag-positive',
+    'Stable': 'tag-primary',
+    'Monitoring': 'tag-neutral',
+    'At Risk': 'tag-negative',
+    'Thriving': 'tag-positive'
+  };
+  const statusCls = statusMap[summaryData.status] || 'tag-ghost';
+
+  let bulletsHtml = '';
+  if (summaryData.bullets && summaryData.bullets.length > 0) {
+    bulletsHtml = `
+      <div class="summary-bullets">
+        <div class="summary-bullets-title">Key Areas</div>
+        <ul>${summaryData.bullets.map(b => `<li>${b.text}</li>`).join('')}</ul>
+      </div>`;
+  }
+
+  return `
+    <div class="summary-card">
+      <div class="summary-header">
+        <div class="summary-header-left">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--st-primary)" stroke-width="2">
+            <path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/>
+          </svg>
+          <span class="summary-ai-label">AI Summary</span>
+          <span class="tag ${statusCls}">${summaryData.status}</span>
+        </div>
+        <span class="summary-date">Generated ${summaryData.generatedAt}</span>
+      </div>
+      <p class="summary-narrative">${summaryData.narrative}</p>
+      ${bulletsHtml}
+      ${summaryData.conclusion ? `<p class="summary-conclusion">${summaryData.conclusion}</p>` : ''}
+    </div>`;
+}
+
+function renderReferences(references) {
+  if (!references || references.length === 0) return '<p class="text-secondary text-sm">No references available.</p>';
+  const borderColors = { 'email': 'var(--st-positive)', 'meeting': 'var(--st-primary)', 'ticket': 'var(--st-warning)', 'chat': '#7C3AED' };
+  const typeIcons = {
+    'email': `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>`,
+    'meeting': `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>`,
+    'ticket': `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.5 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg>`,
+    'chat': `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>`
+  };
+  return references.map(ref => {
+    const borderColor = borderColors[ref.type] || 'var(--st-border)';
+    const icon = typeIcons[ref.type] || '';
+    const typeLabel = ref.type.charAt(0).toUpperCase() + ref.type.slice(1);
+    return `
+      <div class="reference-card" style="border-left-color: ${borderColor};">
+        <div class="reference-context">
+          ${icon}
+          <span class="reference-type">${typeLabel}</span>
+          <span class="reference-context-text"> — ${ref.context}</span>
+        </div>
+        <blockquote class="reference-quote">"${ref.quote}"</blockquote>
+        <div class="reference-attribution">
+          <span class="reference-author">${ref.attribution}</span>
+          <span class="reference-date">${ref.date}</span>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+function renderStakeholders(stakeholders) {
+  if (!stakeholders || stakeholders.length === 0) return '<p class="text-secondary text-sm">No stakeholders identified.</p>';
+  const personaColors = {
+    'Executive Sponsor': 'tag-scope',
+    'Champion': 'tag-positive',
+    'Power User': 'tag-primary',
+    'Decision Maker': 'tag-neutral',
+    'Influencer': 'tag-ghost'
+  };
+  const engagementDots = {
+    'high': `<svg width="10" height="10" viewBox="0 0 10 10"><circle cx="5" cy="5" r="5" fill="var(--st-positive)"/></svg>`,
+    'medium': `<svg width="10" height="10" viewBox="0 0 10 10"><circle cx="5" cy="5" r="5" fill="var(--st-neutral)"/></svg>`,
+    'low': `<svg width="10" height="10" viewBox="0 0 10 10"><circle cx="5" cy="5" r="5" fill="var(--st-negative)"/></svg>`
+  };
+  const sentimentLabels = {
+    'positive': { icon: '+', cls: 'sentiment-positive' },
+    'neutral': { icon: '~', cls: 'sentiment-neutral' },
+    'negative': { icon: '-', cls: 'sentiment-negative' }
+  };
+  return `<div class="stakeholder-list">
+    ${stakeholders.map(s => {
+      const personaCls = personaColors[s.persona] || 'tag-ghost';
+      const dot = engagementDots[s.engagement] || '';
+      const sent = sentimentLabels[s.sentiment] || sentimentLabels['neutral'];
+      return `
+        <div class="stakeholder-row">
+          <div class="stakeholder-info">
+            <span class="stakeholder-name">${s.name}</span>
+            <span class="stakeholder-role">${s.role}</span>
+          </div>
+          <div class="stakeholder-tags">
+            <span class="tag ${personaCls}">${s.persona}</span>
+            <span class="engagement-indicator" title="${s.engagement} engagement">${dot}</span>
+            <span class="sentiment ${sent.cls}" title="${s.sentiment} sentiment">${sent.icon}</span>
+          </div>
+        </div>`;
+    }).join('')}
+  </div>`;
+}
+
+function renderSignalCards(signals) {
+  if (!signals || signals.length === 0) return '<p class="text-secondary text-sm">No active signals.</p>';
+  const confidenceColors = { 'high': 'tag-positive', 'medium': 'tag-neutral', 'low': 'tag-ghost' };
+  return `<div class="signal-cards">
+    ${signals.map(sig => {
+      const borderColor = sig.type === 'expansion' ? 'var(--st-positive)' : 'var(--st-negative)';
+      const typeIcon = sig.type === 'expansion'
+        ? `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--st-positive)" stroke-width="2.5"><path d="M7 17l9.2-9.2M17 17V7H7"/></svg>`
+        : `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--st-negative)" stroke-width="2.5"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg>`;
+      const confCls = confidenceColors[sig.confidence] || 'tag-ghost';
+      return `
+        <div class="signal-card" style="border-left-color: ${borderColor};">
+          <div class="signal-card-header">
+            ${typeIcon}
+            <span class="signal-title">${sig.title}</span>
+            <span class="tag ${confCls}">${sig.confidence.charAt(0).toUpperCase() + sig.confidence.slice(1)} confidence</span>
+          </div>
+          <p class="signal-description">${sig.description}</p>
+          <div class="signal-source">Source: ${sig.source}</div>
+        </div>`;
+    }).join('')}
+  </div>`;
+}
+
+function renderEngagements(engagements) {
+  if (!engagements || engagements.length === 0) return '<p class="text-secondary text-sm">No recent engagements.</p>';
+  const typeIcons = {
+    'email': `<div class="engagement-type-icon" style="background: var(--st-positive-light); color: var(--st-positive);">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div>`,
+    'meeting': `<div class="engagement-type-icon" style="background: var(--st-primary-light); color: var(--st-primary);">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>`,
+    'ticket': `<div class="engagement-type-icon" style="background: var(--st-warning-light); color: var(--st-warning);">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.5 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg></div>`,
+    'chat': `<div class="engagement-type-icon" style="background: #F3E8FD; color: #7C3AED;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></div>`
+  };
+  return `<div class="engagement-list">
+    ${engagements.map(eng => {
+      const icon = typeIcons[eng.type] || typeIcons['email'];
+      const participants = eng.participants && eng.participants.length > 0
+        ? `<span class="engagement-participants">${eng.participants.join(', ')}</span>`
+        : '';
+      return `
+        <div class="engagement-row">
+          ${icon}
+          <div class="engagement-info">
+            <span class="engagement-title">${eng.title}</span>
+            ${participants}
+          </div>
+          <span class="engagement-time">${eng.timeAgo}</span>
+        </div>`;
+    }).join('')}
+  </div>`;
+}
+
+/* ─── Interactions ─── */
+
+function toggleCard(productId) {
+  const wasExpanded = expandedCard === productId;
+
+  if (expandedCard) {
+    const prevCard = document.getElementById('card-' + expandedCard);
+    const prevBody = document.getElementById('body-' + expandedCard);
+    if (prevCard) prevCard.classList.remove('expanded');
+    if (prevBody) prevBody.style.maxHeight = '0';
+    const prevChevron = prevCard ? prevCard.querySelector('.chevron') : null;
+    if (prevChevron) prevChevron.classList.remove('rotated');
+  }
+
+  if (wasExpanded) {
+    expandedCard = null;
+    return;
+  }
+
+  expandedCard = productId;
+  const card = document.getElementById('card-' + productId);
+  const body = document.getElementById('body-' + productId);
+  if (card) card.classList.add('expanded');
+  if (body) {
+    body.style.maxHeight = body.scrollHeight + 2000 + 'px';
+  }
+  const chevron = card ? card.querySelector('.chevron') : null;
+  if (chevron) chevron.classList.add('rotated');
+
+  setTimeout(() => {
+    if (card) card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, 100);
+}
+
+function updateFilterPill() {
+  const area = document.getElementById('filter-pill-area');
+  if (!area) return;
+  if (currentProduct === 'all') {
+    area.innerHTML = '';
+    return;
+  }
+  const product = DEMO_DATA.products.find(p => p.id === currentProduct);
+  if (!product) { area.innerHTML = ''; return; }
+  area.innerHTML = `<div class="filter-pill">
+    ${product.name}
+    <span class="filter-pill-clear" onclick="filterByProduct('all')" title="Clear filter">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </span>
+  </div>`;
+}
+
+function filterByProduct(productId) {
+  currentProduct = productId;
+
+  const dropdown = document.getElementById('product-filter');
+  if (dropdown) dropdown.value = productId;
+
+  updateFilterPill();
+
+  const cards = document.querySelectorAll('.product-card');
+  cards.forEach(card => {
+    const cardId = card.dataset.productId;
+    if (productId === 'all') {
+      card.classList.remove('dimmed');
+    } else if (cardId === productId) {
+      card.classList.remove('dimmed');
+    } else {
+      card.classList.add('dimmed');
+    }
+  });
+
+  if (productId !== 'all') {
+    if (expandedCard && expandedCard !== productId) {
+      const prevCard = document.getElementById('card-' + expandedCard);
+      const prevBody = document.getElementById('body-' + expandedCard);
+      if (prevCard) prevCard.classList.remove('expanded');
+      if (prevBody) prevBody.style.maxHeight = '0';
+      const prevChevron = prevCard ? prevCard.querySelector('.chevron') : null;
+      if (prevChevron) prevChevron.classList.remove('rotated');
+    }
+    expandedCard = productId;
+    const card = document.getElementById('card-' + productId);
+    const body = document.getElementById('body-' + productId);
+    if (card) card.classList.add('expanded');
+    if (body) body.style.maxHeight = body.scrollHeight + 2000 + 'px';
+    const chevron = card ? card.querySelector('.chevron') : null;
+    if (chevron) chevron.classList.add('rotated');
+
+    setTimeout(() => {
+      if (card) card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 150);
+  } else {
+    if (expandedCard) {
+      const prevCard = document.getElementById('card-' + expandedCard);
+      const prevBody = document.getElementById('body-' + expandedCard);
+      if (prevCard) prevCard.classList.remove('expanded');
+      if (prevBody) prevBody.style.maxHeight = '0';
+      const prevChevron = prevCard ? prevCard.querySelector('.chevron') : null;
+      if (prevChevron) prevChevron.classList.remove('rotated');
+      expandedCard = null;
+    }
+  }
+
+  updateSummaryContent();
+}
+
+function switchTab(tabId) {
+  activeTab = tabId;
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.tab === tabId);
+  });
+  const summaryPanel = document.getElementById('tab-summary');
+  const analysisPanel = document.getElementById('tab-product-analysis');
+  if (summaryPanel) summaryPanel.style.display = tabId === 'summary' ? 'block' : 'none';
+  if (analysisPanel) analysisPanel.style.display = tabId === 'product-analysis' ? 'block' : 'none';
+}
+
+function updateSummaryContent() {
+  const container = document.getElementById('summary-content');
+  if (!container) return;
+  const summaryKey = currentProduct === 'all' ? 'all' : currentProduct;
+  const summaryData = DEMO_DATA.summaries[summaryKey];
+  container.innerHTML = renderSummary(summaryData);
+}
+
+function goScenario(scenarioId) {
+  document.querySelectorAll('.demo-step').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.scenario === scenarioId);
+  });
+  switch (scenarioId) {
+    case 'default':
+      switchTab('summary');
+      filterByProduct('all');
+      break;
+    case 'focus':
+      switchTab('product-analysis');
+      filterByProduct('gainsight-cs');
+      break;
+    case 'risk':
+      switchTab('product-analysis');
+      filterByProduct('skilljar');
+      break;
+  }
+}
+
+/* ─── Init ─── */
+document.addEventListener('DOMContentLoaded', function() {
+  renderProductCards(DEMO_DATA.products);
+  updateSummaryContent();
+
+  const dropdown = document.getElementById('product-filter');
+  if (dropdown) {
+    dropdown.addEventListener('change', (e) => {
+      filterByProduct(e.target.value);
+    });
+  }
+
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => switchTab(btn.dataset.tab));
+  });
+
+  document.querySelectorAll('.demo-step').forEach(btn => {
+    btn.addEventListener('click', () => goScenario(btn.dataset.scenario));
+  });
+
+  switchTab('summary');
+});
+</script>
+</body>
+</html>
